@@ -6,7 +6,7 @@ import { t, resolveLocale, contact } from '../lib/i18n';
 const locale = resolveLocale(Astro.currentLocale);
 ---
 
-<section class="bg-ink text-canvas relative overflow-hidden">
+<section class="bg-ink text-canvas relative">
   <div class="mx-auto max-w-[1080px] px-10 pt-[110px] pb-[90px]">
     <Logo width={26} height={35} class="text-canvas mb-10 block" data-reveal />
 
@@ -34,6 +34,12 @@ const locale = resolveLocale(Astro.currentLocale);
         rel="noopener"
         class="footer-link">LinkedIn</a
       >
+      <a
+        href={contact.github}
+        target="_blank"
+        rel="noopener"
+        class="footer-link">GitHub</a
+      >
       <button
         type="button"
         data-print
@@ -52,7 +58,10 @@ const locale = resolveLocale(Astro.currentLocale);
   </div>
 
   {/* A quiet hello from the old rengifo.es — hover it */}
-  <div class="pointer-events-auto absolute right-6 bottom-3" data-no-print>
+  <div
+    class="pointer-events-auto flex justify-center pb-10 sm:absolute sm:right-6 sm:bottom-3 sm:block sm:pb-0"
+    data-no-print
+  >
     <Cat />
   </div>
 </section>

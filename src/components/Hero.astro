@@ -59,9 +59,19 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
     style={`animation: fadeUp 0.8s 0.3s ${EASE} both;`}
   >
     <a href={`mailto:${contact.email}`} class="text-muted">{contact.email}</a>
+    <span class="text-muted font-serif italic">
+      {t('ui_footer_gmail_aside', locale)}{' '}
+      <a
+        href={`mailto:${contact.gmail}`}
+        class="text-muted font-sans not-italic">{contact.gmail}</a
+      >
+    </span>
     <a href={contact.linkedin} target="_blank" rel="noopener" class="text-muted"
       >LinkedIn</a
     >
-    <span>{contact.languages}</span>
+    <a href={contact.github} target="_blank" rel="noopener" class="text-muted"
+      >GitHub</a
+    >
+    <span>{t('ui_speaks', locale)} {contact.languages}</span>
   </div>
 </section>

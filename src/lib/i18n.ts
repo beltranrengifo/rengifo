@@ -33,5 +33,6 @@ export const contact = {
   email: 'beltran@rengifo.es',
   gmail: 'merloc@gmail.com',
   linkedin: 'https://www.linkedin.com/in/beltranrengifo/',
+  github: 'https://github.com/beltranrengifo',
   languages: 'ES · EN · IT',
 };
