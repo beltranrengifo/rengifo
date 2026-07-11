@@ -1,0 +1,69 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { t, resolveLocale } from '../lib/i18n';
+import { projects } from '../data/projects';
+
+const locale = resolveLocale(Astro.currentLocale);
+---
+
+<section class="mx-auto max-w-[1080px] px-10 pb-10">
+  <SectionHeader number="02" titleKey="ui_section_projects" class="mb-12" />
+
+  <div class="grid">
+    {
+      projects.map((project, i) => {
+        const isLast = i === projects.length - 1;
+        return (
+          <div
+            data-reveal
+            class:list={[
+              'grid grid-cols-[minmax(140px,220px)_1fr] gap-6',
+              isLast
+                ? 'border-b-0 px-0 pt-7 pb-16'
+                : 'proj-row border-hairline -mx-6 rounded-xs border-b px-6 py-7',
+            ]}
+          >
+            {project.href ? (
+              <a
+                href={project.href}
+                target="_blank"
+                rel="noopener"
+                class="proj-link m-0 font-serif text-[20px] italic"
+              >
+                {project.name}
+              </a>
+            ) : (
+              <p class="m-0 font-serif text-[20px] italic">{project.name}</p>
+            )}
+            <div class="mt-[2px]">
+              <p class="text-muted m-0 text-[15px]">
+                {t(project.descKey, locale)}
+              </p>
+              {project.stack && (
+                <p class="text-faint mt-2 mb-0 text-[13px]">
+                  {project.stack.join(' · ')}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .proj-row {
+    transition: background 0.45s ease;
+  }
+  .proj-row:hover {
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+  .proj-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .proj-link:hover {
+    color: var(--accent);
+  }
+</style>

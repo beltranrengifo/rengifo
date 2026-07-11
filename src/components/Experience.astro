@@ -1,0 +1,96 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { t, resolveLocale } from '../lib/i18n';
+import { experience } from '../data/experience';
+
+const locale = resolveLocale(Astro.currentLocale);
+---
+
+<section class="mx-auto max-w-[1080px] px-10 pb-10">
+  <SectionHeader number="01" titleKey="ui_section_experience" class="mb-16" />
+
+  {
+    experience.map((entry, i) => {
+      const isFirst = i === 0;
+      const multi = entry.roles.length > 1;
+      const company = entry.companyKey
+        ? t(entry.companyKey, locale)
+        : entry.company;
+      return (
+        <div
+          data-reveal
+          class:list={[
+            'grid grid-cols-[minmax(140px,220px)_1fr] gap-6',
+            isFirst
+              ? 'pb-14'
+              : 'exp-row border-hairline -mx-6 rounded-xs border-t px-6 py-10',
+          ]}
+        >
+          {/* Left: period + company */}
+          <div>
+            <p class="text-muted m-0 text-[13px] tracking-[0.14em] uppercase">
+              {entry.period}
+            </p>
+            <p class="text-body mt-2 mb-0 font-serif text-[17px] italic">
+              {company}
+            </p>
+          </div>
+
+          {/* Right: one or more roles */}
+          <div class:list={[multi && 'grid gap-9']}>
+            {entry.roles.map((role) => (
+              <div>
+                <h3 class="m-0 text-[19px] font-semibold tracking-[-0.01em]">
+                  {role.href ? (
+                    <a
+                      href={role.href}
+                      target="_blank"
+                      rel="noopener"
+                      class="role-link"
+                    >
+                      {t(role.titleKey, locale)}
+                      <span class="text-muted ml-1 align-middle text-[0.7em]">
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    t(role.titleKey, locale)
+                  )}
+                </h3>
+                {role.dates && (
+                  <p class="text-muted mt-1 mb-[10px] text-[13px] tracking-[0.1em] uppercase">
+                    {role.dates}
+                  </p>
+                )}
+                <p
+                  class:list={[
+                    'text-body m-0 max-w-[620px]',
+                    !role.dates && 'mt-[10px]',
+                  ]}
+                >
+                  {t(role.blurbKey, locale)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    })
+  }
+</section>
+
+<style>
+  .exp-row {
+    transition: background 0.45s ease;
+  }
+  .exp-row:hover {
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+  .role-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .role-link:hover {
+    color: var(--accent);
+  }
+</style>

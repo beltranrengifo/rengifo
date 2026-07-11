@@ -1,0 +1,25 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { t, resolveLocale } from '../lib/i18n';
+import { education } from '../data/education';
+
+const locale = resolveLocale(Astro.currentLocale);
+---
+
+<section class="mx-auto max-w-[1080px] px-10 pb-[100px]">
+  <SectionHeader number="04" titleKey="ui_section_education" class="mb-12" />
+
+  <div
+    data-reveal
+    class="text-body grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-16 gap-y-2 text-[15px]"
+  >
+    {
+      education.map((item) => (
+        <div class="border-hairline-soft flex justify-between gap-4 border-b py-3">
+          <span>{item.titleKey ? t(item.titleKey, locale) : item.title}</span>
+          <span class="text-faint">{item.year}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>

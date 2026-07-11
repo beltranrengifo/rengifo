@@ -1,0 +1,23 @@
+---
+import { t, resolveLocale } from '../lib/i18n';
+
+interface Props {
+  number: string;
+  titleKey: string;
+  /** Bottom margin utility — Experience uses mb-16, others mb-12. */
+  class?: string;
+}
+
+const { number, titleKey, class: className = 'mb-12' } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+---
+
+<div
+  data-reveal
+  class:list={['border-ink flex items-baseline gap-5 border-t pt-5', className]}
+>
+  <span class="text-muted text-[13px] tracking-[0.2em]">{number}</span>
+  <h2 class="m-0 text-[15px] font-medium tracking-[0.2em] uppercase">
+    {t(titleKey, locale)}
+  </h2>
+</div>

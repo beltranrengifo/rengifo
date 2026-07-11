@@ -1,0 +1,34 @@
+# build output
+dist/
+.output/
+
+# dependencies
+node_modules/
+
+# generated types
+.astro/
+
+# paraglide (compiled from src/i18n/messages)
+src/paraglide/
+
+# environment
+.env
+.env.production
+.env.*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# private — working notes (names ex-colleagues) + local Claude config
+MEWS-CASE-STUDIES.md
+.claude/
