@@ -10,7 +10,14 @@ export const capabilities: CapabilityColumn[] = [
   },
   {
     headingKey: 'cap_h_stack',
-    itemKeys: ['cap_stack_1', 'cap_stack_2', 'cap_stack_3', 'cap_stack_4'],
+    itemKeys: [
+      'cap_stack_1',
+      'cap_stack_5',
+      'cap_stack_2',
+      'cap_stack_3',
+      'cap_stack_6',
+      'cap_stack_4',
+    ],
   },
   {
     headingKey: 'cap_h_uiux',

@@ -152,4 +152,27 @@ a:hover {
   * {
     animation: none !important;
   }
+
+  /* Tighten the generous on-screen spacing for paper */
+  section {
+    padding-top: 28px !important;
+    padding-bottom: 28px !important;
+  }
+
+  /* Keep headings attached to the content that follows */
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* Print the dark contact footer with its colours intact (legible text) */
+  .bg-ink {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Page margins for the printed résumé */
+@page {
+  margin: 14mm;
 }

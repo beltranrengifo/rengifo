@@ -20,7 +20,7 @@ const locale = resolveLocale(Astro.currentLocale);
         <div
           data-reveal
           class:list={[
-            'grid grid-cols-[minmax(140px,220px)_1fr] gap-6',
+            'grid grid-cols-1 gap-6 sm:grid-cols-[minmax(140px,220px)_1fr]',
             isFirst
               ? 'pb-14'
               : 'exp-row border-hairline -mx-6 rounded-xs border-t px-6 py-10',
