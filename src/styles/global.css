@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+/*
+ * Design system for the résumé site — ported 1:1 from the design reference.
+ * Tokens live in @theme so Tailwind generates matching utilities
+ * (bg-canvas, text-ink, font-serif, …). The accent is a runtime CSS var so it
+ * stays themeable.
+ */
+@theme {
+  --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Newsreader', ui-serif, Georgia, serif;
+
+  --color-canvas: #f6f5f2; /* cool off-white background */
+  --color-ink: #16181a; /* headings, strong text, footer bg */
+  --color-body: #3a3e42; /* body copy */
+  --color-muted: #5c6166; /* labels, dates */
+  --color-faint: #8a8e93; /* placeholders, years */
+  --color-accent: var(--accent);
+  --color-hairline: rgba(22, 24, 26, 0.12); /* row dividers */
+  --color-hairline-soft: rgba(22, 24, 26, 0.1); /* education dividers */
+
+  --radius-xs: 2px; /* near-square, Nordic */
+}
+
+:root {
+  /* Accent — default muted slate blue. Alternates: #16181A #6B705C #8C4A3B */
+  --accent: #2f5d8a;
+}
+
+/* ── Base ────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip; /* contain the drifting glow orbs */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(22, 24, 26, 0.3);
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--color-canvas);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-10%, 8%) scale(1.18);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  60% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+/*
+ * Scroll-reveal — progressive enhancement. Elements are visible by default;
+ * JS adds .reveal-hidden ONLY to below-the-fold elements, then removes it on
+ * intersection. No JS (or reduced motion) → everything just shows.
+ */
+[data-reveal] {
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.6, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+[data-reveal].reveal-hidden {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+/* ── Reduced motion: no drift/breathe/reveal, everything visible ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal].reveal-hidden {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Print: clean résumé, no chrome/motion ───────────────────── */
+@media print {
+  [data-no-print] {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    overflow-x: visible;
+  }
+  [data-reveal],
+  [data-reveal].reveal-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  * {
+    animation: none !important;
+  }
+}

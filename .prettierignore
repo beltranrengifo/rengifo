@@ -1,0 +1,7 @@
+dist/
+node_modules/
+.astro/
+src/paraglide/
+specs/
+package-lock.json
+MEWS-CASE-STUDIES.md

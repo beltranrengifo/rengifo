@@ -1,0 +1,67 @@
+---
+import { t, resolveLocale, contact } from '../lib/i18n';
+
+const locale = resolveLocale(Astro.currentLocale);
+const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
+---
+
+<section
+  class="relative isolate mx-auto max-w-[1080px] px-10 pt-[130px] pb-[100px]"
+>
+  {/* Drifting accent glow orbs */}
+  <div
+    data-no-print
+    aria-hidden="true"
+    class="pointer-events-none absolute -top-[6%] -right-[6%] -z-10 aspect-square w-[62vw] max-w-[820px] rounded-full"
+    style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 26%, transparent) 0%, transparent 66%); animation: drift 38s ease-in-out infinite alternate;"
+  >
+  </div>
+  <div
+    data-no-print
+    aria-hidden="true"
+    class="pointer-events-none absolute -bottom-[18%] -left-[14%] -z-10 aspect-square w-[40vw] max-w-[520px] rounded-full"
+    style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 66%); animation: drift 46s ease-in-out infinite alternate-reverse;"
+  >
+  </div>
+
+  <p
+    class="text-muted m-0 mb-9 text-[13px] tracking-[0.2em] uppercase"
+    style={`animation: fadeUp 0.8s ${EASE} both;`}
+  >
+    {t('ui_kicker', locale)}
+  </p>
+
+  <h1
+    class="m-0 max-w-[900px] text-[clamp(40px,5.6vw,76px)] leading-[1.08] font-medium tracking-[-0.03em]"
+    style={`animation: fadeUp 0.8s 0.08s ${EASE} both;`}
+    set:html={t('ui_hero_heading_html', locale)}
+  />
+
+  <p
+    class="text-body mt-8 mb-0 max-w-[600px] text-[18px] leading-[1.6]"
+    style={`animation: fadeUp 0.8s 0.16s ${EASE} both;`}
+  >
+    {t('ui_hero_sub', locale)}
+  </p>
+
+  <div
+    class="border-hairline mt-16 flex items-center gap-[14px] border-t pt-7"
+    style={`animation: fadeUp 0.8s 0.24s ${EASE} both;`}
+  >
+    <span
+      class="bg-accent h-[7px] w-[7px] shrink-0 rounded-full"
+      style="animation: breathe 3.2s ease-out infinite;"></span>
+    <p class="text-body m-0 text-[15px]">{t('ui_availability', locale)}</p>
+  </div>
+
+  <div
+    class="text-muted mt-6 flex flex-wrap gap-8 text-[14px]"
+    style={`animation: fadeUp 0.8s 0.3s ${EASE} both;`}
+  >
+    <a href={`mailto:${contact.email}`} class="text-muted">{contact.email}</a>
+    <a href={contact.linkedin} target="_blank" rel="noopener" class="text-muted"
+      >LinkedIn</a
+    >
+    <span>{contact.languages}</span>
+  </div>
+</section>

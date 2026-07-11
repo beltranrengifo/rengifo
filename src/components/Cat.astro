@@ -1,0 +1,658 @@
+---
+/*
+ * Pure-CSS cat — salvaged from the old rengifo.es portfolio (poncho.css).
+ * Idle: ears twitch, eyes blink. Hover: it stretches, eyes dart, and meows.
+ * Sizing knob: `.cat-stage { font-size }` — the whole cat scales with it
+ * (the original vmin units were converted to em for exactly this).
+ * Placement is handled by the parent (ContactFooter).
+ */
+---
+
+<div class="cat-stage" data-no-print aria-hidden="true">
+  <div class="cat">
+    <div class="cat-inner"></div>
+    <div class="cat-head">
+      <div class="cat-ear"></div>
+      <div class="cat-ear2"></div>
+      <div class="cat-nose"></div>
+      <div class="cat-mouth"><div class="cat-meow"></div></div>
+      <div class="cateye">
+        <div class="cateye inner"></div>
+        <div class="cateye inner inner-2"></div>
+        <div class="cateyelid top"></div>
+        <div class="cateyelid bottom"></div>
+      </div>
+      <div class="cateye2">
+        <div class="cateye inner"></div>
+        <div class="cateye inner inner-2"></div>
+        <div class="cateyelid top"></div>
+        <div class="cateyelid bottom"></div>
+      </div>
+    </div>
+    <div class="cat-leg"></div>
+    <div class="cat-foot"></div>
+    <div class="cat-leg-front"></div>
+    <div class="cat-foot-front"></div>
+    <div class="cat-hind-leg"></div>
+    <div class="cat-hind-leg-top"></div>
+    <div class="cat-hind-foot"></div>
+    <div class="cat-hind-paw"></div>
+    <div class="cat-hind-leg2"></div>
+    <div class="cat-hind-leg-top2"></div>
+    <div class="cat-hind-foot2"></div>
+    <div class="cat-hind-paw2"></div>
+    <div class="cat-tail"></div>
+    <div class="cat-tail-end"></div>
+  </div>
+</div>
+
+<style>
+  /* ── Stage: sizing + framing (font-size is the scale knob) ──── */
+  .cat-stage {
+    font-size: 3px;
+    position: relative;
+    width: 66em;
+    height: 40em;
+    overflow: visible;
+    opacity: 0.9;
+  }
+
+  .cat {
+    position: absolute;
+    left: 7em;
+    top: 12em;
+    height: 16em;
+    width: 30em;
+    border-radius: 5% 32% 15% 65%;
+    cursor: pointer;
+  }
+
+  /* ── Palette (from the original "overrides" block) ──────────── */
+  .cat-inner,
+  .cat-head,
+  .cat-ear,
+  .cat-ear2 {
+    background: #d2b389 !important;
+  }
+  .cat-nose {
+    background: #c18d7f !important;
+  }
+  .cateye.inner {
+    background: #f2a300 !important;
+  }
+  .cateye.inner-2 {
+    background: black !important;
+  }
+  .cateyelid {
+    background: #d2b389 !important;
+  }
+  .cat:hover .cateyelid {
+    background: transparent !important;
+  }
+  .cat-leg {
+    border-top-color: #cbaf89 !important;
+  }
+  .cat-foot,
+  .cat-hind-paw2 {
+    background: #dedede !important;
+  }
+  .cat-leg-front {
+    border-top-color: #d2b389 !important;
+  }
+  .cat-foot-front,
+  .cat-hind-paw {
+    background: #ededed !important;
+  }
+  .cat-hind-leg2 {
+    background-color: #cbaf89 !important;
+    border-left-color: #cbaf89 !important;
+  }
+  .cat-hind-leg-top2 {
+    border-top-color: #cbaf89 !important;
+  }
+  .cat-hind-leg {
+    background: #d2b389 !important;
+    border-left-color: #d2b389 !important;
+  }
+  .cat-hind-leg-top {
+    border-top-color: #d2b389 !important;
+  }
+  .cat-hind-foot {
+    background: #d2b389 !important;
+  }
+  .cat-hind-foot2 {
+    background: #cbaf89 !important;
+  }
+  .cat-tail {
+    border-left-color: #d2b389 !important;
+    border-bottom-color: #d2b389 !important;
+  }
+  .cat-tail-end {
+    background: #ededed !important;
+  }
+
+  /* ── Body ───────────────────────────────────────────────────── */
+  .cat-inner {
+    height: 16em;
+    width: 28em;
+    background-color: #0e3d58;
+    position: absolute;
+    transform: translateY(-70%) translateX(-50%) rotate(28deg);
+    border-radius: 5% 32% 35% 65%;
+    left: 48%;
+    bottom: -70%;
+    transform-origin: 20% 30%;
+    transition: 0.4s ease-in-out;
+  }
+  .cat:hover .cat-inner {
+    transform: translateY(-70%) translateX(-50%) rotate(0deg);
+    left: 46%;
+  }
+
+  /* ── Head + ears ────────────────────────────────────────────── */
+  .cat-head {
+    position: absolute;
+    height: 75%;
+    width: 52%;
+    background-color: #0e3d58;
+    left: -22%;
+    top: -55%;
+    border-radius: 45% 45% 55% 55%;
+  }
+  .cat-ear {
+    position: absolute;
+    background-color: #0e3d58;
+    text-align: left;
+    left: 24%;
+    top: 3%;
+    transform: rotate(30deg) skewX(-30deg) scale(1, 0.566);
+    animation: cattwitch 5s ease-in-out 2s infinite;
+    transition: 0.4s ease-in-out;
+  }
+  .cat-ear:before,
+  .cat-ear:after {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+  }
+  .cat-ear,
+  .cat-ear:before,
+  .cat-ear:after {
+    width: 8em;
+    height: 8em;
+    border-top-right-radius: 30%;
+  }
+  .cat-ear:before {
+    transform: rotate(-135deg) skewX(-45deg) scale(1.414, 0.707)
+      translate(0, -50%);
+  }
+  .cat-ear:after {
+    transform: rotate(135deg) skewY(-45deg) scale(0.707, 1.414) translate(50%);
+  }
+  .cat-ear2 {
+    position: absolute;
+    background-color: #0e3d58;
+    text-align: left;
+    left: 37%;
+    top: 19%;
+    transform: rotate(108deg) skewX(-30deg) scale(1, 0.566);
+    transition: 0.2s ease-in-out;
+  }
+  .cat-ear2:before,
+  .cat-ear2:after {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+  }
+  .cat-ear2,
+  .cat-ear2:before,
+  .cat-ear2:after {
+    width: 8em;
+    height: 8em;
+    border-top-right-radius: 30%;
+  }
+  .cat-ear2:before {
+    transform: rotate(-135deg) skewX(-45deg) scale(1.414, 0.707)
+      translate(0, -50%);
+  }
+  .cat-ear2:after {
+    transform: rotate(135deg) skewY(-45deg) scale(0.707, 1.414) translate(50%);
+  }
+
+  /* ── Face ───────────────────────────────────────────────────── */
+  .cat-nose {
+    position: absolute;
+    background-color: #e2bad6;
+    width: 15%;
+    height: 20%;
+    border-radius: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 46%;
+  }
+  .cat-nose:after {
+    content: '';
+    position: absolute;
+    background-color: #e2bad6;
+    width: 0em;
+    height: 1em;
+    border: 1px solid #000;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+  }
+  .cat-mouth {
+    background-color: transparent;
+    border-top: 0.3em solid #000;
+    border-right: 0.3em solid #000;
+    border-left: 0.3em solid #000;
+    height: 1.5em;
+    width: 3em;
+    border-radius: 4em 4em 0px 0px;
+    position: absolute;
+    bottom: 13%;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: hidden;
+  }
+  .cat-meow {
+    background-color: #000;
+    border-top: 2px solid #000;
+    border-right: 2px solid #000;
+    border-left: 2px solid #000;
+    height: 1.5em;
+    width: 3em;
+    border-radius: 4em 4em 0px 0px;
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: 0.4s ease-in-out;
+  }
+  .cat:hover .cat-meow {
+    animation: meow 1s ease-in-out 6s 1;
+  }
+
+  /* ── Eyes ───────────────────────────────────────────────────── */
+  .cateye {
+    position: absolute;
+    overflow: hidden;
+    width: 9em;
+    height: 9em;
+    border-radius: 50%;
+    transform: scale(0.65);
+    bottom: 24.2%;
+  }
+  .cateye2 {
+    position: absolute;
+    overflow: hidden;
+    width: 9em;
+    height: 9em;
+    border-radius: 50%;
+    transform: scale(0.65);
+    bottom: 24.2%;
+    left: 43%;
+  }
+  .cateye.inner {
+    position: absolute;
+    background: #ffcd66;
+    padding: 0;
+    width: auto;
+    height: auto;
+    border: none;
+    margin: 0;
+    left: 1%;
+    right: 1%;
+    bottom: 1%;
+    top: 1%;
+    transition: 0.4s ease-in-out;
+  }
+  .cateye.inner-2 {
+    left: 25%;
+    right: 25%;
+    bottom: 25%;
+    top: 25%;
+    background: #000;
+    transition: 0.4s ease-in-out;
+    height: 4em;
+    width: 4em;
+  }
+  .cat:hover .cateye.inner-2 {
+    height: 2em;
+    width: 2em;
+    left: 40%;
+    top: 40%;
+    animation: cateyes 6s ease-in-out 1;
+  }
+  .cateyelid {
+    position: absolute;
+    height: 50%;
+    left: 0;
+    right: 0;
+    background: #0e3d58;
+    transition: margin 0.15s ease;
+  }
+  .cateyelid.top {
+    display: block;
+    top: 0;
+    border-radius: 200px 200px 0 0;
+  }
+  .cateyelid.bottom {
+    display: block;
+    bottom: 0;
+    border-radius: 0 0 200px 200px;
+    margin-bottom: -50%;
+    animation: catblink 4s ease-in-out 2s infinite;
+  }
+
+  /* ── Front legs ─────────────────────────────────────────────── */
+  .cat-leg {
+    border-top: 18em solid #092738;
+    border-left: 3em solid transparent;
+    height: 0;
+    width: 5em;
+    transform: rotate(-9deg);
+    position: absolute;
+    top: 45%;
+    left: 6%;
+    z-index: -1;
+  }
+  .cat-foot {
+    height: 2em;
+    width: 5em;
+    background-color: #828282;
+    position: absolute;
+    bottom: -63%;
+    left: 10.5%;
+    border-radius: 90% 0% 20% 20%;
+  }
+  .cat-leg-front {
+    border-top: 18em solid #0e3d58;
+    border-left: 3em solid transparent;
+    height: 0;
+    width: 5em;
+    transform: rotate(-2deg);
+    position: absolute;
+    top: 39%;
+    left: 18%;
+    z-index: -1;
+  }
+  .cat-foot-front {
+    height: 2em;
+    width: 5em;
+    background-color: #bfbfbf;
+    position: absolute;
+    bottom: -63%;
+    left: 19%;
+    border-radius: 90% 0% 20% 20%;
+  }
+
+  /* ── Hind legs ──────────────────────────────────────────────── */
+  .cat-hind-leg {
+    height: 14em;
+    width: 10em;
+    border-radius: 10em 0 3em 10em;
+    position: absolute;
+    background-color: #0e3d58;
+    border-left: 1px solid #092738;
+    right: 16%;
+    bottom: -62%;
+    transition: 0.4s ease-in-out;
+  }
+  .cat-hind-leg2 {
+    height: 14em;
+    width: 10em;
+    border-radius: 10em 0 3em 10em;
+    position: absolute;
+    background-color: #092738;
+    border-left: 1px solid #092738;
+    right: 25%;
+    bottom: -62%;
+    transition: 0.4s ease-in-out;
+    z-index: -1;
+  }
+  .cat-hind-foot {
+    height: 2.5em;
+    width: 5em;
+    position: absolute;
+    background-color: #0e3d58;
+    border-radius: 30% 20% 20% 30%;
+    right: 20%;
+    bottom: -63%;
+    transform-origin: 0% 0%;
+    transition: 0.4s ease-in-out;
+  }
+  .cat-hind-foot2 {
+    height: 2.5em;
+    width: 5em;
+    position: absolute;
+    background-color: #0e3d58;
+    border-radius: 30% 20% 20% 30%;
+    right: 22%;
+    bottom: -63%;
+    transform-origin: 0% 0%;
+    transition: 0.4s ease-in-out;
+    z-index: -1;
+  }
+  .cat-hind-paw {
+    height: 2.5em;
+    width: 4.7em;
+    position: absolute;
+    background-color: #0e3d58;
+    border-radius: 70% 0% 0% 0%;
+    right: 32.5%;
+    bottom: -63%;
+  }
+  .cat-hind-paw2 {
+    height: 2.5em;
+    width: 4.7em;
+    position: absolute;
+    background-color: #092738;
+    border-radius: 70% 0% 0% 0%;
+    right: 39.5%;
+    bottom: -63%;
+    z-index: -1;
+  }
+  .cat-hind-leg-top {
+    border-top: 9em solid #0e3d58;
+    border-left: 3em solid transparent;
+    height: 0;
+    width: 5em;
+    transform: rotate(-20deg);
+    position: absolute;
+    top: 109%;
+    right: 24%;
+    z-index: 5;
+    transition: 0.4s ease-in-out;
+  }
+  .cat-hind-leg-top2 {
+    border-top: 9em solid #092738;
+    border-left: 3em solid transparent;
+    height: 0;
+    width: 5em;
+    transform: rotate(-20deg);
+    position: absolute;
+    top: 109%;
+    right: 30%;
+    z-index: -1;
+    transition: 0.4s ease-in-out;
+  }
+  .cat:hover .cat-hind-leg {
+    height: 15em;
+    width: 10em;
+    border-radius: 10em 4em 0 10em;
+    transform: rotate(24deg);
+    right: 6%;
+    bottom: -7%;
+    transform-origin: 20% 30%;
+  }
+  .cat:hover .cat-hind-leg2 {
+    height: 15em;
+    width: 10em;
+    border-radius: 10em 4em 0 10em;
+    transform: rotate(24deg);
+    right: 15%;
+    bottom: -7%;
+    transform-origin: 20% 30%;
+  }
+  .cat:hover .cat-hind-foot {
+    height: 2.7em;
+    width: 7em;
+    border-radius: 0;
+    right: 15%;
+    bottom: -66%;
+    transform: rotate(-38deg);
+  }
+  .cat:hover .cat-hind-foot2 {
+    height: 2.7em;
+    width: 7em;
+    border-radius: 0;
+    right: 22%;
+    bottom: -66%;
+    transform: rotate(-38deg);
+    z-index: -1;
+  }
+  .cat:hover .cat-hind-leg-top {
+    transform: rotate(-27deg);
+    top: 89%;
+    right: 19%;
+  }
+  .cat:hover .cat-hind-leg-top2 {
+    transform: rotate(-27deg);
+    top: 89%;
+    right: 23%;
+  }
+
+  /* ── Tail ───────────────────────────────────────────────────── */
+  .cat-tail {
+    background-color: transparent;
+    height: 12em;
+    width: 15em;
+    border-left: 2em solid #0e3d58;
+    border-bottom: 2em solid #0e3d58;
+    border-radius: 2em 0 0 16em;
+    transform-origin: 100% 0%;
+    transform: rotate(0deg);
+    right: -30%;
+    bottom: -65%;
+    position: absolute;
+    z-index: 1;
+    transition: 0.4s ease-in-out;
+  }
+  .cat:hover .cat-tail {
+    height: 20em;
+    width: 9em;
+    right: -18%;
+  }
+  .cat-tail-end {
+    width: 10em;
+    height: 1.9em;
+    position: absolute;
+    bottom: -65%;
+    right: -63%;
+    background-color: #bfbfbf;
+    border-radius: 0% 25% 25% 0%;
+    transition: 0.4s ease-in-out;
+  }
+  .cat:hover .cat-tail-end {
+    right: -51%;
+  }
+
+  /* ── Hover: ears perk up (idle twitch stops) ────────────────── */
+  .cat:hover .cat-ear {
+    transform: rotate(40deg) skewX(-30deg) scale(1, 0.566);
+    animation: none;
+  }
+  .cat:hover .cat-ear2 {
+    transform: rotate(98deg) skewX(-30deg) scale(1, 0.566);
+  }
+
+  /* ── Keyframes ──────────────────────────────────────────────── */
+  @keyframes catblink {
+    0% {
+      margin-bottom: -50%;
+    }
+    3% {
+      margin-bottom: 0%;
+    }
+    6% {
+      margin-bottom: -50%;
+    }
+    100% {
+      margin-bottom: -50%;
+    }
+  }
+  @keyframes cattwitch {
+    0% {
+      transform: rotate(30deg) skewX(-30deg) scale(1, 0.566);
+    }
+    2% {
+      transform: rotate(20deg) skewX(-30deg) scale(1, 0.566);
+    }
+    4% {
+      transform: rotate(30deg) skewX(-30deg) scale(1, 0.566);
+    }
+    50% {
+      transform: rotate(30deg) skewX(-30deg) scale(1, 0.566);
+    }
+    100% {
+      transform: rotate(30deg) skewX(-30deg) scale(1, 0.566);
+    }
+  }
+  @keyframes cateyes {
+    0% {
+      left: 40%;
+      top: 40%;
+    }
+    18% {
+      left: 40%;
+      top: 40%;
+    }
+    25% {
+      left: 20%;
+      top: 20%;
+    }
+    42% {
+      left: 20%;
+      top: 20%;
+    }
+    50% {
+      left: 60%;
+      top: 20%;
+    }
+    68% {
+      left: 60%;
+      top: 20%;
+    }
+    75% {
+      left: 30%;
+      top: 70%;
+    }
+    85% {
+      left: 30%;
+      top: 70%;
+    }
+    95% {
+      left: 40%;
+      top: 40%;
+    }
+    100% {
+      left: 40%;
+      top: 40%;
+    }
+  }
+  @keyframes meow {
+    0% {
+      bottom: 120%;
+    }
+    15% {
+      bottom: 0%;
+    }
+    50% {
+      bottom: 120%;
+    }
+    100% {
+      bottom: 120%;
+    }
+  }
+</style>
