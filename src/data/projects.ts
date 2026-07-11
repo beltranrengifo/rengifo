@@ -5,8 +5,7 @@ export interface SideProject {
   stack?: string[]; // small tech line; from the repos where available
 }
 
-// Names are the source-of-truth spellings from the design reference.
-// Stacks confirmed from the (private) repos via gh; Carabanchel from the user.
+// One entry per side project. Copy lives in src/i18n/messages/{en,es}.json.
 export const projects: SideProject[] = [
   {
     name: 'Ensayadero.studio',
