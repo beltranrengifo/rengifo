@@ -30,6 +30,7 @@ export const capabilities: CapabilityColumn[] = [
       'cap_practice_2',
       'cap_practice_3',
       'cap_practice_4',
+      'cap_practice_5',
     ],
   },
 ];
