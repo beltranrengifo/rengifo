@@ -32,3 +32,6 @@ yarn-error.log*
 # private — working notes (names ex-colleagues) + local Claude config
 MEWS-CASE-STUDIES.md
 .claude/
+
+# design handoff / reference — kept local, not part of the public repo
+specs/

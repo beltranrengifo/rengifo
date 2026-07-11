@@ -16,12 +16,7 @@ export interface ExperienceEntry {
   roles: Role[];
 }
 
-/*
- * NOTE FOR CONTENT AUDIT: the Mews blurbs are enriched from the git/self-eval
- * analysis (DataGrid, code-ownership, tokens). The strongest framing
- * ("set the technical direction") is kept from the original design copy — flag
- * for review. Copy lives in src/i18n/messages/{en,es}.json.
- */
+// Reverse-chronological work history. Copy lives in src/i18n/messages/{en,es}.json.
 export const experience: ExperienceEntry[] = [
   {
     period: '2022 — 2026',
