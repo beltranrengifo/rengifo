@@ -13,6 +13,7 @@ export interface ExperienceEntry {
   period: string; // left-column date range, language-agnostic
   company?: string; // brand name (same in both languages)
   companyKey?: string; // …or a message key when the label is translatable
+  companyHref?: string; // company site, linked from the name
   roles: Role[];
 }
 
@@ -21,6 +22,7 @@ export const experience: ExperienceEntry[] = [
   {
     period: '2022 — 2026',
     company: 'Mews',
+    companyHref: 'https://www.mews.com/',
     roles: [
       {
         titleKey: 'exp_mews_squad_title',
@@ -42,22 +44,19 @@ export const experience: ExperienceEntry[] = [
   {
     period: '2021 — 2022',
     company: 'Liferay',
+    companyHref: 'https://www.liferay.com/',
     roles: [{ titleKey: 'exp_liferay_title', blurbKey: 'exp_liferay_blurb' }],
   },
   {
     period: '2020 — 2021',
     company: 'Docline',
-    roles: [
-      {
-        titleKey: 'exp_docline_title',
-        href: 'https://www.docline.com/',
-        blurbKey: 'exp_docline_blurb',
-      },
-    ],
+    companyHref: 'https://www.docline.com/',
+    roles: [{ titleKey: 'exp_docline_title', blurbKey: 'exp_docline_blurb' }],
   },
   {
     period: '2018 — 2021',
     company: 'Minsait · Indra',
+    companyHref: 'https://www.minsait.com/',
     roles: [
       {
         titleKey: 'exp_indra_po_title',
@@ -76,6 +75,7 @@ export const experience: ExperienceEntry[] = [
   {
     period: '2018 — 2019',
     company: 'Ironhack',
+    companyHref: 'https://www.ironhack.com/',
     roles: [{ titleKey: 'exp_ironhack_title', blurbKey: 'exp_ironhack_blurb' }],
   },
   {
@@ -86,6 +86,7 @@ export const experience: ExperienceEntry[] = [
   {
     period: '2012 — 2015',
     company: 'AulaCM',
+    companyHref: 'https://aulacm.com/',
     roles: [{ titleKey: 'exp_aulacm_title', blurbKey: 'exp_aulacm_blurb' }],
   },
   {
