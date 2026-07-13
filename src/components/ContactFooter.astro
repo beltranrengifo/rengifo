@@ -7,7 +7,9 @@ const locale = resolveLocale(Astro.currentLocale);
 ---
 
 <section class="bg-ink text-canvas relative">
-  <div class="mx-auto max-w-[1080px] px-10 pt-[110px] pb-[90px]">
+  <div
+    class="mx-auto max-w-[1080px] px-6 pt-[80px] pb-[64px] sm:px-10 sm:pt-[110px] sm:pb-[90px]"
+  >
     <Logo width={26} height={35} class="text-canvas mb-10 block" data-reveal />
 
     <h2
@@ -18,12 +20,16 @@ const locale = resolveLocale(Astro.currentLocale);
     </h2>
 
     <div data-reveal class="flex flex-wrap items-center gap-9 text-[16px]">
-      <a href={`mailto:${contact.email}`} class="footer-link">{contact.email}</a
+      <a
+        href={`mailto:${contact.email}`}
+        data-copy={contact.email}
+        class="footer-link">{contact.email}</a
       >
       <span class="font-serif text-[rgba(246,245,242,0.6)] italic">
         {t('ui_footer_gmail_aside', locale)}{' '}
         <a
           href={`mailto:${contact.gmail}`}
+          data-copy={contact.gmail}
           class="footer-link font-sans text-[16px] not-italic"
           >{contact.gmail}</a
         >
@@ -54,6 +60,12 @@ const locale = resolveLocale(Astro.currentLocale);
       class="mt-[90px] text-[13px] tracking-[0.1em] text-[rgba(246,245,242,0.45)]"
     >
       {t('ui_footer_legal', locale)}
+    </p>
+
+    {/* Keyboard shortcuts, clearly signposted */}
+    <p class="footer-kbd" data-no-print>
+      <span><kbd>L</kbd>{t('ui_kbd_lang', locale)}</span>
+      <span><kbd>P</kbd>{t('ui_kbd_print', locale)}</span>
     </p>
   </div>
 

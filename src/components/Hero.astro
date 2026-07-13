@@ -6,22 +6,34 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
 ---
 
 <section
-  class="relative isolate mx-auto max-w-[1080px] px-10 pt-[130px] pb-[100px]"
+  class="relative isolate mx-auto max-w-[1080px] px-6 pt-[104px] pb-[72px] sm:px-10 sm:pt-[130px] sm:pb-[100px]"
 >
-  {/* Drifting accent glow orbs */}
+  {/* Drifting accent glow orbs — parallax wrapper, drift on the inner orb */}
   <div
     data-no-print
+    data-parallax="125"
+    data-parallax-scroll="0.3"
     aria-hidden="true"
-    class="pointer-events-none absolute -top-[6%] -right-[6%] -z-10 aspect-square w-[62vw] max-w-[820px] rounded-full"
-    style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 26%, transparent) 0%, transparent 66%); animation: drift 38s ease-in-out infinite alternate;"
+    class="orb-wrap pointer-events-none absolute -top-[6%] -right-[6%] -z-10 aspect-square w-[62vw] max-w-[820px]"
   >
+    <div
+      class="orb"
+      style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 13%, transparent) 0%, transparent 66%); animation: drift 26s ease-in-out infinite alternate;"
+    >
+    </div>
   </div>
   <div
     data-no-print
+    data-parallax="95"
+    data-parallax-scroll="0.22"
     aria-hidden="true"
-    class="pointer-events-none absolute -bottom-[18%] -left-[14%] -z-10 aspect-square w-[40vw] max-w-[520px] rounded-full"
-    style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 66%); animation: drift 46s ease-in-out infinite alternate-reverse;"
+    class="orb-wrap pointer-events-none absolute -bottom-[18%] -left-[14%] -z-10 aspect-square w-[40vw] max-w-[520px]"
   >
+    <div
+      class="orb"
+      style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 11%, transparent) 0%, transparent 66%); animation: drift 32s ease-in-out infinite alternate-reverse;"
+    >
+    </div>
   </div>
 
   <p
@@ -33,7 +45,7 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
 
   <h1
     class="m-0 max-w-[900px] text-[clamp(40px,5.6vw,76px)] leading-[1.08] font-medium tracking-[-0.03em]"
-    style={`animation: fadeUp 0.8s 0.08s ${EASE} both;`}
+    style={`animation: blurUp 1s 0.1s ${EASE} both;`}
     set:html={t('ui_hero_heading_html', locale)}
   />
 
@@ -48,9 +60,15 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
     class="border-hairline mt-16 flex items-center gap-[14px] border-t pt-7"
     style={`animation: fadeUp 0.8s 0.24s ${EASE} both;`}
   >
-    <span
-      class="bg-accent h-[7px] w-[7px] shrink-0 rounded-full"
-      style="animation: breathe 3.2s ease-out infinite;"></span>
+    <button
+      type="button"
+      data-accent-cycle
+      class="accent-dot shrink-0"
+      aria-label="Change accent colour"
+      title="Change accent colour"
+    >
+      <span></span>
+    </button>
     <p class="text-body m-0 text-[15px]">{t('ui_availability', locale)}</p>
   </div>
 
@@ -58,11 +76,16 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
     class="text-muted mt-6 flex flex-wrap gap-8 text-[14px]"
     style={`animation: fadeUp 0.8s 0.3s ${EASE} both;`}
   >
-    <a href={`mailto:${contact.email}`} class="text-muted">{contact.email}</a>
+    <a
+      href={`mailto:${contact.email}`}
+      data-copy={contact.email}
+      class="text-muted">{contact.email}</a
+    >
     <span class="text-muted font-serif italic">
       {t('ui_footer_gmail_aside', locale)}{' '}
       <a
         href={`mailto:${contact.gmail}`}
+        data-copy={contact.gmail}
         class="text-muted font-sans not-italic">{contact.gmail}</a
       >
     </span>
