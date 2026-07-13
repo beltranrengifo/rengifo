@@ -2,13 +2,30 @@
 /*
  * Pure-CSS cat — salvaged from the old rengifo.es portfolio (poncho.css).
  * Idle: ears twitch, eyes blink. Hover: it stretches, eyes dart, and meows.
- * Sizing knob: `.cat-stage { font-size }` — the whole cat scales with it
- * (the original vmin units were converted to em for exactly this).
- * Placement is handled by the parent (ContactFooter).
+ * `size` scales the whole cat; `flip` mirrors it; `filter` recolours it.
  */
+interface Props {
+  size?: number; // px → font-size (default 3)
+  flip?: boolean; // mirror horizontally
+  filter?: string; // CSS filter for colour variants, e.g. 'hue-rotate(-30deg)'
+  class?: string; // extra classes (placement)
+}
+const { size = 3, flip = false, filter, class: className } = Astro.props;
+const stageStyle = [
+  `font-size:${size}px`,
+  filter && `filter:${filter}`,
+  flip && 'transform:scaleX(-1)',
+]
+  .filter(Boolean)
+  .join(';');
 ---
 
-<div class="cat-stage" data-no-print aria-hidden="true">
+<div
+  class:list={['cat-stage', className]}
+  style={stageStyle}
+  data-no-print
+  aria-hidden="true"
+>
   <div class="cat">
     <div class="cat-inner"></div>
     <div class="cat-head">
