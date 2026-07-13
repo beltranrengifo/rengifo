@@ -15,6 +15,6 @@ export const education: EducationItem[] = [
   { title: 'Angular 2 — Aepi', year: '2017' },
   { titleKey: 'edu_oop', year: '2016' },
   { title: 'Web Dev: PHP, JS, SQL — Now-e', year: '2012' },
-  { titleKey: 'edu_cinematography', year: '2001 — 05' },
+  { titleKey: 'edu_sound_engineering', year: '2001 — 05' },
   { titleKey: 'edu_humanities', year: '1998 — 01' },
 ];

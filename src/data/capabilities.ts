@@ -6,7 +6,14 @@ export interface CapabilityColumn {
 export const capabilities: CapabilityColumn[] = [
   {
     headingKey: 'cap_h_frontend',
-    itemKeys: ['cap_fe_1', 'cap_fe_2', 'cap_fe_3', 'cap_fe_4', 'cap_fe_5'],
+    itemKeys: [
+      'cap_fe_1',
+      'cap_fe_2',
+      'cap_fe_3',
+      'cap_fe_6',
+      'cap_fe_4',
+      'cap_fe_5',
+    ],
   },
   {
     headingKey: 'cap_h_stack',
