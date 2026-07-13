@@ -90,7 +90,7 @@ if (glow && !reduced && finePointer) {
   tick();
 }
 
-// ── Parallax on the drifting shapes (lagged mouse) ───────────
+// ── Parallax on the drifting shapes — mouse (lagged) + scroll ─
 const parallaxEls = Array.from(
   document.querySelectorAll<HTMLElement>('[data-parallax]'),
 );
@@ -99,6 +99,26 @@ if (parallaxEls.length && !reduced) {
   let tmy = 0;
   let cmx = 0;
   let cmy = 0;
+
+  /*
+   * Each shape's natural document centre, measured with no transform applied.
+   * The scroll offset is then computed RELATIVE to the viewport centre rather
+   * than from raw scrollY: a shape lags behind the scroll while it's on its
+   * way in/out, but always lands back on its natural spot as it passes the
+   * middle of the screen. (A raw `scrollY * factor` offset would shove the
+   * lower shapes permanently down the page and they'd never be seen.)
+   */
+  let bases: number[] = [];
+  const measure = (): void => {
+    parallaxEls.forEach((el) => (el.style.transform = ''));
+    bases = parallaxEls.map((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top + window.scrollY + r.height / 2;
+    });
+  };
+  measure();
+  window.addEventListener('resize', measure);
+
   if (finePointer) {
     window.addEventListener(
       'mousemove',
@@ -109,15 +129,16 @@ if (parallaxEls.length && !reduced) {
       { passive: true },
     );
   }
+
   const tick = (): void => {
     cmx += (tmx - cmx) * 0.06;
     cmy += (tmy - cmy) * 0.06;
-    // Lag the shapes behind the scroll → they travel WITH the page, slower.
-    const sy = window.scrollY;
-    parallaxEls.forEach((el) => {
+    const viewportCentre = window.scrollY + window.innerHeight / 2;
+    parallaxEls.forEach((el, i) => {
       const f = parseFloat(el.dataset.parallax || '0');
       const sf = parseFloat(el.dataset.parallaxScroll || '0');
-      el.style.transform = `translate3d(${cmx * f}px, ${cmy * f + sy * sf}px, 0)`;
+      const lag = (viewportCentre - bases[i]) * sf;
+      el.style.transform = `translate3d(${cmx * f}px, ${cmy * f + lag}px, 0)`;
     });
     requestAnimationFrame(tick);
   };

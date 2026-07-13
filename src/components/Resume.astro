@@ -9,6 +9,24 @@ import ContactFooter from './ContactFooter.astro';
 import { t, resolveLocale } from '../lib/i18n';
 
 const locale = resolveLocale(Astro.currentLocale);
+
+/*
+ * The ambient flock. `top`/`left` are page-relative %, `w` is vw (capped by
+ * `max`), `a` the accent alpha, `kf` one of three drift paths so they never
+ * move in unison, `px` the mouse-parallax strength and `ps` how much they lag
+ * behind the scroll (higher = closer to the viewer).
+ */
+const orbs = [
+  { top: 5, left: -12, w: 52, max: 660, a: 11, dur: 26, kf: 'drift', dir: 'alternate', px: 260, ps: 0.42 }, // prettier-ignore
+  { top: 17, left: 68, w: 38, max: 480, a: 9, dur: 32, kf: 'drift2', dir: 'alternate-reverse', px: 170, ps: 0.26 }, // prettier-ignore
+  { top: 29, left: 20, w: 28, max: 380, a: 8, dur: 23, kf: 'drift3', dir: 'alternate', px: 340, ps: 0.5 }, // prettier-ignore
+  { top: 40, left: -9, w: 44, max: 560, a: 10, dur: 30, kf: 'drift2', dir: 'alternate', px: 215, ps: 0.34 }, // prettier-ignore
+  { top: 52, left: 60, w: 46, max: 580, a: 11, dur: 27, kf: 'drift', dir: 'alternate-reverse', px: 285, ps: 0.46 }, // prettier-ignore
+  { top: 63, left: 10, w: 32, max: 420, a: 8, dur: 35, kf: 'drift3', dir: 'alternate', px: 155, ps: 0.22 }, // prettier-ignore
+  { top: 73, left: 45, w: 40, max: 520, a: 10, dur: 24, kf: 'drift2', dir: 'alternate-reverse', px: 325, ps: 0.5 }, // prettier-ignore
+  { top: 84, left: -7, w: 36, max: 460, a: 9, dur: 31, kf: 'drift', dir: 'alternate', px: 235, ps: 0.38 }, // prettier-ignore
+  { top: 92, left: 64, w: 34, max: 440, a: 8, dur: 28, kf: 'drift3', dir: 'alternate-reverse', px: 300, ps: 0.3 }, // prettier-ignore
+];
 ---
 
 <div class="relative">
@@ -35,44 +53,23 @@ const locale = resolveLocale(Astro.currentLocale);
   >
   </div>
 
-  {/* Ambient drifting shapes (parallax, behind everything) */}
+  {/* Ambient drifting shapes — the flock. Parallax on mouse AND scroll. */}
   <div class="ambient" data-no-print aria-hidden="true">
-    <div
-      class="orb-wrap"
-      data-parallax="115"
-      data-parallax-scroll="0.32"
-      style="top:14%;left:-14%;width:54vw;max-width:680px;aspect-ratio:1;"
-    >
-      <div
-        class="orb"
-        style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 11%, transparent) 0%, transparent 68%); animation: drift 30s ease-in-out infinite alternate;"
-      >
-      </div>
-    </div>
-    <div
-      class="orb-wrap"
-      data-parallax="85"
-      data-parallax-scroll="0.24"
-      style="top:42%;left:64%;width:42vw;max-width:540px;aspect-ratio:1;"
-    >
-      <div
-        class="orb"
-        style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 70%); animation: drift 36s ease-in-out infinite alternate-reverse;"
-      >
-      </div>
-    </div>
-    <div
-      class="orb-wrap"
-      data-parallax="135"
-      data-parallax-scroll="0.38"
-      style="top:72%;left:24%;width:46vw;max-width:600px;aspect-ratio:1;"
-    >
-      <div
-        class="orb"
-        style="background: radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 68%); animation: drift 33s ease-in-out infinite alternate;"
-      >
-      </div>
-    </div>
+    {
+      orbs.map((o) => (
+        <div
+          class="orb-wrap"
+          data-parallax={o.px}
+          data-parallax-scroll={o.ps}
+          style={`top:${o.top}%;left:${o.left}%;width:${o.w}vw;max-width:${o.max}px;aspect-ratio:1;`}
+        >
+          <div
+            class="orb"
+            style={`background: radial-gradient(circle, color-mix(in srgb, var(--accent) ${o.a}%, transparent) 0%, transparent 68%); animation: ${o.kf} ${o.dur}s ease-in-out infinite ${o.dir};`}
+          />
+        </div>
+      ))
+    }
   </div>
 
   <Header />
