@@ -179,10 +179,49 @@ a:not(.no-underline):not(.role-link):not(.proj-link):not(.company-link):hover {
   will-change: transform;
   pointer-events: none;
 }
+/*
+ * Registered so it can be INTERPOLATED — a plain custom property would snap
+ * between keyframes instead of fading. Unsupported browsers just get a static
+ * accent-coloured shape, which is fine.
+ */
+@property --orb-tint {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #2f5d8a;
+}
+
 .orb {
   position: absolute;
   inset: 0;
   border-radius: 50%;
+  --orb-tint: var(--accent);
+  --orb-a: 10%; /* per-shape alpha, set inline */
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--orb-tint) var(--orb-a), transparent) 0%,
+    transparent 68%
+  );
+}
+
+/*
+ * Slow colour drift. Every stop is mixed FROM the live accent, so the flock
+ * stays harmonious with whatever accent is active (incl. after the dot cycles
+ * it). Long durations + desynced delays → you never catch two shapes agreeing.
+ */
+@keyframes tint {
+  0%,
+  100% {
+    --orb-tint: var(--accent);
+  }
+  25% {
+    --orb-tint: color-mix(in srgb, var(--accent) 62%, #6b705c); /* sage */
+  }
+  50% {
+    --orb-tint: color-mix(in srgb, var(--accent) 58%, #8c4a3b); /* terracotta */
+  }
+  75% {
+    --orb-tint: color-mix(in srgb, var(--accent) 60%, #4f7fa8); /* cool blue */
+  }
 }
 
 /* ── Accent-cycle dot (the availability dot is a button) ─────── */
