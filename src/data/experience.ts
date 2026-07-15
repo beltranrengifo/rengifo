@@ -81,6 +81,7 @@ export const experience: ExperienceEntry[] = [
   {
     period: '2015 — 2018',
     company: 'Tau Design',
+    companyHref: 'https://taudesign.com/',
     roles: [{ titleKey: 'exp_tau_title', blurbKey: 'exp_tau_blurb' }],
   },
   {
