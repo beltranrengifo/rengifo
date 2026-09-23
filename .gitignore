@@ -35,3 +35,9 @@ MEWS-CASE-STUDIES.md
 
 # design handoff / reference — kept local, not part of the public repo
 specs/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
