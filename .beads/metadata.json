@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "rengifo",
+  "project_id": "2fb94a97-d418-4294-8c70-772249bb070e"
+}
