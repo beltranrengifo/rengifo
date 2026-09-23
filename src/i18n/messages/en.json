@@ -141,5 +141,6 @@
   "cs_ensayadero_shot2_alt": "A session playing: transport, stereo meters, a channel strip with its waveform and a loop marker.",
   "cs_ensayadero_shot2_cap": "Playback with per-channel mute, solo and EQ, and loop markers for the bars that need repeating.",
   "cs_ensayadero_shot3_alt": "The chord chart in editing mode, with sections, chords, lap counts and timings.",
-  "cs_ensayadero_shot3_cap": "The chart the models guessed, open for correction: sections, chords, laps and timings. The band's edits survive reprocessing."
+  "cs_ensayadero_shot3_cap": "The chart the models guessed, open for correction: sections, chords, laps and timings. The band's edits survive reprocessing.",
+  "cs_ensayadero_access": "In private beta. If you'd like to try it, I'll set you up with an account."
 }
