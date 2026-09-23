@@ -135,5 +135,11 @@
   "cs_carabanchel_n1_h": "GeoJSON nativo dentro del gestor",
   "cs_carabanchel_n1_b": "En vez de guardar latitudes y longitudes sueltas, la geometría de cada elemento es una zona dinámica compuesta de componentes GeoJSON. Una persona sin perfil técnico rellena un formulario y la API emite un FeatureCollection válido que el mapa consume directamente — más importación masiva para las colecciones que llegaron como ficheros, y regeneración al guardar.",
   "cs_carabanchel_n2_h": "Un mapa compuesto, y listas que no se atascan",
-  "cs_carabanchel_n2_b": "Mapbox GL corre por debajo de Leaflet en lugar de por su cuenta, lo que mantuvo disponible todo su ecosistema de plugins, y el panel lateral virtualiza la lista de elementos para que una colección de cientos de puntos se recorra sin tirones en los móviles con los que la gente pasea de verdad."
+  "cs_carabanchel_n2_b": "Mapbox GL corre por debajo de Leaflet en lugar de por su cuenta, lo que mantuvo disponible todo su ecosistema de plugins, y el panel lateral virtualiza la lista de elementos para que una colección de cientos de puntos se recorra sin tirones en los móviles con los que la gente pasea de verdad.",
+  "cs_ensayadero_shot1_alt": "La portada de Ensayadero: qué entra, qué hace el proceso y qué sale.",
+  "cs_ensayadero_shot1_cap": "El producto explicado en tres columnas, encima del grabador que captura el ensayo directamente del micro del local.",
+  "cs_ensayadero_shot2_alt": "Una sesión sonando: transporte, medidores estéreo y una tira de canal con su onda y un marcador de bucle.",
+  "cs_ensayadero_shot2_cap": "Reproducción con mute, solo y EQ por canal, y marcadores de bucle para los compases que hay que repetir.",
+  "cs_ensayadero_shot3_alt": "La hoja de acordes en modo edición, con secciones, acordes, vueltas y tiempos.",
+  "cs_ensayadero_shot3_cap": "La hoja que adivinaron los modelos, abierta para corregirla: secciones, acordes, vueltas y tiempos. Lo que edita la banda sobrevive a un reprocesado."
 }
