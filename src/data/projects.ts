@@ -1,6 +1,7 @@
 export interface SideProject {
   name: string; // brand name — not translated
   href?: string; // public link (opens in a new tab)
+  caseStudy?: string; // slug of a case-study page, when there is one
   descKey: string; // Paraglide message key for the description
   stack?: string[]; // small tech line; from the repos where available
 }
@@ -12,6 +13,12 @@ export const projects: SideProject[] = [
     href: 'https://ensayadero.studio/',
     descKey: 'proj_ensayadero_desc',
     stack: ['TypeScript', 'Python (audio/MIDI)', 'Docker'],
+  },
+  {
+    name: 'Billing engine',
+    caseStudy: 'billing-engine',
+    descKey: 'proj_billing_desc',
+    stack: ['TypeScript', 'Node', 'Vitest'],
   },
   {
     name: 'Tartaytantas',

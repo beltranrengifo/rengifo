@@ -1,0 +1,131 @@
+---
+import { Image } from 'astro:assets';
+import Header from './Header.astro';
+import ContactFooter from './ContactFooter.astro';
+import { t, resolveLocale, homeHref, contact } from '../lib/i18n';
+import type { CaseStudy } from '../data/caseStudies';
+
+interface Props {
+  study: CaseStudy;
+}
+
+const { study } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
+---
+
+<div class="relative">
+  <a href="#main" class="skip-link no-underline">{t('ui_skip', locale)}</a>
+  <div class="grain" data-no-print aria-hidden="true"></div>
+
+  <Header />
+
+  <main id="main">
+    <article class="mx-auto max-w-[1080px] px-6 sm:px-10">
+      <header class="pt-[104px] pb-16 sm:pt-[130px]">
+        <p
+          class="text-muted m-0 mb-9 text-[13px] tracking-[0.2em] uppercase"
+          style={`animation: fadeUp 0.8s ${EASE} both;`}
+        >
+          {t('ui_cs_kicker', locale)}
+        </p>
+
+        <h1
+          class="m-0 max-w-[900px] text-[clamp(34px,4.6vw,60px)] leading-[1.1] font-medium tracking-[-0.03em]"
+          style={`animation: blurUp 1s 0.1s ${EASE} both;`}
+        >
+          {study.name}
+        </h1>
+
+        <p
+          class="text-body mt-5 mb-0 max-w-[620px] font-serif text-[clamp(20px,2.4vw,26px)] leading-[1.4] italic"
+          style={`animation: fadeUp 0.8s 0.16s ${EASE} both;`}
+        >
+          {t(study.taglineKey, locale)}
+        </p>
+
+        <p
+          class="text-body mt-8 mb-0 max-w-[620px] text-[17px] leading-[1.65]"
+          style={`animation: fadeUp 0.8s 0.22s ${EASE} both;`}
+        >
+          {t(study.introKey, locale)}
+        </p>
+      </header>
+
+      {/* Screenshots carry the work when the repository cannot. */}
+      <div class="grid gap-14 pb-4">
+        {
+          study.screenshots.map((shot, i) => (
+            <figure data-reveal class="m-0">
+              <Image
+                src={shot.src}
+                alt={t(shot.altKey, locale)}
+                widths={[640, 960, 1280, 1600]}
+                sizes="(min-width: 1080px) 1000px, 100vw"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                class="border-hairline block h-auto w-full rounded-xs border"
+              />
+              <figcaption class="text-muted mt-3 max-w-[620px] text-[14px] leading-[1.6]">
+                {t(shot.captionKey, locale)}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <div class="grid gap-12 pt-20 pb-10">
+        {
+          study.notes.map((note) => (
+            <section data-reveal class="grid gap-3">
+              <h2 class="border-ink m-0 border-t pt-5 text-[19px] font-semibold tracking-[-0.01em]">
+                {t(note.headingKey, locale)}
+              </h2>
+              <p class="text-body m-0 max-w-[660px] text-[16px] leading-[1.7]">
+                {t(note.bodyKey, locale)}
+              </p>
+            </section>
+          ))
+        }
+      </div>
+
+      <footer
+        data-reveal
+        class="border-hairline mt-10 mb-[100px] flex flex-wrap items-baseline justify-between gap-6 border-t pt-7"
+      >
+        <div>
+          <h2
+            class="text-muted m-0 mb-2 text-[13px] font-medium tracking-[0.16em] uppercase"
+          >
+            {t('ui_cs_stack', locale)}
+          </h2>
+          <p class="text-body m-0 text-[15px]">{study.stack.join(' · ')}</p>
+        </div>
+
+        <p class="text-body m-0 max-w-[420px] text-[15px]">
+          {
+            study.code === 'private' ? (
+              <>
+                {t('ui_cs_code_private', locale)}{' '}
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              </>
+            ) : (
+              <a href={study.code.href} target="_blank" rel="noopener">
+                {t('ui_cs_code_link', locale)}
+              </a>
+            )
+          }
+        </p>
+      </footer>
+
+      <p class="mb-[100px]">
+        <a
+          href={homeHref(locale)}
+          class="text-muted hover:text-ink text-[14px] tracking-[0.02em] transition-colors"
+          >← {t('ui_cs_back', locale)}</a
+        >
+      </p>
+    </article>
+  </main>
+
+  <ContactFooter />
+</div>

@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+import { caseStudies } from '../../data/caseStudies';
+import { t } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return caseStudies.map((study) => ({
+    params: { slug: study.slug },
+    props: { study },
+  }));
+}
+
+const { study } = Astro.props;
+---
+
+<Layout
+  lang="en"
+  title={`${study.name} — Beltrán Rengifo`}
+  description={t(study.taglineKey, 'en')}
+>
+  <CaseStudy study={study} />
+</Layout>

@@ -1,9 +1,13 @@
 ---
 import SectionHeader from './SectionHeader.astro';
-import { t, resolveLocale } from '../lib/i18n';
+import { t, resolveLocale, localisedPath } from '../lib/i18n';
 import { projects } from '../data/projects';
 
 const locale = resolveLocale(Astro.currentLocale);
+
+/** A case study lives on this site, so it stays in the visitor's language. */
+const caseStudyHref = (slug: string): string =>
+  localisedPath(`/work/${slug}/`, 'en', locale);
 ---
 
 <section class="mx-auto max-w-[1080px] px-6 pb-10 sm:px-10">
@@ -23,7 +27,17 @@ const locale = resolveLocale(Astro.currentLocale);
                 : 'proj-row border-hairline -mx-6 rounded-xs border-b px-6 py-7',
             ]}
           >
-            {project.href ? (
+            {project.caseStudy ? (
+              <a
+                href={caseStudyHref(project.caseStudy)}
+                class="proj-link m-0 font-serif text-[20px] italic"
+              >
+                {project.name}
+                <span class="text-muted ml-1 align-middle font-sans text-[0.6em] not-italic">
+                  →
+                </span>
+              </a>
+            ) : project.href ? (
               <a
                 href={project.href}
                 target="_blank"
