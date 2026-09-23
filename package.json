@@ -13,7 +13,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "og": "node scripts/og/generate.mjs"
+    "og": "node scripts/og/generate.mjs",
+    "pdf": "node scripts/pdf/generate.mjs"
   },
   "dependencies": {
     "@inlang/paraglide-js": "^2.21.0",

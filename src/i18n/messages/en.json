@@ -17,8 +17,6 @@
   "ui_download_pdf": "Download PDF",
   "ui_speaks": "Languages",
   "ui_skip": "Skip to content",
-  "ui_kbd_lang": "switch language",
-  "ui_kbd_print": "print",
   "ui_lang_switch": "Español",
   "exp_mews_squad_title": "Squad Lead — Experience team, Growth tribe",
   "exp_mews_squad_blurb": "Led a cross-functional squad on the experience layer of the PMS: an entirely new product navigation and key upgrades to the assistant search. Built the navigation package behind it — route-active detection, enterprise-scoped links, TanStack Router and Query — as its main author, and rolled it out behind feature flags one surface at a time. Planned the work, ran the ceremonies and mentored junior engineers while remaining the team's main delivery engineer, and introduced AI-assisted workflows and tooling that cut the repetitive work.",

@@ -17,8 +17,6 @@
   "ui_download_pdf": "Descargar PDF",
   "ui_speaks": "Idiomas",
   "ui_skip": "Saltar al contenido",
-  "ui_kbd_lang": "cambiar idioma",
-  "ui_kbd_print": "imprimir",
   "ui_lang_switch": "English",
   "exp_mews_squad_title": "Squad Lead — Equipo Experience, tribu Growth",
   "exp_mews_squad_blurb": "Lideré un squad multidisciplinar en la capa de experiencia del PMS: una navegación de producto completamente nueva y mejoras clave en el buscador del asistente. Construí el paquete de navegación que hay debajo —detección de ruta activa, enlaces con alcance de empresa, TanStack Router y Query— como autor principal, y lo desplegué tras feature flags, una superficie cada vez. Planifiqué el trabajo, dirigí las ceremonias y mentoricé a ingenieros junior sin dejar de ser el principal motor de delivery del equipo, e introduje flujos de trabajo y herramientas con IA que redujeron el trabajo repetitivo.",
