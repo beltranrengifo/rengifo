@@ -141,5 +141,6 @@
   "cs_ensayadero_shot2_alt": "Una sesión sonando: transporte, medidores estéreo y una tira de canal con su onda y un marcador de bucle.",
   "cs_ensayadero_shot2_cap": "Reproducción con mute, solo y EQ por canal, y marcadores de bucle para los compases que hay que repetir.",
   "cs_ensayadero_shot3_alt": "La hoja de acordes en modo edición, con secciones, acordes, vueltas y tiempos.",
-  "cs_ensayadero_shot3_cap": "La hoja que adivinaron los modelos, abierta para corregirla: secciones, acordes, vueltas y tiempos. Lo que edita la banda sobrevive a un reprocesado."
+  "cs_ensayadero_shot3_cap": "La hoja que adivinaron los modelos, abierta para corregirla: secciones, acordes, vueltas y tiempos. Lo que edita la banda sobrevive a un reprocesado.",
+  "cs_ensayadero_access": "En beta privada. Si quieres probarlo, te abro una cuenta."
 }

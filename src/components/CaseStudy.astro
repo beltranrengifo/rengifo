@@ -53,8 +53,8 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
 
         {
           study.href && (
-            <p
-              class="mt-8 mb-0"
+            <div
+              class="mt-8 flex flex-wrap items-center gap-5"
               style={`animation: fadeUp 0.8s 0.28s ${EASE} both;`}
             >
               <a
@@ -65,7 +65,20 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
               >
                 {t('ui_cs_live', locale)} <span aria-hidden="true">↗</span>
               </a>
-            </p>
+
+              {/* Only gated work needs this: a public site speaks for itself. */}
+              {study.accessKey && (
+                <p class="text-muted m-0 max-w-[380px] font-serif text-[15px] italic">
+                  {t(study.accessKey, locale)}{' '}
+                  <a
+                    href={`mailto:${contact.email}`}
+                    class="font-sans not-italic"
+                  >
+                    {contact.email}
+                  </a>
+                </p>
+              )}
+            </div>
           )
         }
       </header>

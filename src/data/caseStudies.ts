@@ -29,6 +29,12 @@ export interface CaseStudy {
   /** Public repository, or the reason there isn't one. */
   code: { href: string } | 'private';
   href?: string; // somewhere live to look, when there is one
+  /**
+   * Only for work that cannot simply be visited: how someone gets in. A
+   * public site needs no such line — the link is the proof, which is also
+   * why only the gated projects carry screenshots.
+   */
+  accessKey?: string;
 }
 
 /**
@@ -73,6 +79,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     code: 'private',
     href: 'https://ensayadero.studio/',
+    accessKey: 'cs_ensayadero_access',
   },
   {
     slug: 'billing-engine',
