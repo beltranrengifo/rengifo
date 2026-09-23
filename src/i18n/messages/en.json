@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "ui_meta_title": "Beltrán Rengifo — Senior Software Engineer",
+  "ui_meta_description": "Senior full-stack engineer, frontend-deep, design systems and accessibility. Madrid-based, available for new roles.",
   "ui_kicker": "Beltrán Rengifo — Senior Software Engineer",
   "ui_hero_heading_html": "I build software end to end, with <em class='hero-em' style='font-family:var(--font-serif);font-weight:300;letter-spacing:-0.01em'>a frontend heart</em>.",
   "ui_hero_sub": "A full-stack engineer with 14+ years shipping web products — deep in frontend, clean UI and UX; fluent across the stack, from Node and Java to CI/CD.",

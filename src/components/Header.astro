@@ -18,7 +18,7 @@ const locale = resolveLocale(Astro.currentLocale);
   </a>
   <nav class="flex items-center gap-7">
     <a
-      href={alternateHref(locale)}
+      href={alternateHref(locale, Astro.url.pathname)}
       class="text-muted hover:text-ink font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-colors"
     >
       {t('ui_lang_switch', locale)}
