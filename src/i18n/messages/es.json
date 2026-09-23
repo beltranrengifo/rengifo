@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "ui_meta_title": "Beltrán Rengifo — Ingeniero de Software Senior",
+  "ui_meta_description": "Ingeniero full-stack con alma de frontend, especializado en design systems y accesibilidad. En Madrid, disponible para nuevas oportunidades.",
   "ui_kicker": "Beltrán Rengifo — Ingeniero de Software Senior",
   "ui_hero_heading_html": "Construyo software de punta a punta, con <em class='hero-em' style='font-family:var(--font-serif);font-weight:300;letter-spacing:-0.01em'>alma de frontend</em>.",
   "ui_hero_sub": "Ingeniero full-stack con más de 14 años lanzando productos web — muy fuerte en frontend, UI limpia y UX; con soltura en todo el stack, de Node y Java a CI/CD.",

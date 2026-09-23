@@ -18,9 +18,23 @@ export function resolveLocale(value: string | undefined): Locale {
   return value === 'es' ? 'es' : 'en';
 }
 
-/** The other locale's home URL, for the language switcher. */
-export function alternateHref(locale: Locale): string {
-  return locale === 'en' ? '/es/' : '/';
+/**
+ * The same page in a given locale. EN paths are the canonical ones; ES lives
+ * under a `/es` prefix. Both ends keep the trailing slash Astro emits.
+ */
+export function localisedPath(
+  pathname: string,
+  from: Locale,
+  to: Locale,
+): string {
+  const base = from === 'es' ? pathname.replace(/^\/es/, '') || '/' : pathname;
+  if (to === 'en') return base;
+  return base === '/' ? '/es/' : `/es${base}`;
+}
+
+/** The other locale's URL for this page, for the language switcher. */
+export function alternateHref(locale: Locale, pathname = '/'): string {
+  return localisedPath(pathname, locale, locale === 'en' ? 'es' : 'en');
 }
 
 /** This locale's home URL. */
