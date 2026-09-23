@@ -20,15 +20,35 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..', '..');
 const PORT = 4329;
 
-const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+/**
+ * Chrome, wherever it lives: an explicit CHROME_PATH first, then the usual
+ * macOS bundle, then whatever is on PATH — which is how CI finds it.
+ */
+function findChrome() {
+  const candidates = [
+    process.env.CHROME_PATH,
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+  ].filter(Boolean);
+  for (const c of candidates) if (existsSync(c)) return c;
+  for (const name of ['google-chrome', 'chromium']) {
+    const found = spawnSync('which', [name], { encoding: 'utf8' });
+    if (found.status === 0) return found.stdout.trim();
+  }
+  return null;
+}
+
+const CHROME = findChrome();
 
 const pages = [
   { path: '/', file: 'beltran-rengifo-cv.pdf' },
   { path: '/es/', file: 'beltran-rengifo-cv-es.pdf' },
 ];
 
-if (!existsSync(CHROME)) {
-  console.error(`Chrome not found at ${CHROME} — install it or edit CHROME.`);
+if (!CHROME) {
+  console.error('Chrome not found — set CHROME_PATH or install Google Chrome.');
   process.exit(1);
 }
 
@@ -65,6 +85,8 @@ try {
     const status = run(CHROME, [
       '--headless=new',
       '--disable-gpu',
+      '--no-sandbox', // CI runs as root in a container
+
       '--no-pdf-header-footer',
       '--virtual-time-budget=6000',
       `--print-to-pdf=${out}`,
