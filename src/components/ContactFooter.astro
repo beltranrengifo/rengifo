@@ -1,7 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import Cat from './Cat.astro';
-import { t, resolveLocale, contact } from '../lib/i18n';
+import { t, resolveLocale, contact, currentYear } from '../lib/i18n';
 
 const locale = resolveLocale(Astro.currentLocale);
 ---
@@ -59,7 +59,7 @@ const locale = resolveLocale(Astro.currentLocale);
     <p
       class="mt-[90px] text-[13px] tracking-[0.1em] text-[rgba(246,245,242,0.45)]"
     >
-      {t('ui_footer_legal', locale)}
+      {t('ui_footer_legal', locale, { year: currentYear })}
     </p>
 
     {/* Keyboard shortcuts, clearly signposted */}

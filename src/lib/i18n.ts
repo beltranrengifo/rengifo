@@ -2,16 +2,32 @@ import * as messages from '../paraglide/messages.js';
 
 export type Locale = 'en' | 'es';
 
+type MessageInputs = Record<string, string | number>;
+
 type MessageFn = (
-  inputs?: Record<string, never>,
+  inputs?: MessageInputs,
   options?: { locale?: Locale },
 ) => string;
 
 /** Resolve a message key in a given locale (falls back to the key itself). */
-export function t(key: string, locale: Locale): string {
+export function t(
+  key: string,
+  locale: Locale,
+  inputs: MessageInputs = {},
+): string {
   const fn = (messages as unknown as Record<string, MessageFn>)[key];
-  return typeof fn === 'function' ? fn({}, { locale }) : key;
+  return typeof fn === 'function' ? fn(inputs, { locale }) : key;
 }
+
+/**
+ * The first paid web development work (AulaCM, 2012). Years of experience and
+ * the copyright year are derived from it at BUILD time, so a deploy refreshes
+ * them — no copy to edit each January.
+ */
+const CAREER_STARTED = 2012;
+
+export const currentYear = new Date().getFullYear();
+export const yearsOfExperience = currentYear - CAREER_STARTED;
 
 /** Coerce Astro.currentLocale (string | undefined) to a known Locale. */
 export function resolveLocale(value: string | undefined): Locale {

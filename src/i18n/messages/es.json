@@ -4,16 +4,16 @@
   "ui_meta_description": "Ingeniero full-stack con alma de frontend, especializado en design systems y accesibilidad. En Madrid, disponible para nuevas oportunidades.",
   "ui_kicker": "Beltrán Rengifo — Ingeniero de Software Senior · Madrid",
   "ui_hero_heading_html": "Construyo software de punta a punta, con <em class='hero-em' style='font-family:var(--font-serif);font-weight:300;letter-spacing:-0.01em'>alma de frontend</em>.",
-  "ui_hero_sub": "Ingeniero full-stack con catorce años lanzando productos web. Donde más hondo llego es en frontend —design systems, APIs de componentes y accesibilidad a escala— y me muevo con soltura por el resto del stack, de Node y Java a CI/CD.",
+  "ui_hero_sub": "Ingeniero full-stack con {years} años lanzando productos web. Donde más hondo llego es en frontend —design systems, APIs de componentes y accesibilidad a escala— y me muevo con soltura por el resto del stack, de Node y Java a CI/CD.",
   "ui_availability": "Disponible ya para puestos senior — con base en Madrid, en remoto o híbrido.",
   "ui_section_experience": "Experiencia",
-  "ui_section_projects": "Proyectos personales",
+  "ui_section_projects": "Trabajos seleccionados",
   "ui_section_capabilities": "Capacidades",
   "ui_section_education": "Formación",
   "ui_capabilities_intro": "Profundidad en frontend e ingeniería de UI; soltura en todo el stack, con la IA como parte natural de mi forma de trabajar hoy.",
   "ui_footer_headline": "¿Necesitas un ingeniero que entregue de punta a punta y aun así cuide cada píxel? Hablemos.",
   "ui_footer_gmail_aside": "o, si prefieres gmail,",
-  "ui_footer_legal": "© 2026 Beltrán Rengifo",
+  "ui_footer_legal": "© {year} Beltrán Rengifo",
   "ui_download_pdf": "Descargar PDF",
   "ui_speaks": "Idiomas",
   "ui_skip": "Saltar al contenido",
@@ -97,5 +97,6 @@
   "cs_billing_shot1_cap": "Cada ejecución escribe un informe HTML autocontenido — sin servidor, sin build, se abre desde el disco.",
   "cs_billing_shot2_alt": "El libro de eventos de un anticipo, con ocho cargos rechazados consecutivos.",
   "cs_billing_shot2_cap": "Un anticipo cuyo mandato dejó de funcionar. El saldo queda intacto y se avisa a una persona; «atascado» es un diagnóstico del informe, nunca un estado que el dominio se invente.",
-  "proj_billing_desc": "Un motor de facturación diaria de anticipos: un núcleo de dominio puro tras una costura de puertos y adaptadores, donde los ingresos que llegan tarde, los topes diarios y los cargos rechazados se arrastran con un único mecanismo."
+  "proj_billing_desc": "Un motor de facturación diaria de anticipos: un núcleo de dominio puro tras una costura de puertos y adaptadores, donde los ingresos que llegan tarde, los topes diarios y los cargos rechazados se arrastran con un único mecanismo.",
+  "ui_cs_read": "Ver el caso de estudio"
 }

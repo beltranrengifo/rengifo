@@ -4,16 +4,16 @@
   "ui_meta_description": "Senior full-stack engineer, frontend-deep, design systems and accessibility. Madrid-based, available for new roles.",
   "ui_kicker": "Beltrán Rengifo — Senior Software Engineer · Madrid",
   "ui_hero_heading_html": "I build software end to end, with <em class='hero-em' style='font-family:var(--font-serif);font-weight:300;letter-spacing:-0.01em'>a frontend heart</em>.",
-  "ui_hero_sub": "A full-stack engineer with fourteen years shipping web products. Deepest in frontend — design systems, component APIs and accessibility at scale — and at home across the rest of the stack, from Node and Java to CI/CD.",
+  "ui_hero_sub": "A full-stack engineer with {years} years shipping web products. Deepest in frontend — design systems, component APIs and accessibility at scale — and at home across the rest of the stack, from Node and Java to CI/CD.",
   "ui_availability": "Available now for senior roles — based in Madrid, remote or hybrid.",
   "ui_section_experience": "Experience",
-  "ui_section_projects": "Selected side projects",
+  "ui_section_projects": "Selected work",
   "ui_section_capabilities": "Capabilities",
   "ui_section_education": "Education",
   "ui_capabilities_intro": "Depth in frontend and UI engineering; working range across the whole stack, with AI a natural part of how I build today.",
   "ui_footer_headline": "Need an engineer who ships end to end — and still sweats the pixels? Let's talk.",
   "ui_footer_gmail_aside": "or, if you prefer gmail,",
-  "ui_footer_legal": "© 2026 Beltrán Rengifo",
+  "ui_footer_legal": "© {year} Beltrán Rengifo",
   "ui_download_pdf": "Download PDF",
   "ui_speaks": "Languages",
   "ui_skip": "Skip to content",
@@ -97,5 +97,6 @@
   "cs_billing_shot1_cap": "Each run writes a self-contained HTML report — no server, no build step, opens from disk.",
   "cs_billing_shot2_alt": "One advance's event ledger, showing eight consecutive rejected charges.",
   "cs_billing_shot2_cap": "An advance whose mandate stopped working. The balance stays intact and a human gets told; “stalled” is a reporting diagnosis, never a state the domain invents.",
-  "proj_billing_desc": "A daily billing engine for cash advances: a pure domain core behind a ports-and-adapters seam, with late revenue, daily caps and rejected charges all carried forward by one mechanism."
+  "proj_billing_desc": "A daily billing engine for cash advances: a pure domain core behind a ports-and-adapters seam, with late revenue, daily caps and rejected charges all carried forward by one mechanism.",
+  "ui_cs_read": "Read the case study"
 }
