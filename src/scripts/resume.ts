@@ -7,11 +7,6 @@
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 
-// ── Print / download-PDF buttons ─────────────────────────────
-document.querySelectorAll('[data-print]').forEach((btn) => {
-  btn.addEventListener('click', () => window.print());
-});
-
 // ── Reveals — fade + slide in on LOAD (staggered) and on SCROLL ──
 const reveals = Array.from(
   document.querySelectorAll<HTMLElement>('[data-reveal]'),
@@ -145,7 +140,7 @@ if (parallaxEls.length && !reduced) {
   tick();
 }
 
-// ── Copy-to-clipboard on email addresses ─────────────────────
+// ── Copy buttons — never on the mailto link itself ──────────
 const toast = document.createElement('div');
 toast.className = 'toast';
 toast.setAttribute('role', 'status');
@@ -160,13 +155,12 @@ function flash(msg: string): void {
     1600,
   );
 }
-const copyLabel =
-  document.documentElement.lang === 'es' ? 'Copiado ✓' : 'Copied ✓';
+const isSpanish = document.documentElement.lang === 'es';
+const copyLabel = isSpanish ? 'Copiado ✓' : 'Copied ✓';
 document.querySelectorAll<HTMLElement>('[data-copy]').forEach((el) => {
-  el.addEventListener('click', (e) => {
-    const text = el.dataset.copy || el.textContent || '';
+  el.addEventListener('click', () => {
+    const text = el.dataset.copy || '';
     if (navigator.clipboard && text) {
-      e.preventDefault();
       navigator.clipboard
         .writeText(text)
         .then(() => flash(copyLabel))
@@ -201,30 +195,14 @@ document.querySelectorAll('[data-accent-cycle]').forEach((el) => {
   });
 });
 
-// ── Keyboard shortcuts: L = language · P = print ─────────────
-document.addEventListener('keydown', (e) => {
-  if (e.metaKey || e.ctrlKey || e.altKey) return;
-  const el = e.target as HTMLElement | null;
-  if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
-  const k = e.key.toLowerCase();
-  if (k === 'l') {
-    window.location.href =
-      document.documentElement.lang === 'es' ? '/' : '/es/';
-  } else if (k === 'p') {
-    e.preventDefault();
-    window.print();
-  }
-});
-
 // ── A hello for anyone reading the source ────────────────────
 console.log(
   '%c👋 Poking around the source?',
   'font:600 15px/1.5 ui-sans-serif,system-ui,sans-serif;color:#2f5d8a',
 );
 console.log(
-  "%cI like you already. Let's talk → beltran@rengifo.es\n%c(psst — press L to switch language, P to print)",
+  "%cI like you already. Let's talk → beltran@rengifo.es",
   'font:14px/1.6 ui-sans-serif,system-ui,sans-serif;color:#3a3e42',
-  'font:12px/1.6 ui-sans-serif,system-ui,sans-serif;color:#8a8e93',
 );
 
 // ── Scroll progress bar ──────────────────────────────────────

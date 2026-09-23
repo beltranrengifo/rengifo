@@ -1,6 +1,12 @@
 ---
 import Logo from './Logo.astro';
-import { t, resolveLocale, alternateHref, homeHref } from '../lib/i18n';
+import {
+  t,
+  resolveLocale,
+  alternateHref,
+  homeHref,
+  pdfHref,
+} from '../lib/i18n';
 
 const locale = resolveLocale(Astro.currentLocale);
 ---
@@ -23,12 +29,12 @@ const locale = resolveLocale(Astro.currentLocale);
     >
       {t('ui_lang_switch', locale)}
     </a>
-    <button
-      type="button"
-      data-print
-      class="text-ink hover:border-ink hover:bg-ink hover:text-canvas cursor-pointer rounded-xs border border-[rgba(22,24,26,0.25)] bg-transparent px-[18px] py-[9px] font-sans text-[13px] tracking-[0.14em] uppercase transition-all duration-200"
+    <a
+      href={pdfHref(locale)}
+      download
+      class="text-ink hover:border-ink hover:bg-ink hover:text-canvas rounded-xs border border-[rgba(22,24,26,0.25)] px-[18px] py-[9px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200"
     >
       PDF
-    </button>
+    </a>
   </nav>
 </header>

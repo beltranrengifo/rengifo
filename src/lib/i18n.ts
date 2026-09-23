@@ -53,6 +53,13 @@ export function alternateHref(locale: Locale, pathname = '/'): string {
   return localisedPath(pathname, locale, locale === 'en' ? 'es' : 'en');
 }
 
+/** The committed résumé PDF for a locale — see `npm run pdf`. */
+export function pdfHref(locale: Locale): string {
+  return locale === 'es'
+    ? '/beltran-rengifo-cv-es.pdf'
+    : '/beltran-rengifo-cv.pdf';
+}
+
 /** This locale's home URL. */
 export function homeHref(locale: Locale): string {
   return locale === 'es' ? '/es/' : '/';
