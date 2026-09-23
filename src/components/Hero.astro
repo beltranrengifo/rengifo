@@ -1,5 +1,5 @@
 ---
-import { t, resolveLocale, contact } from '../lib/i18n';
+import { t, resolveLocale, contact, yearsOfExperience } from '../lib/i18n';
 
 const locale = resolveLocale(Astro.currentLocale);
 const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
@@ -53,7 +53,7 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
     class="text-body mt-8 mb-0 max-w-[600px] text-[18px] leading-[1.6]"
     style={`animation: fadeUp 0.8s 0.16s ${EASE} both;`}
   >
-    {t('ui_hero_sub', locale)}
+    {t('ui_hero_sub', locale, { years: yearsOfExperience })}
   </p>
 
   <div
