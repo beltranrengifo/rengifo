@@ -135,5 +135,11 @@
   "cs_carabanchel_n1_h": "GeoJSON native inside the CMS",
   "cs_carabanchel_n1_b": "Rather than storing loose latitude and longitude columns, a feature's geometry is a dynamic zone built from GeoJSON components. A non-technical editor fills in a form and the API emits a valid FeatureCollection the map consumes directly — plus bulk import for the collections that arrived as files, and regeneration on save.",
   "cs_carabanchel_n2_h": "A composed map, and lists that stay smooth",
-  "cs_carabanchel_n2_b": "Mapbox GL runs under Leaflet rather than standalone, which kept the plugin ecosystem available, and the side panel virtualises its feature list so a collection of hundreds of points scrolls without dropping frames on the phones people actually walk around with."
+  "cs_carabanchel_n2_b": "Mapbox GL runs under Leaflet rather than standalone, which kept the plugin ecosystem available, and the side panel virtualises its feature list so a collection of hundreds of points scrolls without dropping frames on the phones people actually walk around with.",
+  "cs_ensayadero_shot1_alt": "The Ensayadero home screen: what goes in, what the pipeline does, and what comes out.",
+  "cs_ensayadero_shot1_cap": "The product explained in three columns, above the recorder that takes a rehearsal straight off the room mic.",
+  "cs_ensayadero_shot2_alt": "A session playing: transport, stereo meters, a channel strip with its waveform and a loop marker.",
+  "cs_ensayadero_shot2_cap": "Playback with per-channel mute, solo and EQ, and loop markers for the bars that need repeating.",
+  "cs_ensayadero_shot3_alt": "The chord chart in editing mode, with sections, chords, lap counts and timings.",
+  "cs_ensayadero_shot3_cap": "The chart the models guessed, open for correction: sections, chords, laps and timings. The band's edits survive reprocessing."
 }

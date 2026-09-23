@@ -1,5 +1,8 @@
 import type { ImageMetadata } from 'astro';
 import billingOverview from '../assets/work/billing-overview.png';
+import ensayaderoLibrary from '../assets/work/ensayadero-library.png';
+import ensayaderoSession from '../assets/work/ensayadero-session.png';
+import ensayaderoChart from '../assets/work/ensayadero-chart.png';
 import billingAdvance from '../assets/work/billing-advance.png';
 
 export interface Screenshot {
@@ -51,7 +54,23 @@ export const caseStudies: CaseStudy[] = [
       { headingKey: 'cs_ensayadero_n1_h', bodyKey: 'cs_ensayadero_n1_b' },
       { headingKey: 'cs_ensayadero_n2_h', bodyKey: 'cs_ensayadero_n2_b' },
     ],
-    screenshots: [],
+    screenshots: [
+      {
+        src: ensayaderoLibrary,
+        altKey: 'cs_ensayadero_shot1_alt',
+        captionKey: 'cs_ensayadero_shot1_cap',
+      },
+      {
+        src: ensayaderoSession,
+        altKey: 'cs_ensayadero_shot2_alt',
+        captionKey: 'cs_ensayadero_shot2_cap',
+      },
+      {
+        src: ensayaderoChart,
+        altKey: 'cs_ensayadero_shot3_alt',
+        captionKey: 'cs_ensayadero_shot3_cap',
+      },
+    ],
     code: 'private',
     href: 'https://ensayadero.studio/',
   },
