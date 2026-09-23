@@ -1,0 +1,58 @@
+name: Résumé PDF
+
+# The downloadable CV is a committed file, so it goes stale the moment the
+# copy changes. Rather than trusting anyone to remember `npm run pdf`, this
+# regenerates it whenever content that appears on the page is pushed, and
+# commits the result. Vercel then deploys that commit as usual.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/i18n/messages/**'
+      - 'src/components/**'
+      - 'src/data/**'
+      - 'src/layouts/**'
+      - 'src/pages/**'
+      - 'src/styles/global.css'
+      - 'scripts/pdf/**'
+  workflow_dispatch:
+
+# Needed to push the regenerated PDF back to the branch.
+permissions:
+  contents: write
+
+concurrency:
+  group: resume-pdf
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # ubuntu-latest ships Chrome; this makes the path explicit rather than
+      # hoping the script's lookup finds the right one.
+      - name: Locate Chrome
+        run: echo "CHROME_PATH=$(which google-chrome)" >> "$GITHUB_ENV"
+
+      - run: npm run pdf
+
+      - name: Commit the PDF if it changed
+        run: |
+          if git diff --quiet -- public/*.pdf; then
+            echo "PDF already matches the site — nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/*.pdf
+          git commit -m "chore: regenerate the résumé PDF"
+          git push
