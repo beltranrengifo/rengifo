@@ -29,6 +29,29 @@ const CAREER_STARTED = 2012;
 export const currentYear = new Date().getFullYear();
 export const yearsOfExperience = currentYear - CAREER_STARTED;
 
+/**
+ * A date range in the reader's language: 'YYYY-MM' becomes a short month and
+ * year ("Dec 2022", "dic 2022"); a bare 'YYYY' stays a year.
+ */
+export function formatSpan(
+  [start, end]: [string, string],
+  locale: Locale,
+): string {
+  const month = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  const format = (value: string): string =>
+    value.length === 4
+      ? value
+      : month
+          .format(new Date(`${value}-01T00:00:00Z`))
+          .replace('.', '')
+          .replace('sept', 'sep'); // three letters, like every other month
+  return `${format(start)} — ${format(end)}`;
+}
+
 /** Coerce Astro.currentLocale (string | undefined) to a known Locale. */
 export function resolveLocale(value: string | undefined): Locale {
   return value === 'es' ? 'es' : 'en';

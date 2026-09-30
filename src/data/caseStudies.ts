@@ -17,13 +17,25 @@ export interface Note {
   bodyKey: string;
 }
 
-export interface CaseStudy {
+interface ProjectBase {
   slug: string; // the URL segment, shared by both locales
   name: string; // brand name — not translated
   rowKey: string; // the one-liner in the index
+  stack: string[];
+  /** Kept in the data, left out of the site: no row, no page. */
+  hidden?: true;
+}
+
+/** Work small enough that the live site says it all: no page of its own. */
+export interface LinkedProject extends ProjectBase {
+  page: false;
+  href: string;
+}
+
+export interface CaseStudy extends ProjectBase {
+  page?: true;
   taglineKey: string;
   introKey: string;
-  stack: string[];
   notes: Note[];
   screenshots: Screenshot[];
   /** Public repository, or the reason there isn't one. */
@@ -37,12 +49,15 @@ export interface CaseStudy {
   accessKey?: string;
 }
 
+export type Project = CaseStudy | LinkedProject;
+
 /**
- * Every project has a page. The index lists them; the page explains the work
- * and carries the link to the live site, so the list stays an index and
- * nothing important hides behind an external link.
+ * The index. Most projects have a page that explains the work and carries the
+ * link to the live site; the simplest link straight out instead.
+ *
+ * Ordered by how much of the stack each one proves, not by date.
  */
-export const caseStudies: CaseStudy[] = [
+const allProjects: Project[] = [
   {
     slug: 'ensayadero',
     name: 'Ensayadero.studio',
@@ -54,6 +69,7 @@ export const caseStudies: CaseStudy[] = [
       'Supabase',
       'Tone.js · wavesurfer',
       'Python — Demucs, Basic Pitch, Omnizart',
+      'TensorFlow · PyTorch',
       'Docker on Railway',
     ],
     notes: [
@@ -82,7 +98,31 @@ export const caseStudies: CaseStudy[] = [
     accessKey: 'cs_ensayadero_access',
   },
   {
+    slug: 'radio-perico',
+    name: 'Radio Perico',
+    rowKey: 'proj_perico_desc',
+    taglineKey: 'cs_perico_tagline',
+    introKey: 'cs_perico_intro',
+    stack: [
+      'Python 3.14 · FastAPI',
+      'Claude API',
+      'pgvector on Supabase',
+      'Hugging Face inference',
+      'React 19 · Vite',
+      'whisper.cpp',
+      'Vercel',
+    ],
+    notes: [
+      { headingKey: 'cs_perico_n1_h', bodyKey: 'cs_perico_n1_b' },
+      { headingKey: 'cs_perico_n2_h', bodyKey: 'cs_perico_n2_b' },
+    ],
+    screenshots: [],
+    code: 'private',
+    href: 'https://radioperico.com',
+  },
+  {
     slug: 'billing-engine',
+    hidden: true,
     name: 'Billing engine',
     rowKey: 'proj_billing_desc',
     taglineKey: 'cs_billing_tagline',
@@ -115,33 +155,9 @@ export const caseStudies: CaseStudy[] = [
     code: 'private',
   },
   {
-    slug: 'radio-perico',
-    name: 'Radio Perico',
-    rowKey: 'proj_perico_desc',
-    taglineKey: 'cs_perico_tagline',
-    introKey: 'cs_perico_intro',
-    stack: [
-      'Python 3.14 · FastAPI',
-      'Claude API',
-      'pgvector on Supabase',
-      'React 19 · Vite',
-      'whisper.cpp',
-      'Vercel',
-    ],
-    notes: [
-      { headingKey: 'cs_perico_n1_h', bodyKey: 'cs_perico_n1_b' },
-      { headingKey: 'cs_perico_n2_h', bodyKey: 'cs_perico_n2_b' },
-    ],
-    screenshots: [],
-    code: 'private',
-    href: 'https://radioperico.com',
-  },
-  {
     slug: 'tartaytantas',
     name: 'Tartaytantas',
     rowKey: 'proj_tartaytantas_desc',
-    taglineKey: 'cs_tartaytantas_tagline',
-    introKey: 'cs_tartaytantas_intro',
     stack: [
       'Astro 5 (SSR)',
       'React islands',
@@ -150,34 +166,28 @@ export const caseStudies: CaseStudy[] = [
       'Playwright',
       'Vercel',
     ],
-    notes: [
-      { headingKey: 'cs_tartaytantas_n1_h', bodyKey: 'cs_tartaytantas_n1_b' },
-      { headingKey: 'cs_tartaytantas_n2_h', bodyKey: 'cs_tartaytantas_n2_b' },
-    ],
-    screenshots: [],
-    code: 'private',
+    page: false,
     href: 'https://tartaytantas.es/',
   },
   {
-    slug: 'triscaideca',
-    name: 'Triscaideca',
-    rowKey: 'proj_triscaideca_desc',
-    taglineKey: 'cs_triscaideca_tagline',
-    introKey: 'cs_triscaideca_intro',
+    slug: 'carabanchel-creativa',
+    name: 'Carabanchel Creativa',
+    rowKey: 'proj_carabanchel_desc',
+    taglineKey: 'cs_carabanchel_tagline',
+    introKey: 'cs_carabanchel_intro',
     stack: [
-      'Nuxt 2 (static)',
-      '@nuxt/content',
-      'Tailwind · SCSS tokens',
-      'Leaflet',
-      'Netlify',
+      'React · Redux + sagas',
+      'Mapbox GL · Leaflet',
+      'Strapi',
+      'MongoDB',
     ],
     notes: [
-      { headingKey: 'cs_triscaideca_n1_h', bodyKey: 'cs_triscaideca_n1_b' },
-      { headingKey: 'cs_triscaideca_n2_h', bodyKey: 'cs_triscaideca_n2_b' },
+      { headingKey: 'cs_carabanchel_n1_h', bodyKey: 'cs_carabanchel_n1_b' },
+      { headingKey: 'cs_carabanchel_n2_h', bodyKey: 'cs_carabanchel_n2_b' },
     ],
     screenshots: [],
     code: 'private',
-    href: 'https://triscaideca.com/',
+    href: 'https://carabanchelcreativa.com/',
   },
   {
     slug: 'paellalab',
@@ -202,26 +212,28 @@ export const caseStudies: CaseStudy[] = [
     href: 'https://paella-lab.vercel.app/',
   },
   {
-    slug: 'carabanchel-creativa',
-    name: 'Carabanchel Creativa',
-    rowKey: 'proj_carabanchel_desc',
-    taglineKey: 'cs_carabanchel_tagline',
-    introKey: 'cs_carabanchel_intro',
+    slug: 'triscaideca',
+    name: 'Triscaideca',
+    rowKey: 'proj_triscaideca_desc',
     stack: [
-      'React · Redux + sagas',
-      'Mapbox GL · Leaflet',
-      'Strapi',
-      'MongoDB',
+      'Nuxt 2 (static)',
+      '@nuxt/content',
+      'Tailwind · SCSS tokens',
+      'Netlify',
     ],
-    notes: [
-      { headingKey: 'cs_carabanchel_n1_h', bodyKey: 'cs_carabanchel_n1_b' },
-      { headingKey: 'cs_carabanchel_n2_h', bodyKey: 'cs_carabanchel_n2_b' },
-    ],
-    screenshots: [],
-    code: 'private',
-    href: 'https://carabanchelcreativa.com/',
+    page: false,
+    href: 'https://triscaideca.com/',
   },
 ];
+
+export const projects: Project[] = allProjects.filter(
+  (project) => !project.hidden,
+);
+
+/** The projects that have a page of their own. */
+export const caseStudies: CaseStudy[] = projects.filter(
+  (project): project is CaseStudy => project.page !== false,
+);
 
 export function findCaseStudy(slug: string): CaseStudy | undefined {
   return caseStudies.find((study) => study.slug === slug);

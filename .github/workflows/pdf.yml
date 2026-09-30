@@ -13,6 +13,7 @@ on:
       - 'src/data/**'
       - 'src/layouts/**'
       - 'src/pages/**'
+      - 'src/scripts/**'
       - 'src/styles/global.css'
       - 'scripts/pdf/**'
   workflow_dispatch:

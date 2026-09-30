@@ -90,7 +90,7 @@ try {
       '--no-pdf-header-footer',
       '--virtual-time-budget=6000',
       `--print-to-pdf=${out}`,
-      `http://localhost:${PORT}${page.path}`,
+      `http://localhost:${PORT}${page.path}?pdf`, // see src/scripts/resume.ts
     ]).status;
     if (status !== 0) throw new Error(`Chrome failed on ${page.path}`);
     console.log(`✓ ${page.file}`);

@@ -42,7 +42,7 @@ const cards = [
       { text: 'end to end, with', italic: false },
       { text: 'a frontend heart.', italic: true },
     ],
-    foot: 'Design systems · Frontend · Full-stack — rengifo.es',
+    foot: 'Full-stack · Frontend · Design systems — rengifo.es',
   },
   {
     file: 'og-es.png',
@@ -52,7 +52,7 @@ const cards = [
       { text: 'de punta a punta,', italic: false },
       { text: 'con alma de frontend.', italic: true },
     ],
-    foot: 'Design systems · Frontend · Full-stack — rengifo.es',
+    foot: 'Full-stack · Frontend · Sistemas de diseño — rengifo.es',
   },
 ];
 
