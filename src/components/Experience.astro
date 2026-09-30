@@ -81,23 +81,6 @@ const locale = resolveLocale(Astro.currentLocale);
                 >
                   {t(role.blurbKey, locale)}
                 </p>
-                {role.repos && (
-                  <p class="text-muted mt-3 mb-0 text-[13px]">
-                    <span class="tracking-[0.14em] uppercase">
-                      {t('ui_exp_code', locale)}
-                    </span>
-                    {role.repos.map((repo) => (
-                      <a
-                        href={repo.href}
-                        target="_blank"
-                        rel="noopener"
-                        class="repo-link ml-3"
-                      >
-                        {repo.name} <span aria-hidden="true">↗</span>
-                      </a>
-                    ))}
-                  </p>
-                )}
               </div>
             ))}
           </div>
@@ -119,14 +102,6 @@ const locale = resolveLocale(Astro.currentLocale);
     text-decoration: none;
   }
   .role-link:hover {
-    color: var(--accent);
-  }
-  .repo-link {
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  .repo-link:hover {
     color: var(--accent);
   }
 
