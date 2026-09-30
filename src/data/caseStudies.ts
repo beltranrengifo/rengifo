@@ -199,13 +199,15 @@ const allProjects: Project[] = [
     stack: [
       'Astro 5 · React 19',
       'Supabase',
-      'Groq · Hugging Face',
+      'Groq — Llama 3.3 70B',
+      'Hugging Face embeddings',
       'Framer Motion · Radix',
       'PWA',
       'Vercel',
     ],
     notes: [
       { headingKey: 'cs_paellalab_n1_h', bodyKey: 'cs_paellalab_n1_b' },
+      { headingKey: 'cs_paellalab_n3_h', bodyKey: 'cs_paellalab_n3_b' },
       { headingKey: 'cs_paellalab_n2_h', bodyKey: 'cs_paellalab_n2_b' },
     ],
     screenshots: [],
