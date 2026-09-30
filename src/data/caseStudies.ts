@@ -156,6 +156,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'tartaytantas',
+    hidden: true,
     name: 'Tartaytantas',
     rowKey: 'proj_tartaytantas_desc',
     stack: [
@@ -213,6 +214,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'triscaideca',
+    hidden: true,
     name: 'Triscaideca',
     rowKey: 'proj_triscaideca_desc',
     stack: [

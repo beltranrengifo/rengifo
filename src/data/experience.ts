@@ -10,8 +10,6 @@ export interface Role {
   blurbKey: string;
   /** Optional external link rendered on the role title. */
   href?: string;
-  /** Public repositories that evidence the role, linked under the blurb. */
-  repos?: { name: string; href: string }[];
 }
 
 export interface ExperienceEntry {
@@ -67,7 +65,7 @@ export const experience: ExperienceEntry[] = [
       {
         titleKey: 'exp_indra_po_title',
         dates: ['2020-01', '2021-01'],
-        href: 'https://www.onesait.com/Technology/experience/',
+        href: 'https://www.onesait.com/',
         blurbKey: 'exp_indra_po_blurb',
       },
       {
@@ -75,13 +73,6 @@ export const experience: ExperienceEntry[] = [
         dates: ['2018-09', '2020-01'],
         href: 'https://ods.ux.onesait.com/one/#herramientas',
         blurbKey: 'exp_indra_consultant_blurb',
-        repos: [
-          {
-            name: 'ods-storybook',
-            href: 'https://github.com/beltranrengifo/ods-storybook',
-          },
-          { name: 'cli3', href: 'https://github.com/beltranrengifo/cli3' },
-        ],
       },
     ],
   },
