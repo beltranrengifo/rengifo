@@ -1,6 +1,6 @@
 ---
 import SectionHeader from './SectionHeader.astro';
-import { t, resolveLocale } from '../lib/i18n';
+import { t, resolveLocale, formatSpan } from '../lib/i18n';
 import { experience } from '../data/experience';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -29,7 +29,7 @@ const locale = resolveLocale(Astro.currentLocale);
           {/* Left: period + company */}
           <div>
             <p class="text-muted m-0 text-[13px] tracking-[0.14em] uppercase">
-              {entry.period}
+              {formatSpan(entry.period, locale)}
             </p>
             <p class="text-body mt-2 mb-0 font-serif text-[17px] italic">
               {entry.companyHref ? (
@@ -70,7 +70,7 @@ const locale = resolveLocale(Astro.currentLocale);
                 </h3>
                 {role.dates && (
                   <p class="text-muted mt-1 mb-[10px] text-[13px] tracking-[0.1em] uppercase">
-                    {role.dates}
+                    {formatSpan(role.dates, locale)}
                   </p>
                 )}
                 <p
@@ -81,6 +81,23 @@ const locale = resolveLocale(Astro.currentLocale);
                 >
                   {t(role.blurbKey, locale)}
                 </p>
+                {role.repos && (
+                  <p class="text-muted mt-3 mb-0 text-[13px]">
+                    <span class="tracking-[0.14em] uppercase">
+                      {t('ui_exp_code', locale)}
+                    </span>
+                    {role.repos.map((repo) => (
+                      <a
+                        href={repo.href}
+                        target="_blank"
+                        rel="noopener"
+                        class="repo-link ml-3"
+                      >
+                        {repo.name} <span aria-hidden="true">↗</span>
+                      </a>
+                    ))}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -102,6 +119,14 @@ const locale = resolveLocale(Astro.currentLocale);
     text-decoration: none;
   }
   .role-link:hover {
+    color: var(--accent);
+  }
+  .repo-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .repo-link:hover {
     color: var(--accent);
   }
 

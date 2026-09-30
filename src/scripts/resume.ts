@@ -4,6 +4,15 @@
  * accent switcher · keyboard shortcuts · a console hello.
  */
 
+// ── PDF ──
+// `npm run pdf` prints from a local preview, so relative links would carry
+// localhost into the file. Under ?pdf they point at the real site instead.
+if (new URLSearchParams(location.search).has('pdf')) {
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((a) => {
+    a.href = new URL(a.getAttribute('href') ?? '/', import.meta.env.SITE).href;
+  });
+}
+
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 

@@ -50,7 +50,7 @@ const locale = resolveLocale(Astro.currentLocale);
         href={pdfHref(locale)}
         download
         data-no-print
-        class="text-canvas hover:bg-canvas hover:text-ink rounded-xs border border-[rgba(246,245,242,0.35)] px-5 py-[10px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200"
+        class="footer-pdf rounded-xs border border-[rgba(246,245,242,0.35)] px-5 py-[10px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200"
       >
         {t('ui_download_pdf', locale)}
       </a>
@@ -80,5 +80,15 @@ const locale = resolveLocale(Astro.currentLocale);
   .footer-link:hover {
     color: var(--accent);
     text-decoration-color: var(--accent);
+  }
+
+  /* Scoped rather than utilities: the global `a` colour is unlayered, so it
+     beats Tailwind's text-canvas and left the label ink on ink. */
+  .footer-pdf {
+    color: var(--color-canvas);
+  }
+  .footer-pdf:hover {
+    background: var(--color-canvas);
+    color: var(--color-ink);
   }
 </style>

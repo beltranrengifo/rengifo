@@ -1,13 +1,21 @@
 ---
 import SectionHeader from './SectionHeader.astro';
 import { t, resolveLocale, localisedPath } from '../lib/i18n';
-import { caseStudies } from '../data/caseStudies';
+import { projects, type Project } from '../data/caseStudies';
 
 const locale = resolveLocale(Astro.currentLocale);
 
-/** A case study lives on this site, so it stays in the visitor's language. */
-const caseStudyHref = (slug: string): string =>
-  localisedPath(`/work/${slug}/`, 'en', locale);
+/**
+ * A case study lives on this site, so it stays in the visitor's language; a
+ * project without a page goes straight to the live site.
+ */
+const projectHref = (project: Project): string =>
+  project.page === false
+    ? project.href
+    : localisedPath(`/work/${project.slug}/`, 'en', locale);
+
+const external = (project: Project) =>
+  project.page === false ? { target: '_blank', rel: 'noopener' } : {};
 ---
 
 <section class="mx-auto max-w-[1080px] px-6 pb-10 sm:px-10">
@@ -15,8 +23,8 @@ const caseStudyHref = (slug: string): string =>
 
   <div class="grid">
     {
-      caseStudies.map((project, i) => {
-        const isLast = i === caseStudies.length - 1;
+      projects.map((project, i) => {
+        const isLast = i === projects.length - 1;
         return (
           <div
             data-reveal
@@ -28,7 +36,8 @@ const caseStudyHref = (slug: string): string =>
             ]}
           >
             <a
-              href={caseStudyHref(project.slug)}
+              href={projectHref(project)}
+              {...external(project)}
               class="proj-link m-0 font-serif text-[20px] italic"
             >
               {project.name}
@@ -42,10 +51,19 @@ const caseStudyHref = (slug: string): string =>
               </p>
               {/* The affordance the row was missing: an explicit way in. */}
               <a
-                href={caseStudyHref(project.slug)}
+                href={projectHref(project)}
+                {...external(project)}
                 class="proj-cta mt-3 inline-block text-[13px] tracking-[0.14em] uppercase"
               >
-                {t('ui_cs_read', locale)} <span aria-hidden="true">→</span>
+                {project.page === false ? (
+                  <>
+                    {t('ui_cs_live', locale)} <span aria-hidden="true">↗</span>
+                  </>
+                ) : (
+                  <>
+                    {t('ui_cs_read', locale)} <span aria-hidden="true">→</span>
+                  </>
+                )}
               </a>
             </div>
           </div>
