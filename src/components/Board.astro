@@ -61,7 +61,7 @@ const clips = [...roles, ...shownProjects, ...works].sort(
 );
 
 // Rows run front to back: what is built on top nearest, the roots behind.
-const LAYER_ORDER = ['frontend', 'backend', 'tools', 'media', 'gear'];
+const LAYER_ORDER = ['frontend', 'backend', 'tools', 'media'];
 const rows = [...techs].sort(
   (a, b) => LAYER_ORDER.indexOf(a.layer) - LAYER_ORDER.indexOf(b.layer),
 );
@@ -114,7 +114,6 @@ const layerHeading = {
   frontend: 'cap_h_frontend',
   tools: 'cap_h_infra',
   media: 'ui_board_layer_media',
-  gear: 'ui_board_layer_gear',
 } as const;
 
 const caseStudyHref = (slug: string) =>
@@ -359,12 +358,6 @@ const caseStudyHref = (slug: string) =>
   }
   .board-node.is-tech .board-dot {
     fill: var(--board-ink);
-  }
-  /* Gear: an outline, quieter than the software. */
-  .board-node.layer-gear .board-dot {
-    fill: var(--board-bg);
-    stroke: var(--board-ink);
-    stroke-width: 1;
   }
   .board-span {
     fill: none;
