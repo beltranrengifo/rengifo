@@ -1,26 +1,27 @@
 /**
- * Poncho on the board: a small SVG cat that walks the floor of the chart and
- * keeps up with the camera, the way a companion would in a game. Drawn in
- * the colours of the CSS cat in the classic footer, but built from parts so
- * each one can move: four legs on a gait, a tail that sways, a head that
- * turns to look, eyes that blink.
+ * Poncho on the board: an exotic shorthair — round flat face, tiny low
+ * ears, big round eyes, a compact plush body on short legs and a short
+ * thick tail — who walks the floor of the chart and keeps up with the
+ * camera, the way a companion would in a game.
  *
- * States: walking or trotting to catch up, sitting when the view rests,
- * asleep after a long quiet spell, and a hop with a "miau" when clicked or
- * when Poncho decides something deserves it.
+ * The body is drawn side-on and the face turned to the viewer, which is how
+ * a flat-faced cat reads best. Three poses (walking, sitting, asleep) are
+ * whole drawings swapped in and out; within each, legs, tail, head and eyes
+ * move on their own.
  */
 
 const NS = 'http://www.w3.org/2000/svg';
 
-const FUR = '#d2b389';
-const FUR_DARK = '#b99a70';
-const BELLY = '#ecdcc0';
-const PAW = '#efe9df';
-const NOSE = '#c18d7f';
-const EYE = '#f2a300';
+const FUR = '#d6b68a';
+const SHADE = '#c3a073';
+const STRIPE = '#b8925f';
+const CREAM = '#efe1c6';
+const PINK = '#d39a8c';
+const EYE = '#e9a23b';
+const INK = '#2a2420';
 
-const WALK_SPEED = 260; // world px per second
-const TROT_SPEED = 620;
+const WALK_SPEED = 240; // world px per second
+const TROT_SPEED = 600;
 const SLEEP_AFTER = 28_000;
 
 type State = 'walk' | 'sit' | 'sleep';
@@ -40,14 +41,12 @@ function el<K extends keyof SVGElementTagNameMap>(
 
 interface Leg {
   g: SVGGElement;
-  hip: number;
+  x: number;
   phase: number;
-  back: boolean;
 }
 
 export class Companion {
   readonly root: SVGGElement;
-  /** World position of the paws, and which way he faces. */
   x: number;
   readonly floor: number;
   private facing = 1;
@@ -59,13 +58,17 @@ export class Companion {
   private look: { x: number; y: number } | null = null;
 
   private readonly flip: SVGGElement;
-  private readonly body: SVGGElement;
-  private readonly head: SVGGElement;
-  private readonly eyelids: SVGEllipseElement[] = [];
-  private readonly pupils: SVGEllipseElement[] = [];
-  private readonly tail: SVGPathElement;
+  private readonly stand: SVGGElement;
+  private readonly sit: SVGGElement;
+  private readonly sleep: SVGGElement;
+  private readonly standTail: SVGPathElement;
+  private readonly sitTail: SVGPathElement;
   private readonly legs: Leg[] = [];
-  private readonly haunch: SVGEllipseElement;
+  private readonly head: SVGGElement;
+  private readonly lids: SVGPathElement[] = [];
+  private readonly pupils: SVGCircleElement[] = [];
+  private readonly shines: SVGCircleElement[] = [];
+  private readonly sleepFace: SVGGElement;
   private readonly bubble: SVGGElement;
   private readonly zzz: SVGTextElement;
 
@@ -77,106 +80,222 @@ export class Companion {
       { class: 'poncho', role: 'img', 'aria-label': label },
       parent,
     );
-    const shadow = el(
+    el(
       'ellipse',
-      { cx: 0, cy: 0, rx: 30, ry: 4, class: 'poncho-shadow' },
+      { cx: 0, cy: 0, rx: 30, ry: 3.5, fill: 'rgba(22,24,26,0.1)' },
       this.root,
     );
-    shadow.setAttribute('fill', 'rgba(22,24,26,0.12)');
     this.flip = el('g', {}, this.root);
 
-    // Far legs first, so the body covers their tops.
-    const leg = (hip: number, far: boolean, phase: number) => {
-      const g = el('g', { transform: `translate(${hip} -24)` }, this.flip);
-      el(
-        'rect',
-        {
-          x: -3.5,
-          y: 0,
-          width: 7,
-          height: 22,
-          rx: 3.5,
-          fill: far ? FUR_DARK : FUR,
-        },
-        g,
-      );
-      el('ellipse', { cx: 0.5, cy: 22, rx: 5, ry: 3, fill: PAW }, g);
-      this.legs.push({ g, hip, phase, back: hip < 0 });
-    };
-    leg(-20, true, Math.PI);
-    leg(16, true, 0);
-
-    this.tail = el(
+    // ── Standing / walking ─────────────────────────────────────
+    this.stand = el('g', {}, this.flip);
+    this.standTail = el(
       'path',
       {
         fill: 'none',
-        stroke: FUR,
-        'stroke-width': 7,
+        stroke: SHADE,
+        'stroke-width': 10,
         'stroke-linecap': 'round',
       },
-      this.flip,
+      this.stand,
     );
-
-    this.body = el('g', {}, this.flip);
-    el('ellipse', { cx: 0, cy: -32, rx: 32, ry: 16, fill: FUR }, this.body);
-    el('ellipse', { cx: 3, cy: -25, rx: 20, ry: 7, fill: BELLY }, this.body);
-    this.haunch = el(
-      'ellipse',
-      { cx: -18, cy: -26, rx: 14, ry: 13, fill: FUR, opacity: 0 },
-      this.body,
-    );
-
-    leg(-14, false, 0);
-    leg(22, false, Math.PI);
-
-    this.head = el('g', {}, this.flip);
-    const ear = (points: string) => {
-      el('polygon', { points, fill: FUR }, this.head);
+    const leg = (x: number, phase: number, far: boolean) => {
+      const g = el('g', {}, this.stand);
+      el(
+        'path',
+        {
+          d: 'M-5 0 L-5 11 Q-5 15 0 15 Q5 15 5 11 L5 0 Z',
+          fill: far ? SHADE : FUR,
+        },
+        g,
+      );
+      el('ellipse', { cx: 0.5, cy: 14.5, rx: 5.5, ry: 2.6, fill: CREAM }, g);
+      this.legs.push({ g, x, phase });
     };
-    ear('-11,-8 -8,-25 1,-12');
-    ear('3,-12 11,-25 13,-6');
+    leg(-17, Math.PI, true);
+    leg(13, 0, true);
+    // The loaf: a compact, plush body.
     el(
-      'polygon',
-      { points: '-8,-11 -6.5,-20 -2,-12', fill: NOSE, opacity: 0.6 },
-      this.head,
+      'path',
+      {
+        d: 'M-31 -17 C-34 -34 -18 -42 0 -42 C19 -42 32 -34 31 -19 C30 -9 20 -7 1 -7 C-18 -7 -29 -7 -31 -17 Z',
+        fill: FUR,
+      },
+      this.stand,
     );
     el(
-      'polygon',
-      { points: '5,-12 10,-20 11,-9', fill: NOSE, opacity: 0.6 },
-      this.head,
+      'path',
+      {
+        d: 'M-24 -12 C-14 -8 12 -8 24 -13 C20 -8 8 -6 0 -6 C-10 -6 -20 -7 -24 -12 Z',
+        fill: CREAM,
+      },
+      this.stand,
     );
-    el('circle', { cx: 0, cy: 0, r: 15, fill: FUR }, this.head);
-    el('ellipse', { cx: 6, cy: 6, rx: 8, ry: 6, fill: BELLY }, this.head);
-    for (const ex of [-4, 7]) {
-      el('ellipse', { cx: ex, cy: -2, rx: 3, ry: 3.6, fill: EYE }, this.head);
+    for (const sx of [-14, -4, 6]) {
+      el(
+        'path',
+        {
+          d: `M${sx} -41 q3 6 0 11`,
+          fill: 'none',
+          stroke: STRIPE,
+          'stroke-width': 2.4,
+          'stroke-linecap': 'round',
+          opacity: 0.45,
+        },
+        this.stand,
+      );
+    }
+    leg(-11, 0, false);
+    leg(19, Math.PI, false);
+
+    // ── Sitting ────────────────────────────────────────────────
+    this.sit = el('g', {}, this.flip);
+    this.sitTail = el(
+      'path',
+      {
+        fill: 'none',
+        stroke: SHADE,
+        'stroke-width': 10,
+        'stroke-linecap': 'round',
+      },
+      this.sit,
+    );
+    el(
+      'path',
+      { d: 'M-20 -2 C-30 -18 -24 -46 0 -48 C22 -48 28 -22 20 -2 Z', fill: FUR },
+      this.sit,
+    );
+    el(
+      'path',
+      { d: 'M-8 -4 C-12 -18 -6 -32 6 -34 C14 -24 14 -12 10 -4 Z', fill: CREAM },
+      this.sit,
+    );
+    for (const px of [-4, 9]) {
+      el(
+        'ellipse',
+        { cx: px, cy: -2, rx: 6.5, ry: 3.4, fill: CREAM },
+        this.sit,
+      );
+    }
+
+    // ── Asleep: curled up, tail round the front ────────────────
+    this.sleep = el('g', {}, this.flip);
+    el(
+      'path',
+      { d: 'M-28 -1 C-34 -14 -22 -28 0 -28 C22 -28 34 -16 30 -2 Z', fill: FUR },
+      this.sleep,
+    );
+    el(
+      'path',
+      {
+        d: 'M-28 -2 C-40 -4 -34 -14 -20 -8',
+        fill: 'none',
+        stroke: SHADE,
+        'stroke-width': 10,
+        'stroke-linecap': 'round',
+      },
+      this.sleep,
+    );
+
+    // ── Head: face to the viewer ───────────────────────────────
+    this.head = el('g', {}, this.flip);
+    // Tiny ears, low and wide apart.
+    for (const side of [-1, 1]) {
+      el(
+        'path',
+        {
+          d: `M${side * 9} -13 Q${side * 16} -24 ${side * 19} -8 Z`,
+          fill: FUR,
+        },
+        this.head,
+      );
+      el(
+        'path',
+        {
+          d: `M${side * 11} -12 Q${side * 15.5} -19 ${side * 17} -9 Z`,
+          fill: PINK,
+          opacity: 0.7,
+        },
+        this.head,
+      );
+    }
+    // A round, full face with plush cheeks.
+    el('ellipse', { cx: 0, cy: 0, rx: 19, ry: 16, fill: FUR }, this.head);
+    for (const side of [-1, 1]) {
+      el('circle', { cx: side * 12, cy: 6, r: 8, fill: FUR }, this.head);
+    }
+    // Tabby marks on the forehead.
+    for (const mx of [-4, 0, 4]) {
+      el(
+        'path',
+        {
+          d: `M${mx} -14 l0 5`,
+          stroke: STRIPE,
+          'stroke-width': 1.6,
+          'stroke-linecap': 'round',
+          opacity: 0.5,
+        },
+        this.head,
+      );
+    }
+    el('ellipse', { cx: 0, cy: 8, rx: 9, ry: 6.5, fill: CREAM }, this.head);
+    // Big round eyes.
+    for (const side of [-1, 1]) {
+      const cx = side * 7.5;
+      el('circle', { cx, cy: -1, r: 5.4, fill: EYE }, this.head);
       this.pupils.push(
+        el('circle', { cx, cy: -1, r: 3.3, fill: INK }, this.head),
+      );
+      this.shines.push(
         el(
-          'ellipse',
-          { cx: ex, cy: -2, rx: 1.1, ry: 3, fill: '#16181a' },
+          'circle',
+          { cx: cx + 1.4, cy: -2.6, r: 1.2, fill: '#fff' },
           this.head,
         ),
       );
-      this.eyelids.push(
-        el('ellipse', { cx: ex, cy: -2, rx: 3.4, ry: 0, fill: FUR }, this.head),
-      );
+      this.lids.push(el('path', { fill: FUR }, this.head));
     }
-    el('polygon', { points: '11,3 15,3 13,6', fill: NOSE }, this.head);
-    for (const [y1, y2] of [
-      [4, 2],
-      [6, 7],
-    ] as const) {
+    // The flat little nose and mouth.
+    el('path', { d: 'M-2.4 4.6 L2.4 4.6 L0 7.2 Z', fill: PINK }, this.head);
+    el(
+      'path',
+      {
+        d: 'M0 7.2 v1.6 M0 8.8 q-2.4 2 -4.2 0.4 M0 8.8 q2.4 2 4.2 0.4',
+        fill: 'none',
+        stroke: INK,
+        'stroke-width': 0.8,
+        'stroke-linecap': 'round',
+        opacity: 0.6,
+      },
+      this.head,
+    );
+    for (const side of [-1, 1]) {
+      for (const dy of [-1, 1.5]) {
+        el(
+          'path',
+          {
+            d: `M${side * 9} ${8 + dy} l${side * 12} ${dy * 1.4}`,
+            stroke: INK,
+            'stroke-width': 0.5,
+            opacity: 0.35,
+          },
+          this.head,
+        );
+      }
+    }
+    // Asleep: closed eyes as two soft arcs.
+    this.sleepFace = el('g', { opacity: 0 }, this.head);
+    for (const side of [-1, 1]) {
       el(
-        'line',
+        'path',
         {
-          x1: 15,
-          y1,
-          x2: 26,
-          y2,
-          stroke: '#16181a',
-          'stroke-opacity': 0.35,
-          'stroke-width': 0.6,
+          d: `M${side * 7.5 - 4} -1 q4 3 8 0`,
+          fill: 'none',
+          stroke: INK,
+          'stroke-width': 1.2,
+          'stroke-linecap': 'round',
         },
-        this.head,
+        this.sleepFace,
       );
     }
 
@@ -184,34 +303,34 @@ export class Companion {
     el(
       'rect',
       {
-        x: -6,
-        y: -104,
-        width: 50,
+        x: -2,
+        y: -96,
+        width: 48,
         height: 22,
         rx: 11,
         fill: '#fbfaf8',
-        stroke: '#16181a',
-        'stroke-opacity': 0.25,
+        stroke: INK,
+        'stroke-opacity': 0.2,
       },
       this.bubble,
     );
     const meow = el(
       'text',
-      { x: 19, y: -89, 'text-anchor': 'middle', class: 'poncho-meow' },
+      { x: 22, y: -81, 'text-anchor': 'middle', class: 'poncho-meow' },
       this.bubble,
     );
     meow.textContent = 'miau';
 
     this.zzz = el(
       'text',
-      { x: 20, y: -60, class: 'poncho-zzz', opacity: 0 },
+      { x: 14, y: -46, class: 'poncho-zzz', opacity: 0 },
       this.root,
     );
     this.zzz.textContent = 'z z z';
 
     this.root.addEventListener('click', (event) => {
       event.stopPropagation();
-      this.hop(performance.now());
+      this.poke(performance.now(), true);
     });
   }
 
@@ -219,53 +338,36 @@ export class Companion {
   poke(now: number, hop = false): void {
     this.lastActivity = now;
     if (this.state === 'sleep') {
-      this.setState('sit');
-      this.hop(now);
+      this.state = 'sit';
+      this.hopUntil = now + 650;
     } else if (hop) {
-      this.hop(now);
+      this.hopUntil = now + 650;
     }
   }
 
-  /** A world point to look at, or null to look ahead. */
+  /** A world point to look at, or null to look at the viewer. */
   lookAt(point: { x: number; y: number } | null): void {
     this.look = point;
   }
 
-  private hop(now: number): void {
-    this.hopUntil = now + 650;
-    this.lastActivity = now;
-  }
-
-  private setState(state: State): void {
-    this.state = state;
-  }
-
-  /**
-   * Advance one frame. `target` is where he wants to be: the middle of the
-   * view, a little behind it.
-   */
+  /** Advance one frame towards `target`, a world x on the floor. */
   update(now: number, dt: number, target: number): void {
     if (this.lastActivity === 0) this.lastActivity = now;
     const gap = target - this.x;
     const far = Math.abs(gap);
 
     if (far > 40) {
-      this.setState('walk');
+      this.state = 'walk';
       this.facing = Math.sign(gap);
-      const speed = far > 600 ? TROT_SPEED : WALK_SPEED;
-      const stepX = Math.min(far, speed * dt) * this.facing;
-      this.x += stepX;
-      this.gait += (Math.abs(stepX) / 22) * (speed === TROT_SPEED ? 1.15 : 1);
+      const trotting = far > 600;
+      const step = Math.min(far, (trotting ? TROT_SPEED : WALK_SPEED) * dt);
+      this.x += step * this.facing;
+      this.gait += (step / 16) * (trotting ? 1.2 : 1);
       this.lastActivity = now;
     } else if (this.state === 'walk') {
-      this.setState('sit');
+      this.state = 'sit';
     } else if (this.state === 'sit' && now - this.lastActivity > SLEEP_AFTER) {
-      this.setState('sleep');
-    }
-
-    // When something is being looked at, face it.
-    if (this.state !== 'walk' && this.look) {
-      this.facing = this.look.x >= this.x ? 1 : -1;
+      this.state = 'sleep';
     }
 
     this.draw(now);
@@ -273,101 +375,120 @@ export class Companion {
 
   private draw(now: number): void {
     const t = now / 1000;
+    const walking = this.state === 'walk';
     const sitting = this.state === 'sit';
     const sleeping = this.state === 'sleep';
-    const walking = this.state === 'walk';
 
-    // A hop: a little parabola.
     let lift = 0;
     if (now < this.hopUntil) {
       const p = 1 - (this.hopUntil - now) / 650;
-      lift = Math.sin(p * Math.PI) * 26;
+      lift = Math.sin(p * Math.PI) * 24;
     }
     this.root.setAttribute(
       'transform',
       `translate(${this.x.toFixed(1)} ${(this.floor - lift).toFixed(1)})`,
     );
     this.flip.setAttribute('transform', `scale(${this.facing} 1)`);
-    this.bubble.setAttribute('opacity', now < this.hopUntil + 500 ? '1' : '0');
+    this.bubble.setAttribute('opacity', now < this.hopUntil + 450 ? '1' : '0');
 
-    // Body: level when walking (with a bob), tilted up when sitting, low
-    // and flat when asleep.
-    const bob = walking ? Math.abs(Math.sin(this.gait)) * 2.2 : 0;
-    const breathe =
-      Math.sin(t * (sleeping ? 1.4 : 2.2)) * (sleeping ? 1.2 : 0.6);
-    let bodyTransform = `translate(0 ${(-bob + breathe * 0.4).toFixed(2)})`;
-    if (sitting)
-      bodyTransform = `rotate(-32 -18 -18) translate(0 ${(breathe * 0.4).toFixed(2)})`;
-    if (sleeping) bodyTransform = `translate(0 14) scale(1 0.82)`;
-    this.body.setAttribute('transform', bodyTransform);
-    this.haunch.setAttribute('opacity', sitting ? '1' : '0');
+    this.stand.setAttribute('display', walking ? 'inline' : 'none');
+    this.sit.setAttribute('display', sitting ? 'inline' : 'none');
+    this.sleep.setAttribute('display', sleeping ? 'inline' : 'none');
 
-    // Legs: a walk cycle; tucked when sitting (back) or asleep (all).
-    this.legs.forEach((leg) => {
-      const { back, hip } = leg;
-      let angle = 0;
-      let lower = 0;
-      let opacity = 1;
-      if (walking) angle = Math.sin(this.gait + leg.phase) * 28;
-      if (sitting && back) opacity = 0;
-      // Sitting, the front legs come down straight from the chest.
-      let reach = 1;
-      let shift = 0;
-      if (sitting && !back) {
-        angle = -4;
-        lower = 26;
-        reach = 2.15;
-        shift = -2;
+    const breathe = Math.sin(t * (sleeping ? 1.3 : 2)) * (sleeping ? 1 : 0.5);
+    const bob = walking ? Math.abs(Math.sin(this.gait)) * 1.8 : 0;
+
+    if (walking) {
+      this.stand.setAttribute('transform', `translate(0 ${(-bob).toFixed(2)})`);
+      for (const leg of this.legs) {
+        const swing = Math.sin(this.gait + leg.phase) * 22;
+        leg.g.setAttribute(
+          'transform',
+          `translate(${leg.x} ${(-12 + bob).toFixed(2)}) rotate(${swing.toFixed(1)})`,
+        );
       }
-      if (sleeping) opacity = 0;
-      leg.g.setAttribute(
-        'transform',
-        `translate(${hip + shift} ${-24 - lower}) rotate(${angle.toFixed(1)}) scale(1 ${reach})`,
+      const wag = Math.sin(this.gait * 0.5) * 5;
+      this.standTail.setAttribute(
+        'd',
+        `M-28 -30 C-38 -36 ${(-42 + wag).toFixed(1)} -46 ${(-40 + wag).toFixed(1)} -52`,
       );
-      leg.g.setAttribute('opacity', String(opacity));
-    });
-
-    // Head: forward when walking, up when sitting, down on the paws asleep;
-    // turned towards whatever is being looked at.
-    let headX = 34;
-    let headY = -44 - bob;
-    let headTilt = 0;
+    }
     if (sitting) {
-      headX = 18;
-      headY = -70 + breathe * 0.5;
-      if (this.look) {
-        const dy = this.look.y - (this.floor - 70);
-        headTilt = Math.max(-18, Math.min(18, dy * 0.04));
-      }
+      const sway = Math.sin(t * 1.5) * 5;
+      this.sitTail.setAttribute(
+        'd',
+        `M-16 -4 C-30 0 ${(-26 + sway).toFixed(1)} 4 ${(4 + sway).toFixed(1)} 2`,
+      );
+      this.sit.setAttribute(
+        'transform',
+        `translate(0 ${(breathe * 0.3).toFixed(2)})`,
+      );
     }
     if (sleeping) {
-      headX = 30;
-      headY = -20;
-      headTilt = 14;
+      this.sleep.setAttribute(
+        'transform',
+        `scale(1 ${(1 + breathe * 0.02).toFixed(3)})`,
+      );
+    }
+
+    // The head rides on whichever pose is showing. The face always turns
+    // to the viewer, so it is un-flipped inside the flipped body.
+    let hx = 24;
+    let hy = -40 - bob;
+    let tilt = Math.sin(this.gait) * 2;
+    if (sitting) {
+      hx = 2;
+      hy = -56 + breathe * 0.4;
+      tilt = this.look
+        ? Math.max(-10, Math.min(10, (this.look.x - this.x) * 0.01))
+        : 0;
+    }
+    if (sleeping) {
+      hx = 20;
+      hy = -14;
+      tilt = 12;
     }
     this.head.setAttribute(
       'transform',
-      `translate(${headX} ${headY.toFixed(1)}) rotate(${headTilt.toFixed(1)})`,
+      `translate(${hx} ${hy.toFixed(1)}) scale(${this.facing} 1) rotate(${(tilt * this.facing).toFixed(1)})`,
     );
 
-    // Eyes: blink now and then; shut when asleep.
-    if (now > this.blinkAt + 160)
-      this.blinkAt = now + 2200 + Math.random() * 3800;
-    const blinking = now > this.blinkAt && now < this.blinkAt + 160;
-    const lid = sleeping || blinking ? 3.8 : 0;
-    for (const e of this.eyelids) e.setAttribute('ry', String(lid));
-    for (const p of this.pupils) p.setAttribute('rx', sleeping ? '0' : '1.1');
+    // Pupils follow what he is looking at; otherwise they look at you.
+    let ox = 0;
+    let oy = 0;
+    if (this.look && !sleeping) {
+      const dx = this.look.x - this.x;
+      const dy = this.look.y - (this.floor + hy);
+      const d = Math.hypot(dx, dy) || 1;
+      ox = (dx / d) * 1.6;
+      oy = (dy / d) * 1.4;
+    }
+    this.pupils.forEach((p, i) => {
+      const cx = (i === 0 ? -7.5 : 7.5) + ox;
+      p.setAttribute('cx', cx.toFixed(2));
+      p.setAttribute('cy', (-1 + oy).toFixed(2));
+      this.shines[i]!.setAttribute('cx', (cx + 1.4).toFixed(2));
+      this.shines[i]!.setAttribute('cy', (-2.6 + oy).toFixed(2));
+    });
 
-    // Tail: sways; quick when walking, lazy when sitting, still asleep.
-    const sway = walking
-      ? Math.sin(this.gait * 0.5) * 10
-      : Math.sin(t * 1.6) * 7;
-    const tail = sleeping
-      ? 'M-30 -14 C-46 -8 -40 2 -10 2'
-      : sitting
-        ? `M-30 -16 C-50 -6 ${(-38 + sway).toFixed(1)} 2 0 0`
-        : `M-30 -36 C-48 -44 ${(-50 + sway).toFixed(1)} -66 ${(-40 + sway).toFixed(1)} -74`;
-    this.tail.setAttribute('d', tail);
+    // Blink now and then: the lid comes down over the eye.
+    if (now > this.blinkAt + 170) {
+      this.blinkAt = now + 2400 + Math.random() * 3600;
+    }
+    const close = now > this.blinkAt && now < this.blinkAt + 170 ? 1 : 0;
+    this.lids.forEach((lid, i) => {
+      const cx = i === 0 ? -7.5 : 7.5;
+      const y = -6.6 + close * 5.8;
+      lid.setAttribute(
+        'd',
+        `M${cx - 6} -6.8 L${cx + 6} -6.8 L${cx + 6} ${y.toFixed(2)} Q${cx} ${(y + close * 2).toFixed(2)} ${cx - 6} ${y.toFixed(2)} Z`,
+      );
+      lid.setAttribute('display', sleeping ? 'none' : 'inline');
+    });
+    for (const p of [...this.pupils, ...this.shines]) {
+      p.setAttribute('display', sleeping ? 'none' : 'inline');
+    }
+    this.sleepFace.setAttribute('opacity', sleeping ? '1' : '0');
 
     this.zzz.setAttribute(
       'opacity',
