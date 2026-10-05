@@ -68,27 +68,23 @@ const locale = resolveLocale(Astro.currentLocale);
     >
       {t('ui_footer_legal', locale, { year: currentYear })}
     </p>
-    {/* Secondary on purpose: the board is a detour, not the way in. */}
-    <p
-      data-no-print
-      class="mt-3 font-serif text-[15px] text-[rgba(246,245,242,0.55)] italic"
-    >
-      <a
-        href={localisedPath('/board/', 'en', locale)}
-        class="footer-link font-sans text-[13px] tracking-[0.1em] not-italic"
-        >{t('ui_board_link', locale)}</a
-      >
-      {' '}{t('ui_board_link_aside', locale)}
-    </p>
   </div>
 
-  {/* A quiet hello from the old rengifo.es — hover it */}
-  <div
-    class="pointer-events-auto flex justify-center pb-10 sm:absolute sm:right-6 sm:bottom-3 sm:block sm:pb-0"
+  {
+    /*
+     * A quiet hello from the old rengifo.es — hover it. Poncho is also the
+     * secret door to board mode: no link announces it, the cat is the link.
+     */
+  }
+  <a
+    href={localisedPath('/board/', 'en', locale)}
+    aria-label={t('ui_board_link', locale)}
+    title={`${t('ui_board_link', locale)} ${t('ui_board_link_aside', locale)}`}
+    class="pointer-events-auto flex justify-center pb-10 no-underline sm:absolute sm:right-6 sm:bottom-3 sm:block sm:pb-0"
     data-no-print
   >
     <Cat />
-  </div>
+  </a>
 </section>
 
 <style>
