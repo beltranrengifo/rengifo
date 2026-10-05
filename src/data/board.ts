@@ -13,7 +13,7 @@ import type { Span } from './experience';
  * slugs.
  */
 
-export type Layer = 'backend' | 'frontend' | 'tools' | 'media' | 'gear';
+export type Layer = 'backend' | 'frontend' | 'tools' | 'media';
 export type Weight = 1 | 2 | 3;
 
 export interface Tech {
@@ -113,43 +113,6 @@ export const techs: Tech[] = [
     layer: 'media',
     uses: { prev: 1 },
     href: 'https://www.adobe.com/products/aftereffects.html',
-  },
-
-  // Gear — on the board only.
-  {
-    id: 'sennheiser',
-    label: 'Sennheiser',
-    layer: 'gear',
-    uses: { prev: 3, 'en-la-cuna-del-aire': 2, 'flores-de-ruanda': 2 },
-    href: 'https://www.sennheiser.com/',
-  },
-  {
-    id: 'fostex',
-    label: { en: 'Fostex DAT recorders', es: 'Grabadoras DAT Fostex' },
-    layer: 'gear',
-    uses: { prev: 2, 'en-la-cuna-del-aire': 2 },
-    href: 'https://www.fostex.jp/',
-  },
-  {
-    id: 'neve',
-    label: { en: 'Neve consoles', es: 'Consolas Neve' },
-    layer: 'gear',
-    uses: { prev: 2 },
-    href: 'https://www.ams-neve.com/',
-  },
-  {
-    id: 'mackie',
-    label: { en: 'Mackie consoles', es: 'Consolas Mackie' },
-    layer: 'gear',
-    uses: { prev: 2 },
-    href: 'https://mackie.com/',
-  },
-  {
-    id: 'avalon',
-    label: { en: 'Avalon compressors', es: 'Compresores Avalon' },
-    layer: 'gear',
-    uses: { prev: 1 },
-    href: 'https://www.avalondesign.com/',
   },
 
   // Frontend
