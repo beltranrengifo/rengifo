@@ -18,7 +18,7 @@ const NARROW = '(max-width: 720px)';
 const PANEL_WIDTH = 420;
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 1.8;
-const TOP = -420;
+const TOP = -440;
 const BOTTOM = 420;
 
 interface Labels {
@@ -80,12 +80,12 @@ function boot(root: HTMLElement): void {
     const x = timeX(year);
     el(
       'line',
-      { x1: x, x2: x, y1: TOP + 40, y2: BOTTOM, class: 'board-year-line' },
+      { x1: x, x2: x, y1: TOP + 46, y2: BOTTOM, class: 'board-year-line' },
       grid,
     );
     const label = el(
       'text',
-      { x: x + 6, y: TOP + 52, class: 'board-year' },
+      { x: x + 6, y: TOP + 60, class: 'board-year' },
       grid,
     );
     label.textContent = String(year);
@@ -97,14 +97,14 @@ function boot(root: HTMLElement): void {
     el(
       'path',
       {
-        d: `M${x1} ${TOP - 2} V${TOP - 10} H${x2} V${TOP - 2}`,
+        d: `M${x1} ${TOP + 10} V${TOP + 2} H${x2} V${TOP + 10}`,
         class: 'board-era-bracket',
       },
       grid,
     );
     const label = el(
       'text',
-      { x: x1 + 8, y: TOP - 20, class: 'board-era' },
+      { x: x1 + 8, y: TOP - 8, class: 'board-era' },
       grid,
     );
     label.textContent = era.label;
@@ -175,12 +175,16 @@ function boot(root: HTMLElement): void {
 
   // ── Camera ─────────────────────────────────────────────────────
   let panelOpen = false;
-  const inset = () => (panelOpen && !narrow.matches ? PANEL_WIDTH : 0);
+  // The space the panel takes, eased so the board slides aside with it
+  // instead of jumping.
+  let insetNow = 0;
+  const insetTarget = () => (panelOpen && !narrow.matches ? PANEL_WIDTH : 0);
+  const inset = () => insetNow;
   const viewW = () => stage.clientWidth - inset();
   const fit = () =>
     Math.min(
       1.1,
-      Math.max(MIN_ZOOM, stage.clientHeight / (BOTTOM - TOP + 140)),
+      Math.max(MIN_ZOOM, stage.clientHeight / (BOTTOM - TOP + 240)),
     );
   const clampX = (x: number, z: number) => {
     const half = viewW() / 2 / z;
@@ -194,8 +198,9 @@ function boot(root: HTMLElement): void {
   // Start in the present; the story reads backwards from here.
   let cx = clampX(Infinity, zoom);
   let tcx = cx;
-  let cy = 0;
-  let tcy = 0;
+  // A little low, so the eras clear the bar at the top.
+  let cy = -40;
+  let tcy = -40;
 
   const toWorld = (sx: number, sy: number): [number, number] => [
     (sx - viewW() / 2) / zoom + cx,
@@ -242,7 +247,8 @@ function boot(root: HTMLElement): void {
     if (!panelOpen) {
       lastFocus = document.activeElement as HTMLElement | SVGElement | null;
     }
-    panel.hidden = false;
+    panel.toggleAttribute('data-open', true);
+    panel.inert = false;
     panelOpen = true;
     root.dataset.panel = 'open';
     const i = nodes.findIndex((node) => node.id === id);
@@ -259,7 +265,8 @@ function boot(root: HTMLElement): void {
   const close = () => {
     if (!panelOpen) return;
     panelOpen = false;
-    panel.hidden = true;
+    panel.removeAttribute('data-open');
+    panel.inert = true;
     delete root.dataset.panel;
     focus(-1);
     const url = new URL(location.href);
@@ -332,6 +339,17 @@ function boot(root: HTMLElement): void {
     layout.sim.alpha(0.3);
   };
 
+  // Reset: every node goes back to where the layout first put it.
+  const homes = nodes.map((node) => [node.homeX, node.homeY] as const);
+  q<HTMLButtonElement>('[data-board-reset]').addEventListener('click', () => {
+    nodes.forEach((node, i) => {
+      [node.homeX, node.homeY] = homes[i]!;
+    });
+    rehome();
+    layout.sim.alpha(0.6);
+    poncho.notify('interact', performance.now());
+  });
+
   // ── Pointer ────────────────────────────────────────────────────
   const pointers = new Map<number, { x: number; y: number }>();
   let held: Node | null = null;
@@ -354,7 +372,11 @@ function boot(root: HTMLElement): void {
   stage.addEventListener('pointerdown', (event) => {
     const p = local(event);
     pointers.set(event.pointerId, p);
-    stage.setPointerCapture(event.pointerId);
+    try {
+      stage.setPointerCapture(event.pointerId);
+    } catch {
+      /* synthetic or already-released pointer */
+    }
     poncho.notify('interact', performance.now());
     if (pointers.size === 2) {
       const [a, b] = [...pointers.values()] as [typeof p, typeof p];
@@ -499,6 +521,7 @@ function boot(root: HTMLElement): void {
     cx += (tcx - cx) * k;
     cy += (tcy - cy) * k;
     zoom += (tz - zoom) * k;
+    insetNow += (insetTarget() - insetNow) * (still ? 1 : k);
     if (!still) layout.sim.tick();
     draw();
     poncho.tick(now);
