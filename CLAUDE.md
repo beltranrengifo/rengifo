@@ -76,4 +76,18 @@ _Add a brief overview of your project architecture_
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+### Git Workflow
+
+Every change goes on its own branch and reaches `main` through a pull
+request — never a direct commit or push to `main`. One PR per change keeps
+each one easy to review and easy to revert.
+
+```bash
+git switch -c <type>/<short-description>   # e.g. content/hero-copy
+# …commit…
+git push -u origin HEAD
+gh pr create --fill
+```
+
+Merging to `main` deploys to production (Vercel) and regenerates the
+résumé PDF (`.github/workflows/pdf.yml`), so merging is the owner's call.
