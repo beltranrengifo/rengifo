@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { techs, projectSpans } from '../data/board';
+import { techs, projectSpans, boardWorks } from '../data/board';
 import { experience } from '../data/experience';
 import { projects } from '../data/caseStudies';
 import { buildModel, yearOf } from './model';
@@ -33,6 +33,12 @@ function realModel() {
         kind: 'project' as const,
         label: project.name,
         span: projectSpans[project.slug]!,
+      })),
+      ...boardWorks.map((work) => ({
+        id: work.id,
+        kind: 'project' as const,
+        label: work.label,
+        span: work.span,
       })),
     ],
     techs: techs.map((tech) => ({
