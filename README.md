@@ -1,7 +1,7 @@
 # rengifo.es
 
 My personal résumé site — a single, elegant page telling the story from film-and-TV
-sound engineer to senior full-stack engineer. Bilingual (EN/ES),
+sound engineer to full-stack product engineer. Bilingual (EN/ES),
 static, fast, and print-to-PDF friendly.
 
 **Live:** [rengifo.es](https://rengifo.es) · **Author:** Beltrán Rengifo
