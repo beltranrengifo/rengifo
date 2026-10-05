@@ -25,6 +25,8 @@ export const timeX = (year: number): number => (year - START_YEAR) * YEAR_PX;
 export interface Node extends SimulationNodeDatum {
   id: string;
   kind: 'role' | 'project' | 'tech';
+  /** A technology's layer; roles and projects use their kind. */
+  layer: string;
   /** Index into model.clips or model.tracks. */
   index: number;
   r: number;
@@ -72,6 +74,7 @@ export function createLayout(
     return {
       id: clip.id,
       kind: clip.kind,
+      layer: clip.kind,
       index,
       r: clip.kind === 'role' ? Math.min(64, 22 + 14 * Math.sqrt(years)) : 16,
       labelLength: clip.label.length,
@@ -80,6 +83,22 @@ export function createLayout(
       x: homeX + (random() - 0.5) * 30,
       y: homeY + (random() - 0.5) * 30,
     };
+  });
+
+  // Technologies used by a single long role would all land on its middle;
+  // spread them along its years instead, in the order they are listed.
+  const soloOf = model.tracks.map((track) =>
+    track.uses.length === 1 ? track.uses[0]!.clip : -1,
+  );
+  const spread = new Map<number, number>();
+  model.clips.forEach((clip, c) => {
+    const solos = soloOf.flatMap((owner, t) => (owner === c ? [t] : []));
+    if (clip.end - clip.start < 2 || solos.length < 2) return;
+    solos.forEach((t, k) => {
+      const at =
+        clip.start + ((k + 0.5) / solos.length) * (clip.end - clip.start);
+      spread.set(t, timeX(at));
+    });
   });
 
   const techNodes: Node[] = model.tracks.map((track, index) => {
@@ -92,11 +111,12 @@ export function createLayout(
       sum += clipNodes[use.clip]!.homeX * w;
       total += w;
     }
-    const homeX = sum / total;
+    const homeX = spread.get(index) ?? sum / total;
     const weight = track.uses.reduce((s, use) => s + use.weight, 0);
     return {
       id: `tech:${track.id}`,
       kind: 'tech',
+      layer: track.layer,
       index,
       r: Math.min(9, 3 + Math.sqrt(weight) * 1.2),
       labelLength: track.label.length,

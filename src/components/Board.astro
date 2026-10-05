@@ -53,7 +53,7 @@ const clips = [...roles, ...shownProjects].sort(
 );
 
 // Rows run front to back: what is built on top nearest, the roots behind.
-const LAYER_ORDER = ['frontend', 'backend', 'tools', 'media'];
+const LAYER_ORDER = ['frontend', 'backend', 'tools', 'media', 'gear'];
 const rows = [...techs].sort(
   (a, b) => LAYER_ORDER.indexOf(a.layer) - LAYER_ORDER.indexOf(b.layer),
 );
@@ -102,6 +102,7 @@ const layerHeading = {
   frontend: 'cap_h_frontend',
   tools: 'cap_h_infra',
   media: 'ui_board_layer_media',
+  gear: 'ui_board_layer_gear',
 } as const;
 
 const caseStudyHref = (slug: string) =>
@@ -188,6 +189,16 @@ const caseStudyHref = (slug: string) =>
         <section data-panel={`tech:${tech.id}`} hidden>
           <p class="board-kicker">{t(layerHeading[tech.layer], locale)}</p>
           <h2>{techLabel(tech.label)}</h2>
+          {tech.href && (
+            <a
+              href={tech.href}
+              target="_blank"
+              rel="noopener"
+              class="board-cta no-underline"
+            >
+              {t('ui_board_visit', locale)} <span aria-hidden="true">↗</span>
+            </a>
+          )}
           <p class="board-used">{t('ui_board_used_in', locale)}</p>
           <ul class="board-uses">
             {Object.keys(tech.uses)
@@ -315,6 +326,27 @@ const caseStudyHref = (slug: string) =>
   .board-node.is-tech .board-dot {
     fill: var(--board-ink);
   }
+  /* Gear: an outline, quieter than the software. */
+  .board-node.layer-gear .board-dot {
+    fill: var(--board-bg);
+    stroke: var(--board-ink);
+    stroke-width: 1;
+  }
+  .board-span {
+    fill: none;
+    stroke: var(--board-ink);
+    stroke-opacity: 0.2;
+    transition: opacity 0.3s ease;
+    vector-effect: non-scaling-stroke;
+  }
+  .board-span.is-project {
+    stroke: var(--board-project);
+    stroke-opacity: 0.45;
+  }
+  .board-span.is-active {
+    stroke: var(--accent);
+    stroke-opacity: 0.7;
+  }
 
   .board-title,
   .board-sub,
@@ -349,6 +381,9 @@ const caseStudyHref = (slug: string) =>
   /* Focus: the node and its neighbours stay, everything else steps back. */
   .board-svg[data-focus] .board-node:not(.is-active, .is-related) {
     opacity: 0.16;
+  }
+  .board-svg[data-focus] .board-span:not(.is-active) {
+    opacity: 0.2;
   }
   .board-svg[data-focus] .board-link:not(.is-active) {
     stroke-opacity: 0.025;

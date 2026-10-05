@@ -40,7 +40,7 @@
   "exp_aulacm_blurb": "Ayudé a construir y mantener la web principal de la empresa y los sitios de cliente que entregaba su rama de agencia — mi primer contacto con el trabajo de agencia y con sacar WordPress a medida en PHP. Además fui el instructor de WordPress de la casa, enseñando plugins, temas, estilos y el PHP básico que lo hace funcionar — y aprendiendo yo también un montón a base de callo.",
   "exp_prev_company": "Una vida anterior",
   "exp_prev_title": "Técnico de sonido en cine y TV",
-  "exp_prev_blurb": "Una vida paralela en el sonido, desde alrededor de 2004 — producción y postproducción para cine y TV. Dos Goyas por sendos documentales, un paso por la Berlinale tras tres semanas rodando con huérfanos en Kenia, y buen recorrido en otros festivales; tras la mesa, un mago de Pro Tools y un obseso de Final Cut, con soltura en compresores Avalon, previos Neve y un buen arsenal de micrófonos de primera. Con mi amigo Iván levanté lacasaestudio — que sigue vivo y a pleno rendimiento — y los instintos se me quedaron: precisión, temple bajo la presión del directo, leer la sala y trabajo en equipo.",
+  "exp_prev_blurb": "Una vida paralela en el sonido, desde alrededor de 2002 — producción y postproducción para cine y TV. Dos Goyas por sendos documentales, un paso por la Berlinale tras tres semanas rodando con huérfanos en Kenia, y buen recorrido en otros festivales; tras la mesa, un mago de Pro Tools y un obseso de Final Cut, con soltura en compresores Avalon, previos Neve y un buen arsenal de micrófonos de primera. Con mi amigo Iván levanté lacasaestudio — que sigue vivo y a pleno rendimiento — y los instintos se me quedaron: precisión, temple bajo la presión del directo, leer la sala y trabajo en equipo.",
   "cap_h_backend": "Backend y datos",
   "cap_h_frontend": "Frontend · UX/UI",
   "cap_h_infra": "Infraestructura y entrega",
@@ -147,5 +147,7 @@
   "ui_board_era_consultancy": "Consultoría",
   "ui_board_era_product": "Producto",
   "ui_board_layer_media": "Sonido e imagen",
-  "ui_board_reset": "Recolocar"
+  "ui_board_reset": "Recolocar",
+  "ui_board_layer_gear": "Equipo",
+  "ui_board_visit": "Ver"
 }

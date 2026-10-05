@@ -4,7 +4,7 @@
  * them). Pure — built once on the server and handed over as JSON.
  */
 
-export const START_YEAR = 2004;
+export const START_YEAR = 2002;
 export const END_YEAR = 2026.75;
 
 export interface Clip {
