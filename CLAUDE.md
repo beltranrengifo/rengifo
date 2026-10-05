@@ -91,3 +91,7 @@ gh pr create --fill
 
 Merging to `main` deploys to production (Vercel) and regenerates the
 résumé PDF (`.github/workflows/pdf.yml`), so merging is the owner's call.
+
+Commits and pull requests are the owner's: no AI co-author trailers in
+commit messages and no "generated with" lines in pull requests. Pull
+requests follow `.github/pull_request_template.md`.
