@@ -154,9 +154,15 @@ const caseStudyHref = (slug: string) =>
 
   <aside class="board-panel" data-board-panel inert aria-live="polite">
     <div class="board-sheet-handle" data-sheet-handle aria-hidden="true"></div>
-    <button type="button" class="board-close" data-board-close>
-      {t('ui_board_close', locale)}
-      <span aria-hidden="true">×</span>
+    <button
+      type="button"
+      class="board-close"
+      data-board-close
+      aria-label={t('ui_board_close', locale)}
+    >
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+        <path d="M3 3 L13 13 M13 3 L3 13"></path>
+      </svg>
     </button>
 
     {
@@ -578,20 +584,38 @@ const caseStudyHref = (slug: string) =>
     text-transform: uppercase;
     color: var(--accent);
   }
+  /* A thin cross, nothing else: the panel's only way out besides Esc. */
   .board-close {
     position: absolute;
-    top: 20px;
-    right: 24px;
+    top: 18px;
+    right: 18px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
     border: 0;
+    border-radius: 50%;
     background: none;
-    font: 500 12px var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
     color: var(--color-muted, #5c6166);
     cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+  .board-close svg path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linecap: round;
   }
   .board-close:hover {
+    background: rgba(22, 24, 26, 0.06);
     color: var(--color-ink, #16181a);
+  }
+  .board-close:focus-visible {
+    outline: 1.5px solid var(--accent);
+    outline-offset: 2px;
   }
   .board-used {
     margin-top: 6px !important;
