@@ -1,3 +1,4 @@
+import type { ForceX, ForceY } from 'd3-force';
 import { createLayout, settle, timeX, type Node } from './layout';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Poncho } from './poncho';
@@ -8,8 +9,8 @@ import { Poncho } from './poncho';
  * grid behind. SVG, so it stays sharp at any zoom and its text is text.
  *
  * The layout breathes (a light force simulation that never fully cools)
- * unless the visitor prefers reduced motion. Nodes can be picked up and
- * let go; they spring back to their year.
+ * unless the visitor prefers reduced motion. Nodes can be picked up,
+ * thrown and left wherever they land.
  */
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -96,14 +97,14 @@ function boot(root: HTMLElement): void {
     el(
       'path',
       {
-        d: `M${x1} ${TOP + 18} V${TOP + 10} H${x2} V${TOP + 18}`,
+        d: `M${x1} ${TOP - 2} V${TOP - 10} H${x2} V${TOP - 2}`,
         class: 'board-era-bracket',
       },
       grid,
     );
     const label = el(
       'text',
-      { x: x1 + 8, y: TOP + 2, class: 'board-era' },
+      { x: x1 + 8, y: TOP - 20, class: 'board-era' },
       grid,
     );
     label.textContent = era.label;
@@ -324,12 +325,21 @@ function boot(root: HTMLElement): void {
     }
   });
 
+  // d3 caches each node's target when a force is set up; ask again.
+  const rehome = () => {
+    layout.sim.force<ForceX<Node>>('time')?.x((node) => node.homeX);
+    layout.sim.force<ForceY<Node>>('lane')?.y((node) => node.homeY);
+    layout.sim.alpha(0.3);
+  };
+
   // ── Pointer ────────────────────────────────────────────────────
   const pointers = new Map<number, { x: number; y: number }>();
   let held: Node | null = null;
   let heldIndex = -1;
   let down = { x: 0, y: 0, at: 0 };
   let moved = 0;
+  // Recent pointer positions, in world units, to throw a node with.
+  let trail: { x: number; y: number; at: number }[] = [];
   let pinch = 0;
 
   const local = (event: PointerEvent | WheelEvent) => {
@@ -384,6 +394,8 @@ function boot(root: HTMLElement): void {
       const [wx, wy] = toWorld(p.x, p.y);
       held.fx = wx;
       held.fy = wy;
+      trail.push({ x: wx, y: wy, at: performance.now() });
+      if (trail.length > 5) trail.shift();
       layout.sim.alpha(0.3);
     } else {
       cx = tcx = clampX(cx - dx / zoom, zoom);
@@ -395,10 +407,24 @@ function boot(root: HTMLElement): void {
     if (!pointers.delete(event.pointerId) || pointers.size > 0) return;
     pinch = 0;
     if (held) {
-      // Let go: the node springs back to its year.
+      // Let go: the node stays where it was dropped — that becomes its new
+      // home — and carries on a little with the speed it was thrown at.
+      const first = trail[0];
+      const lastPoint = trail.at(-1);
+      if (first && lastPoint && lastPoint.at > first.at) {
+        const seconds = (lastPoint.at - first.at) / 1000;
+        held.vx = ((lastPoint.x - first.x) / seconds) * 0.012;
+        held.vy = ((lastPoint.y - first.y) / seconds) * 0.012;
+      }
+      // Home is where the throw would come to rest, not where it left the
+      // hand — so the glide ends there instead of being pulled back.
+      held.homeX = (held.fx ?? held.x) + (held.vx ?? 0) * 2;
+      held.homeY = (held.fy ?? held.y) + (held.vy ?? 0) * 2;
       held.fx = null;
       held.fy = null;
       held = null;
+      trail = [];
+      rehome();
       delete root.dataset.holding;
       if (moved > 40) poncho.notify('fling', performance.now());
     }
