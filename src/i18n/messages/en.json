@@ -137,7 +137,7 @@
   "ui_board_title": "Board — Beltrán Rengifo",
   "ui_board_description": "The career as an interactive timeline: roles, projects and technologies as jelly you can squeeze, stretch and follow through time.",
   "ui_board_label": "Career board",
-  "ui_board_hint": "Drag to travel through time · ⌘/Ctrl + scroll or pinch to zoom · squeeze the jelly",
+  "ui_board_hint": "Scroll or drag to travel through time · ⌘/Ctrl + scroll to zoom · hover a line or a role",
   "ui_board_classic": "Classic view",
   "ui_board_close": "Close",
   "ui_board_used_in": "Used in",
@@ -146,5 +146,6 @@
   "ui_board_era_sound": "Sound",
   "ui_board_era_agency": "Agency",
   "ui_board_era_consultancy": "Consultancy",
-  "ui_board_era_product": "Product"
+  "ui_board_era_product": "Product",
+  "ui_board_layer_media": "Sound & image"
 }
