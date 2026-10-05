@@ -35,7 +35,7 @@ const LOGO = [
 const cards = [
   {
     file: 'og.png',
-    kicker: 'SENIOR PRODUCT ENGINEER · MADRID',
+    kicker: 'PRODUCT ENGINEER · MADRID',
     // The H1, split at the italic phrase so the serif can take over.
     lines: [
       { text: 'I build products', italic: false },
@@ -46,7 +46,7 @@ const cards = [
   },
   {
     file: 'og-es.png',
-    kicker: 'SENIOR PRODUCT ENGINEER · MADRID',
+    kicker: 'PRODUCT ENGINEER · MADRID',
     lines: [
       { text: 'Desarrollo productos', italic: false },
       { text: 'end-to-end, con', italic: false },
