@@ -131,5 +131,20 @@
   "cs_ensayadero_shot3_alt": "The chord chart in editing mode, with sections, chords, lap counts and timings.",
   "cs_ensayadero_shot3_cap": "The chart the models guessed, open for correction: sections, chords, laps and timings. The band's edits survive reprocessing.",
   "cs_ensayadero_access": "In private beta. If you'd like to try it, I'll set you up with an account.",
-  "ui_accent_label": "Change accent colour"
+  "ui_accent_label": "Change accent colour",
+  "ui_board_link": "Board mode",
+  "ui_board_link_aside": "— the same story, as a field of jelly",
+  "ui_board_title": "Board — Beltrán Rengifo",
+  "ui_board_description": "The career as an interactive timeline: roles, projects and technologies as jelly you can squeeze, stretch and follow through time.",
+  "ui_board_label": "Career board",
+  "ui_board_hint": "Drag to travel through time · ⌘/Ctrl + scroll or pinch to zoom · squeeze the jelly",
+  "ui_board_classic": "Classic view",
+  "ui_board_close": "Close",
+  "ui_board_used_in": "Used in",
+  "ui_board_ruler": "Years",
+  "ui_board_kind_project": "Project",
+  "ui_board_era_sound": "Sound",
+  "ui_board_era_agency": "Agency",
+  "ui_board_era_consultancy": "Consultancy",
+  "ui_board_era_product": "Product"
 }

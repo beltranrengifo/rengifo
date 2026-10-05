@@ -1,0 +1,653 @@
+---
+import Logo from './Logo.astro';
+import Cat from './Cat.astro';
+import {
+  t,
+  resolveLocale,
+  alternateHref,
+  homeHref,
+  localisedPath,
+  formatSpan,
+} from '../lib/i18n';
+import { experience, type Span } from '../data/experience';
+import { projects } from '../data/caseStudies';
+import { techs, projectSpans, eras } from '../data/board';
+import { buildModel, yearOf, START_YEAR } from '../board/model';
+
+const locale = resolveLocale(Astro.currentLocale);
+
+const roleId = (titleKey: string) => titleKey.replace(/^exp_|_title$/g, '');
+const techLabel = (label: (typeof techs)[number]['label']) =>
+  typeof label === 'string' ? label : label[locale];
+
+// Everything the board shows, in one list, ordered by time.
+interface Entry {
+  id: string;
+  kind: 'role' | 'project' | 'tech';
+  label: string;
+  span: Span;
+}
+
+const roles = experience.flatMap((entry) =>
+  entry.roles.map((role) => {
+    const company = entry.companyKey
+      ? t(entry.companyKey, locale)
+      : (entry.company ?? '');
+    const title = t(role.titleKey, locale);
+    return {
+      id: roleId(role.titleKey),
+      kind: 'role' as const,
+      // Short enough to sit on a blob: the role, then the company.
+      label: `${title.split(' — ')[0]!.split(', ')[0]} · ${company}`,
+      title,
+      company,
+      span: role.dates ?? entry.period,
+      blurbKey: role.blurbKey,
+    };
+  }),
+);
+
+const shownProjects = projects.map((project) => ({
+  id: project.slug,
+  kind: 'project' as const,
+  label: project.name,
+  span: projectSpans[project.slug]!,
+  project,
+}));
+
+const model = buildModel({
+  roles,
+  projects: shownProjects,
+  techs: techs.map((tech) => ({ ...tech, label: techLabel(tech.label) })),
+});
+
+const spanOf = new Map<string, Span>([
+  ...roles.map((role) => [role.id, role.span] as const),
+  ...shownProjects.map((project) => [project.id, project.span] as const),
+]);
+const labelOf = new Map<string, string>([
+  ...roles.map((role) => [role.id, role.label] as const),
+  ...shownProjects.map((project) => [project.id, project.label] as const),
+]);
+
+const entries: Entry[] = [
+  ...roles,
+  ...shownProjects,
+  ...techs.map((tech) => {
+    const spans = tech.usedIn.map((id) => spanOf.get(id)!);
+    const start = spans.map((s) => s[0]).sort()[0]!;
+    const end = spans
+      .map((s) => s[1])
+      .sort()
+      .at(-1)!;
+    return {
+      id: `tech:${tech.id}`,
+      kind: 'tech' as const,
+      label: techLabel(tech.label),
+      span: [start, end] as Span,
+    };
+  }),
+].sort((a, b) => yearOf(a.span[0]) - yearOf(b.span[0]));
+
+const layerHeading = {
+  backend: 'cap_h_backend',
+  frontend: 'cap_h_frontend',
+  infra: 'cap_h_infra',
+  craft: 'cap_h_practice',
+} as const;
+
+const years = Array.from(
+  { length: 2026 - START_YEAR + 1 },
+  (_, i) => START_YEAR + i,
+);
+
+const caseStudyHref = (slug: string) =>
+  localisedPath(`/work/${slug}/`, 'en', locale);
+---
+
+<div
+  class="board"
+  data-board
+  role="region"
+  aria-label={t('ui_board_label', locale)}
+>
+  <div class="board-stage" data-board-stage>
+    <div class="board-eras" aria-hidden="true">
+      {
+        eras.map((era) => (
+          <div
+            class="board-era"
+            data-era
+            data-start={era.start}
+            data-end={era.end}
+          >
+            <span>{t(era.key, locale)}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <canvas class="board-canvas" data-board-canvas aria-hidden="true"></canvas>
+    <div class="board-still" data-board-still aria-hidden="true"></div>
+
+    <div class="board-labels">
+      {
+        entries.map((entry) => (
+          <button
+            type="button"
+            class:list={['board-label', `is-${entry.kind}`]}
+            data-node={entry.id}
+          >
+            {entry.label}
+          </button>
+        ))
+      }
+
+      <div class="board-poncho" data-poncho aria-hidden="true">
+        <Cat size={2.2} />
+      </div>
+      <div class="board-peek" data-poncho-peek aria-hidden="true">
+        <Cat size={1.6} flip filter="saturate(0.6) brightness(1.05)" />
+      </div>
+    </div>
+  </div>
+
+  <header class="board-bar">
+    <a
+      href={homeHref(locale)}
+      class="board-home no-underline"
+      aria-label="Beltrán Rengifo"
+    >
+      <Logo width={16} height={22} />
+    </a>
+    <p class="board-hint">{t('ui_board_hint', locale)}</p>
+    <nav class="board-nav">
+      <a href={alternateHref(locale, Astro.url.pathname)} class="no-underline">
+        {t('ui_lang_switch', locale)}
+      </a>
+      <a href={homeHref(locale)} class="board-classic no-underline">
+        {t('ui_board_classic', locale)}
+      </a>
+    </nav>
+  </header>
+
+  <div class="board-ruler" aria-label={t('ui_board_ruler', locale)}>
+    {
+      years.map((year) => (
+        <button type="button" class="board-tick" data-year={year} tabindex="-1">
+          {year % 2 === 0 ? year : ''}
+          <span class="sr-only">{year % 2 === 0 ? '' : year}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  <aside class="board-panel" data-board-panel hidden aria-live="polite">
+    <div class="board-sheet-handle" data-sheet-handle aria-hidden="true"></div>
+    <button type="button" class="board-close" data-board-close>
+      {t('ui_board_close', locale)}
+      <span aria-hidden="true">×</span>
+    </button>
+
+    {
+      roles.map((role) => (
+        <section data-panel={role.id} hidden>
+          <p class="board-kicker">
+            {role.company} · {formatSpan(role.span, locale)}
+          </p>
+          <h2>{role.title}</h2>
+          <p>{t(role.blurbKey, locale)}</p>
+        </section>
+      ))
+    }
+
+    {
+      shownProjects.map(({ id, span, project }) => (
+        <section data-panel={id} hidden>
+          <p class="board-kicker">
+            {t('ui_board_kind_project', locale)} · {formatSpan(span, locale)}
+          </p>
+          <h2>{project.name}</h2>
+          <p>{t(project.rowKey, locale)}</p>
+          <p class="board-stack">{project.stack.join(' · ')}</p>
+          {project.page !== false && (
+            <a
+              href={caseStudyHref(project.slug)}
+              class="board-cta no-underline"
+            >
+              {t('ui_cs_read', locale)} <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </section>
+      ))
+    }
+
+    {
+      techs.map((tech) => (
+        <section data-panel={`tech:${tech.id}`} hidden>
+          <p class="board-kicker">{t(layerHeading[tech.layer], locale)}</p>
+          <h2>{techLabel(tech.label)}</h2>
+          <p class="board-used">{t('ui_board_used_in', locale)}</p>
+          <ul class="board-uses">
+            {tech.usedIn
+              .slice()
+              .sort(
+                (a, b) => yearOf(spanOf.get(a)![0]) - yearOf(spanOf.get(b)![0]),
+              )
+              .map((id) => (
+                <li>
+                  <button type="button" data-goto={id}>
+                    <span>{labelOf.get(id)}</span>
+                    <span class="board-years">
+                      {formatSpan(spanOf.get(id)!, locale)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ))
+    }
+  </aside>
+
+  <script
+    type="application/json"
+    data-board-model
+    set:html={JSON.stringify(model)}
+  />
+</div>
+
+<script>
+  import '../board/main.ts';
+</script>
+
+<style is:global>
+  .board {
+    --board-bg: #f6f5f2;
+    --board-role: var(--accent);
+    --board-project: #b8654a;
+    --board-backend: #4f8a6a;
+    --board-frontend: #7a68b0;
+    --board-infra: #b08a32;
+    --board-craft: #8b8580;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--board-bg);
+    color: var(--color-ink, #16181a);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .board-stage {
+    position: absolute;
+    inset: 0;
+    cursor: default;
+  }
+  .board[data-grabbing] .board-stage {
+    cursor: grabbing !important;
+  }
+
+  .board-canvas,
+  .board-still {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .board-still,
+  .board-labels {
+    pointer-events: none;
+  }
+
+  /* ── Eras: quiet bands behind everything ───────────────────── */
+  .board-eras {
+    position: absolute;
+    inset: 0;
+  }
+  .board-era {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-left: 1px solid var(--color-hairline, rgba(22, 24, 26, 0.08));
+  }
+  .board-era:nth-child(even) {
+    background: rgba(22, 24, 26, 0.018);
+  }
+  .board-era span {
+    position: sticky;
+    left: 0;
+    display: block;
+    padding: 84px 20px 0;
+    font-family: var(--font-serif, 'Newsreader', Georgia, serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 28px;
+    color: rgba(22, 24, 26, 0.32);
+    transition: font-size 0.4s ease;
+    white-space: nowrap;
+  }
+  .board[data-zoom='far'] .board-era span {
+    font-size: 54px;
+  }
+
+  /* ── Labels ─────────────────────────────────────────────────── */
+  .board-labels {
+    position: absolute;
+    inset: 0;
+  }
+  .board-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    translate: -50% -50%;
+    max-width: 150px;
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    font: 500 12.5px/1.25
+      var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+    transition: opacity 0.3s ease;
+    will-change: transform;
+  }
+  .board-label.is-outside,
+  .board-label.is-tech {
+    translate: -50% 0;
+    max-width: 120px;
+    font-size: 11.5px;
+    color: var(--color-ink, #16181a);
+    /* A halo in the page colour instead of a box, so the jelly shows. */
+    text-shadow:
+      0 0 3px var(--board-bg),
+      0 0 6px var(--board-bg);
+  }
+  .board[data-zoom='far'] .board-label.is-tech {
+    opacity: 0;
+  }
+  .board-label.is-dim {
+    opacity: 0.18;
+  }
+  .board-label:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  .board[data-mode='still'] .board-label.is-role:not(.is-outside),
+  .board[data-mode='still'] .board-label.is-project:not(.is-outside) {
+    color: #fff;
+  }
+
+  .board-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--dot) 82%, transparent);
+    transform-origin: center;
+    transition: opacity 0.3s ease;
+  }
+  .board-dot.is-dim {
+    opacity: 0.2;
+  }
+
+  /* ── Poncho ─────────────────────────────────────────────────── */
+  .board-poncho,
+  .board-peek {
+    position: absolute;
+    top: 0;
+    left: 0;
+    translate: -50% -88%;
+    transform-origin: 50% 100%;
+    pointer-events: auto;
+    will-change: transform;
+  }
+  .board-peek {
+    opacity: 0;
+    translate: -50% 40%;
+    transition:
+      opacity 0.6s ease,
+      translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .board-peek[data-peek] {
+    opacity: 1;
+    translate: -50% -60%;
+  }
+
+  /* ── Bar ────────────────────────────────────────────────────── */
+  .board-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 24px;
+    pointer-events: none;
+  }
+  .board-bar > * {
+    pointer-events: auto;
+  }
+  .board-home {
+    color: var(--color-ink, #16181a);
+    display: inline-flex;
+  }
+  .board-hint {
+    flex: 1;
+    margin: 0;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--color-muted, #5c6166);
+  }
+  .board-nav {
+    display: flex;
+    gap: 20px;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .board-nav a {
+    color: var(--color-muted, #5c6166);
+  }
+  .board-nav a:hover {
+    color: var(--color-ink, #16181a);
+  }
+  .board-classic {
+    color: var(--color-ink, #16181a) !important;
+  }
+
+  /* ── Ruler ──────────────────────────────────────────────────── */
+  .board-ruler {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 44px;
+    border-top: 1px solid rgba(22, 24, 26, 0.08);
+    background: color-mix(in srgb, var(--board-bg) 86%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .board-tick {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 0 0 0 6px;
+    border: 0;
+    border-left: 1px solid rgba(22, 24, 26, 0.18);
+    background: none;
+    font: 500 11px/44px
+      var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
+    letter-spacing: 0.1em;
+    color: var(--color-muted, #5c6166);
+    cursor: pointer;
+  }
+  .board-tick:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  /* ── Panel ──────────────────────────────────────────────────── */
+  .board-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    overflow-y: auto;
+    padding: 72px 36px 48px;
+    background: color-mix(in srgb, var(--board-bg) 94%, white);
+    border-left: 1px solid rgba(22, 24, 26, 0.08);
+    box-shadow: -24px 0 60px rgba(22, 24, 26, 0.06);
+    user-select: text;
+    -webkit-user-select: text;
+    touch-action: pan-y;
+    animation: board-panel-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .board-panel[hidden] {
+    display: none;
+  }
+  @keyframes board-panel-in {
+    from {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+  }
+  .board-panel h2 {
+    margin: 0 0 16px;
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .board-panel p {
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-body, #3a3d40);
+  }
+  .board-kicker {
+    font-size: 12px !important;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted, #5c6166) !important;
+  }
+  .board-stack {
+    font-size: 13px !important;
+    color: var(--color-muted, #5c6166) !important;
+  }
+  .board-cta {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .board-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    border: 0;
+    background: none;
+    font: 500 12px var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted, #5c6166);
+    cursor: pointer;
+  }
+  .board-close:hover {
+    color: var(--color-ink, #16181a);
+  }
+  .board-used {
+    margin-top: 6px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted, #5c6166) !important;
+  }
+  .board-uses {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .board-uses button {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border: 0;
+    border-bottom: 1px solid rgba(22, 24, 26, 0.08);
+    background: none;
+    font: 15px/1.4 var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
+    text-align: left;
+    color: var(--color-ink, #16181a);
+    cursor: pointer;
+  }
+  .board-uses button:hover {
+    color: var(--accent);
+  }
+  .board-years {
+    flex-shrink: 0;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted, #5c6166);
+  }
+  .board-sheet-handle {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .board-hint {
+      display: none;
+    }
+    .board-bar {
+      justify-content: space-between;
+    }
+    .board-panel {
+      top: auto;
+      left: 0;
+      width: auto;
+      height: 86dvh;
+      padding: 40px 22px 40px;
+      border-left: 0;
+      border-top: 1px solid rgba(22, 24, 26, 0.08);
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -24px 60px rgba(22, 24, 26, 0.1);
+      animation-name: board-sheet-in;
+    }
+    @keyframes board-sheet-in {
+      from {
+        transform: translateY(60px);
+        opacity: 0;
+      }
+    }
+    .board-sheet-handle {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      touch-action: none;
+    }
+    .board-sheet-handle::after {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      width: 44px;
+      height: 4px;
+      margin-left: -22px;
+      border-radius: 4px;
+      background: rgba(22, 24, 26, 0.18);
+    }
+  }
+</style>

@@ -131,5 +131,20 @@
   "cs_ensayadero_shot3_alt": "La hoja de acordes en modo edición, con secciones, acordes, vueltas y tiempos.",
   "cs_ensayadero_shot3_cap": "La hoja que adivinaron los modelos, abierta para corregirla: secciones, acordes, vueltas y tiempos. Lo que edita la banda sobrevive a un reprocesado.",
   "cs_ensayadero_access": "En beta privada. Si quieres probarlo, te abro una cuenta.",
-  "ui_accent_label": "Cambiar el color de acento"
+  "ui_accent_label": "Cambiar el color de acento",
+  "ui_board_link": "Modo tablero",
+  "ui_board_link_aside": "— la misma historia, en gelatina",
+  "ui_board_title": "Tablero — Beltrán Rengifo",
+  "ui_board_description": "La carrera como una línea temporal interactiva: puestos, proyectos y tecnologías hechos de gelatina que puedes apretar, estirar y seguir en el tiempo.",
+  "ui_board_label": "Tablero de la carrera",
+  "ui_board_hint": "Arrastra para viajar en el tiempo · ⌘/Ctrl + rueda o pellizca para hacer zoom · aprieta la gelatina",
+  "ui_board_classic": "Vista clásica",
+  "ui_board_close": "Cerrar",
+  "ui_board_used_in": "Usado en",
+  "ui_board_ruler": "Años",
+  "ui_board_kind_project": "Proyecto",
+  "ui_board_era_sound": "Sonido",
+  "ui_board_era_agency": "Agencia",
+  "ui_board_era_consultancy": "Consultoría",
+  "ui_board_era_product": "Producto"
 }

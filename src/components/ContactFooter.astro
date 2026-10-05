@@ -1,7 +1,14 @@
 ---
 import Logo from './Logo.astro';
 import Cat from './Cat.astro';
-import { t, resolveLocale, contact, currentYear, pdfHref } from '../lib/i18n';
+import {
+  t,
+  resolveLocale,
+  contact,
+  currentYear,
+  pdfHref,
+  localisedPath,
+} from '../lib/i18n';
 
 const locale = resolveLocale(Astro.currentLocale);
 ---
@@ -60,6 +67,18 @@ const locale = resolveLocale(Astro.currentLocale);
       class="mt-[90px] text-[13px] tracking-[0.1em] text-[rgba(246,245,242,0.45)]"
     >
       {t('ui_footer_legal', locale, { year: currentYear })}
+    </p>
+    {/* Secondary on purpose: the board is a detour, not the way in. */}
+    <p
+      data-no-print
+      class="mt-3 font-serif text-[15px] text-[rgba(246,245,242,0.55)] italic"
+    >
+      <a
+        href={localisedPath('/board/', 'en', locale)}
+        class="footer-link font-sans text-[13px] tracking-[0.1em] not-italic"
+        >{t('ui_board_link', locale)}</a
+      >
+      {' '}{t('ui_board_link_aside', locale)}
     </p>
   </div>
 
