@@ -131,6 +131,9 @@ const caseStudyHref = (slug: string) =>
     </a>
     <p class="board-hint">{t('ui_board_hint', locale)}</p>
     <nav class="board-nav">
+      <button type="button" class="board-reset" data-board-reset>
+        {t('ui_board_reset', locale)}
+      </button>
       <a href={alternateHref(locale, Astro.url.pathname)} class="no-underline">
         {t('ui_lang_switch', locale)}
       </a>
@@ -140,7 +143,7 @@ const caseStudyHref = (slug: string) =>
     </nav>
   </header>
 
-  <aside class="board-panel" data-board-panel hidden aria-live="polite">
+  <aside class="board-panel" data-board-panel inert aria-live="polite">
     <div class="board-sheet-handle" data-sheet-handle aria-hidden="true"></div>
     <button type="button" class="board-close" data-board-close>
       {t('ui_board_close', locale)}
@@ -427,6 +430,19 @@ const caseStudyHref = (slug: string) =>
   .board-nav a:hover {
     color: var(--color-ink, #16181a);
   }
+  .board-reset {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: var(--color-muted, #5c6166);
+    cursor: pointer;
+  }
+  .board-reset:hover {
+    color: var(--color-ink, #16181a);
+  }
   .board-classic {
     color: var(--color-ink, #16181a) !important;
   }
@@ -446,16 +462,25 @@ const caseStudyHref = (slug: string) =>
     user-select: text;
     -webkit-user-select: text;
     touch-action: pan-y;
-    animation: board-panel-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    /* Slides in and out; the board eases aside in step (see main.ts). */
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+      transform 0.55s cubic-bezier(0.22, 0.8, 0.2, 1),
+      visibility 0s linear 0.55s;
   }
-  .board-panel[hidden] {
-    display: none;
+  .board-panel[data-open] {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform 0.55s cubic-bezier(0.22, 0.8, 0.2, 1),
+      visibility 0s;
   }
-  @keyframes board-panel-in {
-    from {
-      transform: translateX(40px);
-      opacity: 0;
-    }
+  .board-panel > section {
+    transition: opacity 0.35s ease 0.12s;
+  }
+  .board-panel:not([data-open]) > section {
+    opacity: 0;
   }
   .board-panel h2 {
     margin: 0 0 16px;
@@ -560,13 +585,10 @@ const caseStudyHref = (slug: string) =>
       border-top: 1px solid rgba(22, 24, 26, 0.08);
       border-radius: 18px 18px 0 0;
       box-shadow: 0 -24px 60px rgba(22, 24, 26, 0.1);
-      animation-name: board-sheet-in;
+      transform: translateY(100%);
     }
-    @keyframes board-sheet-in {
-      from {
-        transform: translateY(60px);
-        opacity: 0;
-      }
+    .board-panel[data-open] {
+      transform: none;
     }
     .board-sheet-handle {
       display: block;
@@ -587,6 +609,13 @@ const caseStudyHref = (slug: string) =>
       margin-left: -22px;
       border-radius: 4px;
       background: rgba(22, 24, 26, 0.18);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .board-panel,
+    .board-panel[data-open] {
+      transition: none;
     }
   }
 </style>

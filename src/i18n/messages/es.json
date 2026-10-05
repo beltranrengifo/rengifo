@@ -146,5 +146,6 @@
   "ui_board_era_agency": "Agencia",
   "ui_board_era_consultancy": "Consultoría",
   "ui_board_era_product": "Producto",
-  "ui_board_layer_media": "Sonido e imagen"
+  "ui_board_layer_media": "Sonido e imagen",
+  "ui_board_reset": "Recolocar"
 }
