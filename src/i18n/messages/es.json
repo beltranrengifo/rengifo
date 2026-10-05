@@ -3,7 +3,7 @@
   "ui_meta_title": "Beltrán Rengifo — Senior Product Engineer",
   "ui_meta_description": "Senior Product Engineer: desarrollo productos end-to-end, de las APIs y los datos a la interfaz, con especial atención a la UX y la UI. Full-stack, en Madrid, disponible para nuevas oportunidades.",
   "ui_kicker": "Beltrán Rengifo — Senior Product Engineer · Madrid",
-  "ui_hero_heading_html": "Desarrollo productos end-to-end, con <em class='hero-em' style='font-family:var(--font-serif);font-weight:300;letter-spacing:-0.01em'>la UX y la UI en el centro</em>.",
+  "ui_hero_heading_html": "Desarrollo productos <span style='white-space:nowrap'>end-to-end</span>, con <em class='hero-em' style='font-family:var(--font-serif);font-weight:300;letter-spacing:-0.01em'>la UX y la UI en el centro.</em>",
   "ui_hero_sub": "Product engineer con {years} años desarrollando productos web end-to-end: APIs y datos, CI/CD y despliegue, y la interfaz. Me muevo con soltura por todo el stack, de Node, Java y Python a Postgres, con especial atención a la UI y la UX.",
   "ui_availability": "Con base en Madrid, en remoto o híbrido.",
   "ui_section_experience": "Experiencia",
