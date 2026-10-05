@@ -35,24 +35,24 @@ const LOGO = [
 const cards = [
   {
     file: 'og.png',
-    kicker: 'SENIOR SOFTWARE ENGINEER · MADRID',
+    kicker: 'SENIOR PRODUCT ENGINEER · MADRID',
     // The H1, split at the italic phrase so the serif can take over.
     lines: [
-      { text: 'I build software', italic: false },
+      { text: 'I build products', italic: false },
       { text: 'end to end, with', italic: false },
-      { text: 'a frontend heart.', italic: true },
+      { text: 'UX and UI at heart.', italic: true },
     ],
-    foot: 'Full-stack · Frontend · Design systems — rengifo.es',
+    foot: 'Product engineering · Full-stack · UI & UX — rengifo.es',
   },
   {
     file: 'og-es.png',
-    kicker: 'INGENIERO DE SOFTWARE SENIOR · MADRID',
+    kicker: 'SENIOR PRODUCT ENGINEER · MADRID',
     lines: [
-      { text: 'Construyo software', italic: false },
-      { text: 'de punta a punta,', italic: false },
-      { text: 'con alma de frontend.', italic: true },
+      { text: 'Desarrollo productos', italic: false },
+      { text: 'end-to-end, con', italic: false },
+      { text: 'la UX y la UI en el centro.', italic: true },
     ],
-    foot: 'Full-stack · Frontend · Sistemas de diseño — rengifo.es',
+    foot: 'Product engineering · Full-stack · UI y UX — rengifo.es',
   },
 ];
 
