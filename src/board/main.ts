@@ -1,6 +1,7 @@
 import type { ForceX, ForceY } from 'd3-force';
 import { createLayout, settle, timeX, type Node } from './layout';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
+import { Companion } from './companion';
 import { Poncho } from './poncho';
 
 /**
@@ -55,7 +56,6 @@ function boot(root: HTMLElement): void {
   const svg = q<SVGSVGElement>('[data-board-svg]');
   const panel = q<HTMLElement>('[data-board-panel]');
   const sections = qa<HTMLElement>('[data-panel]');
-  const ponchoWrap = q<HTMLElement>('[data-poncho]');
 
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const narrow = matchMedia(NARROW);
@@ -65,9 +65,16 @@ function boot(root: HTMLElement): void {
   settle(layout, 400);
   const { nodes, links } = layout;
 
-  const poncho = new Poncho(
-    ponchoWrap.querySelector<HTMLElement>('.cat-stage')!,
-  );
+  // Poncho's moods decide when he reacts; the sprite does the reacting.
+  const moods = { dataset: {} as DOMStringMap } as HTMLElement;
+  const poncho = new Poncho(moods);
+  let cat: Companion | null = null;
+  const react = (event: Parameters<Poncho['notify']>[0]) => {
+    const now = performance.now();
+    const before = moods.dataset.mood;
+    poncho.notify(event, now);
+    cat?.poke(now, moods.dataset.mood === 'stretch' && before !== 'stretch');
+  };
 
   // ── Scene ──────────────────────────────────────────────────────
   const world = el('g', { class: 'board-world' }, svg);
@@ -76,6 +83,7 @@ function boot(root: HTMLElement): void {
   // Durations: a hairline from each role's start to its end, at its height.
   const spanLayer = el('g', { class: 'board-spans' }, world);
   const nodeLayer = el('g', { class: 'board-nodes' }, world);
+  const catLayer = el('g', { class: 'board-cat' }, world);
 
   // The year grid: a hairline per year, each one numbered at the top.
   for (let year = START_YEAR; year <= Math.floor(END_YEAR); year++) {
@@ -92,6 +100,18 @@ function boot(root: HTMLElement): void {
     );
     label.textContent = String(year);
   }
+  // The floor Poncho walks on.
+  el(
+    'line',
+    {
+      x1: timeX(START_YEAR) - 120,
+      x2: timeX(END_YEAR) + 120,
+      y1: BOTTOM,
+      y2: BOTTOM,
+      class: 'board-floor',
+    },
+    grid,
+  );
   // Eras: a bracket over their years, named in small caps.
   for (const era of model.eras) {
     const x1 = timeX(era.start) + 4;
@@ -210,13 +230,16 @@ function boot(root: HTMLElement): void {
   let cy = -40;
   let tcy = -40;
 
+  cat = new Companion(
+    catLayer,
+    cx - (viewW() / 2 / zoom) * 0.62,
+    BOTTOM,
+    'Poncho',
+  );
+
   const toWorld = (sx: number, sy: number): [number, number] => [
     (sx - viewW() / 2) / zoom + cx,
     (sy - stage.clientHeight / 2) / zoom + cy,
-  ];
-  const toScreen = (wx: number, wy: number): [number, number] => [
-    (wx - cx) * zoom + viewW() / 2,
-    (wy - cy) * zoom + stage.clientHeight / 2,
   ];
   const glideTo = (wx: number) => {
     tcx = clampX(wx, tz);
@@ -268,7 +291,7 @@ function boot(root: HTMLElement): void {
     url.searchParams.set('node', id);
     history.replaceState(null, '', url);
     panel.querySelector<HTMLElement>('[data-board-close]')?.focus();
-    poncho.notify('open', performance.now());
+    react('open');
   };
   const close = () => {
     if (!panelOpen) return;
@@ -355,7 +378,7 @@ function boot(root: HTMLElement): void {
     });
     rehome();
     layout.sim.alpha(0.6);
-    poncho.notify('interact', performance.now());
+    react('interact');
   });
 
   // ── Pointer ────────────────────────────────────────────────────
@@ -385,7 +408,7 @@ function boot(root: HTMLElement): void {
     } catch {
       /* synthetic or already-released pointer */
     }
-    poncho.notify('interact', performance.now());
+    react('interact');
     if (pointers.size === 2) {
       const [a, b] = [...pointers.values()] as [typeof p, typeof p];
       pinch = Math.hypot(a.x - b.x, a.y - b.y);
@@ -456,7 +479,7 @@ function boot(root: HTMLElement): void {
       trail = [];
       rehome();
       delete root.dataset.holding;
-      if (moved > 40) poncho.notify('fling', performance.now());
+      if (moved > 40) react('fling');
     }
     const wasClick = moved < 6 && performance.now() - down.at < 450;
     const i = heldIndex;
@@ -478,7 +501,7 @@ function boot(root: HTMLElement): void {
       } else {
         tcx = clampX(tcx + (event.deltaX + event.deltaY) / zoom, tz);
       }
-      poncho.notify('interact', performance.now());
+      react('interact');
     },
     { passive: false },
   );
@@ -526,15 +549,6 @@ function boot(root: HTMLElement): void {
         curve(s.x, s.y, t.x, t.y + (t.y < s.y ? t.r : -t.r)),
       );
     });
-
-    // Poncho sits on the latest role, on top of its label.
-    const perch = nodes.find((node) => node.id === 'mews_squad');
-    if (perch) {
-      // Above the circle and its three lines of text.
-      const [px, py] = toScreen(perch.x, perch.y - perch.r - 64);
-      const scale = Math.min(1.1, Math.max(0.5, zoom));
-      ponchoWrap.style.transform = `translate3d(${f(px)}px, ${f(py)}px, 0) scale(${scale.toFixed(3)})`;
-    }
   };
 
   let last = performance.now();
@@ -549,6 +563,10 @@ function boot(root: HTMLElement): void {
     if (!still) layout.sim.tick();
     draw();
     poncho.tick(now);
+    // Poncho walks the floor, keeping to the left of the view, and looks at
+    // whatever has the focus.
+    cat?.lookAt(focused >= 0 ? nodes[focused]! : null);
+    cat?.update(now, dt, cx - (viewW() / 2 / zoom) * 0.62);
     requestAnimationFrame(frame);
   };
   new ResizeObserver(() => {

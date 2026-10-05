@@ -34,6 +34,41 @@ export const projectSpans: Record<string, Span> = {
   'carabanchel-creativa': ['2021-01', '2021-05'],
 };
 
+/**
+ * Work that only the board shows: films and the like, too far from a résumé
+ * to belong on the classic page.
+ */
+export interface BoardWork {
+  id: string;
+  label: string;
+  span: Span;
+  note: { en: string; es: string };
+  href?: string;
+}
+
+export const boardWorks: BoardWork[] = [
+  {
+    id: 'en-la-cuna-del-aire',
+    label: 'En la cuna del aire',
+    span: ['2005-01', '2005-12'],
+    note: {
+      en: 'Documentary short. Goya for Best Documentary Short Film, 2006.',
+      es: 'Cortometraje documental. Goya al mejor cortometraje documental, 2006.',
+    },
+    href: 'https://www.youtube.com/watch?v=04DO6E_X7e0',
+  },
+  {
+    id: 'flores-de-ruanda',
+    label: 'Flores de Ruanda',
+    span: ['2009-01', '2009-12'],
+    note: {
+      en: 'Documentary short by David Muñoz on Rwanda after the genocide. Goya for Best Documentary Short Film, 2010.',
+      es: 'Cortometraje documental de David Muñoz sobre Ruanda tras el genocidio. Goya al mejor cortometraje documental, 2010.',
+    },
+    href: 'https://sede.mcu.gob.es/CatalogoICAA/Peliculas/Detalle?Pelicula=150809',
+  },
+];
+
 /** Grouped by layer; the board orders the rows itself. */
 export const techs: Tech[] = [
   // Sound and image — where it all started.
@@ -41,7 +76,7 @@ export const techs: Tech[] = [
     id: 'pro-tools',
     label: 'Pro Tools',
     layer: 'media',
-    uses: { prev: 3 },
+    uses: { prev: 3, 'en-la-cuna-del-aire': 3, 'flores-de-ruanda': 3 },
     href: 'https://www.avid.com/pro-tools',
   },
   {
@@ -85,8 +120,15 @@ export const techs: Tech[] = [
     id: 'sennheiser',
     label: 'Sennheiser',
     layer: 'gear',
-    uses: { prev: 3 },
+    uses: { prev: 3, 'en-la-cuna-del-aire': 2, 'flores-de-ruanda': 2 },
     href: 'https://www.sennheiser.com/',
+  },
+  {
+    id: 'fostex',
+    label: { en: 'Fostex DAT recorders', es: 'Grabadoras DAT Fostex' },
+    layer: 'gear',
+    uses: { prev: 2, 'en-la-cuna-del-aire': 2 },
+    href: 'https://www.fostex.jp/',
   },
   {
     id: 'neve',

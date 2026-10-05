@@ -1,6 +1,5 @@
 ---
 import Logo from './Logo.astro';
-import Cat from './Cat.astro';
 import {
   t,
   resolveLocale,
@@ -11,7 +10,7 @@ import {
 } from '../lib/i18n';
 import { experience, type Span } from '../data/experience';
 import { projects } from '../data/caseStudies';
-import { techs, projectSpans, eras } from '../data/board';
+import { techs, projectSpans, eras, boardWorks } from '../data/board';
 import { buildModel, yearOf } from '../board/model';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -47,8 +46,17 @@ const shownProjects = projects.map((project) => ({
   project,
 }));
 
+// Films and other work only the board shows; drawn like projects.
+const works = boardWorks.map((work) => ({
+  id: work.id,
+  kind: 'project' as const,
+  label: work.label,
+  span: work.span,
+  work,
+}));
+
 // Clips in time order, so Tab and the arrows walk the career forwards.
-const clips = [...roles, ...shownProjects].sort(
+const clips = [...roles, ...shownProjects, ...works].sort(
   (a, b) => yearOf(a.span[0]) - yearOf(b.span[0]),
 );
 
@@ -77,6 +85,10 @@ const labels: Record<string, { title: string; sub?: string; years?: string }> =
     ...shownProjects.map((project) => [
       project.id,
       { title: project.label, years: formatSpan(project.span, locale) },
+    ]),
+    ...works.map((work) => [
+      work.id,
+      { title: work.label, years: work.span[0].slice(0, 4) },
     ]),
     ...rows.map((tech) => [
       `tech:${tech.id}`,
@@ -117,9 +129,6 @@ const caseStudyHref = (slug: string) =>
 >
   <div class="board-stage" data-board-stage>
     <svg class="board-svg" data-board-svg aria-hidden="false"></svg>
-    <div class="board-poncho" data-poncho aria-hidden="true">
-      <Cat size={2.2} />
-    </div>
   </div>
 
   <header class="board-bar">
@@ -178,6 +187,26 @@ const caseStudyHref = (slug: string) =>
               class="board-cta no-underline"
             >
               {t('ui_cs_read', locale)} <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </section>
+      ))
+    }
+
+    {
+      works.map(({ id, span, work }) => (
+        <section data-panel={id} hidden>
+          <p class="board-kicker">{span[0].slice(0, 4)}</p>
+          <h2>{work.label}</h2>
+          <p>{work.note[locale]}</p>
+          {work.href && (
+            <a
+              href={work.href}
+              target="_blank"
+              rel="noopener"
+              class="board-cta no-underline"
+            >
+              {t('ui_board_visit', locale)} <span aria-hidden="true">↗</span>
             </a>
           )}
         </section>
@@ -270,6 +299,11 @@ const caseStudyHref = (slug: string) =>
     stroke: var(--board-ink);
     stroke-opacity: 0.06;
     stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .board-floor {
+    stroke: var(--board-ink);
+    stroke-opacity: 0.16;
     vector-effect: non-scaling-stroke;
   }
   .board-year {
@@ -415,15 +449,18 @@ const caseStudyHref = (slug: string) =>
     stroke-width: 2;
   }
 
-  /* Poncho: anchored at his paws, so he sits on the rim. */
-  .board-poncho {
-    position: absolute;
-    top: 0;
-    left: 0;
-    translate: -50% -91%;
-    transform-origin: 50% 100%;
-    pointer-events: auto;
-    will-change: transform;
+  /* Poncho, the board's companion (see companion.ts). */
+  .poncho {
+    cursor: pointer;
+  }
+  .poncho-meow {
+    font: italic 400 13px var(--font-serif, Georgia, serif);
+    fill: var(--board-ink);
+  }
+  .poncho-zzz {
+    font: italic 300 14px var(--font-serif, Georgia, serif);
+    fill: var(--board-ink);
+    letter-spacing: 0.2em;
   }
 
   /* ── Bar ────────────────────────────────────────────────────── */
