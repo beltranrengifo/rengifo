@@ -73,6 +73,8 @@ function boot(root: HTMLElement): void {
   const world = el('g', { class: 'board-world' }, svg);
   const grid = el('g', { class: 'board-grid' }, world);
   const linkLayer = el('g', { class: 'board-links' }, world);
+  // Durations: a hairline from each role's start to its end, at its height.
+  const spanLayer = el('g', { class: 'board-spans' }, world);
   const nodeLayer = el('g', { class: 'board-nodes' }, world);
 
   // The year grid: a hairline per year, each one numbered at the top.
@@ -116,12 +118,18 @@ function boot(root: HTMLElement): void {
     return path;
   });
 
+  const spanEls = nodes.map((node) =>
+    node.kind === 'tech'
+      ? null
+      : el('path', { class: `board-span is-${node.kind}` }, spanLayer),
+  );
+
   const nodeEls = nodes.map((node) => {
     const label = model.labels[node.id]!;
     const g = el(
       'g',
       {
-        class: `board-node is-${node.kind}`,
+        class: `board-node is-${node.kind} layer-${node.layer}`,
         tabindex: 0,
         role: 'button',
         'aria-label': [label.title, label.sub, label.years]
@@ -491,6 +499,22 @@ function boot(root: HTMLElement): void {
       nodeEls[i]!.setAttribute(
         'transform',
         `translate(${f(node.x)} ${f(node.y)})`,
+      );
+    });
+    nodes.forEach((node, i) => {
+      const span = spanEls[i];
+      if (!span) return;
+      const clip = model.clips[node.index]!;
+      const x1 = timeX(clip.start);
+      const x2 = timeX(clip.end);
+      const y = node.y;
+      span.setAttribute(
+        'd',
+        `M${f(x1)} ${f(y - 4)} V${f(y + 4)} M${f(x1)} ${f(y)} H${f(x2)} M${f(x2)} ${f(y - 4)} V${f(y + 4)}`,
+      );
+      span.classList.toggle(
+        'is-active',
+        nodeEls[i]!.classList.contains('is-active'),
       );
     });
     links.forEach((link, i) => {

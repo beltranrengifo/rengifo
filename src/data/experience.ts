@@ -95,7 +95,7 @@ export const experience: ExperienceEntry[] = [
     roles: [{ titleKey: 'exp_aulacm_title', blurbKey: 'exp_aulacm_blurb' }],
   },
   {
-    period: ['2004', '2015'],
+    period: ['2002', '2015'],
     companyKey: 'exp_prev_company',
     roles: [
       {

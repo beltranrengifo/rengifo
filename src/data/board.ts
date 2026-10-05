@@ -13,7 +13,7 @@ import type { Span } from './experience';
  * slugs.
  */
 
-export type Layer = 'backend' | 'frontend' | 'tools' | 'media';
+export type Layer = 'backend' | 'frontend' | 'tools' | 'media' | 'gear';
 export type Weight = 1 | 2 | 3;
 
 export interface Tech {
@@ -22,6 +22,8 @@ export interface Tech {
   label: string | { en: string; es: string };
   layer: Layer;
   uses: Record<string, Weight>;
+  /** Somewhere to read about it — shown in the panel. */
+  href?: string;
 }
 
 /** Project date spans, by slug — from each repository's history. */
@@ -34,24 +36,78 @@ export const projectSpans: Record<string, Span> = {
 
 /** Grouped by layer; the board orders the rows itself. */
 export const techs: Tech[] = [
-  // Media — where it all started.
+  // Sound and image — where it all started.
   {
     id: 'pro-tools',
     label: 'Pro Tools',
     layer: 'media',
     uses: { prev: 3 },
+    href: 'https://www.avid.com/pro-tools',
+  },
+  {
+    id: 'logic',
+    label: 'Logic',
+    layer: 'media',
+    uses: { prev: 2 },
+    href: 'https://www.apple.com/logic-pro/',
+  },
+  {
+    id: 'avid',
+    label: 'Avid Media Composer',
+    layer: 'media',
+    uses: { prev: 2 },
+    href: 'https://www.avid.com/media-composer',
   },
   {
     id: 'final-cut',
     label: 'Final Cut',
     layer: 'media',
     uses: { prev: 2 },
+    href: 'https://www.apple.com/final-cut-pro/',
+  },
+  {
+    id: 'davinci',
+    label: 'DaVinci Resolve',
+    layer: 'media',
+    uses: { prev: 1 },
+    href: 'https://www.blackmagicdesign.com/products/davinciresolve',
   },
   {
     id: 'after-effects',
     label: 'After Effects',
     layer: 'media',
     uses: { prev: 1 },
+    href: 'https://www.adobe.com/products/aftereffects.html',
+  },
+
+  // Gear — on the board only.
+  {
+    id: 'sennheiser',
+    label: 'Sennheiser',
+    layer: 'gear',
+    uses: { prev: 3 },
+    href: 'https://www.sennheiser.com/',
+  },
+  {
+    id: 'neve',
+    label: { en: 'Neve consoles', es: 'Consolas Neve' },
+    layer: 'gear',
+    uses: { prev: 2 },
+    href: 'https://www.ams-neve.com/',
+  },
+  {
+    id: 'mackie',
+    label: { en: 'Mackie consoles', es: 'Consolas Mackie' },
+    layer: 'gear',
+    uses: { prev: 2 },
+    href: 'https://mackie.com/',
+  },
+  {
+    id: 'avalon',
+    label: { en: 'Avalon compressors', es: 'Compresores Avalon' },
+    layer: 'gear',
+    uses: { prev: 1 },
+    href: 'https://www.avalondesign.com/',
   },
 
   // Frontend
@@ -244,7 +300,7 @@ export const techs: Tech[] = [
 
 /** The four eras, as fractional years, named along the floor. */
 export const eras = [
-  { key: 'ui_board_era_sound', start: 2004, end: 2012 },
+  { key: 'ui_board_era_sound', start: 2002, end: 2012 },
   { key: 'ui_board_era_agency', start: 2012, end: 2018 },
   { key: 'ui_board_era_consultancy', start: 2018, end: 2021 },
   { key: 'ui_board_era_product', start: 2021, end: 2026.6 },

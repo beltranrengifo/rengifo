@@ -40,7 +40,7 @@
   "exp_aulacm_blurb": "Helped build and maintain the company's main site and the client websites delivered by its agency arm — my first taste of agency work and shipping custom WordPress in PHP. Doubled as the in-house WordPress instructor, teaching plugins, themes, styling and the PHP basics that make it all tick — and learning plenty the honest way myself.",
   "exp_prev_company": "A previous life",
   "exp_prev_title": "Film & TV Sound Engineer",
-  "exp_prev_blurb": "A parallel life in sound, from around 2004 — production and post for film and TV. Two Goyas for documentaries, a Berlinale run after three weeks filming with orphans in Kenya, and a good showing at festivals besides; behind the desk, a Pro Tools wizard and Final Cut obsessive fluent in Avalon compressors, Neve preamps and a wall of top-notch mics. With my friend Iván I built lacasaestudio — still alive and thriving — and the instincts stuck: precision, grace under live pressure, reading a room, and tight teamwork.",
+  "exp_prev_blurb": "A parallel life in sound, from around 2002 — production and post for film and TV. Two Goyas for documentaries, a Berlinale run after three weeks filming with orphans in Kenya, and a good showing at festivals besides; behind the desk, a Pro Tools wizard and Final Cut obsessive fluent in Avalon compressors, Neve preamps and a wall of top-notch mics. With my friend Iván I built lacasaestudio — still alive and thriving — and the instincts stuck: precision, grace under live pressure, reading a room, and tight teamwork.",
   "cap_h_backend": "Backend & data",
   "cap_h_frontend": "Frontend · UX/UI",
   "cap_h_infra": "Infrastructure & delivery",
@@ -147,5 +147,7 @@
   "ui_board_era_consultancy": "Consultancy",
   "ui_board_era_product": "Product",
   "ui_board_layer_media": "Sound & image",
-  "ui_board_reset": "Reset"
+  "ui_board_reset": "Reset",
+  "ui_board_layer_gear": "Gear",
+  "ui_board_visit": "Visit"
 }
