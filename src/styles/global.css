@@ -385,6 +385,8 @@ a:not(.no-underline):not(.role-link):not(.proj-link):not(.company-link):hover {
   }
 }
 .hero-em {
+  /* inline-block so it can scale; the full stop lives inside the <em>,
+     or it would be free to wrap onto a line of its own. */
   display: inline-block;
   animation: heartBeat 1.1s 1.15s ease both;
 }
