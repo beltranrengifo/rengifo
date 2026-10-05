@@ -137,7 +137,7 @@
   "ui_board_title": "Tablero — Beltrán Rengifo",
   "ui_board_description": "La carrera como una línea temporal interactiva: puestos, proyectos y tecnologías hechos de gelatina que puedes apretar, estirar y seguir en el tiempo.",
   "ui_board_label": "Tablero de la carrera",
-  "ui_board_hint": "Arrastra para viajar en el tiempo · ⌘/Ctrl + rueda o pellizca para hacer zoom · aprieta la gelatina",
+  "ui_board_hint": "Rueda o arrastra para viajar en el tiempo · ⌘/Ctrl + rueda para hacer zoom · pasa por una línea o un puesto",
   "ui_board_classic": "Vista clásica",
   "ui_board_close": "Cerrar",
   "ui_board_used_in": "Usado en",
@@ -146,5 +146,6 @@
   "ui_board_era_sound": "Sonido",
   "ui_board_era_agency": "Agencia",
   "ui_board_era_consultancy": "Consultoría",
-  "ui_board_era_product": "Producto"
+  "ui_board_era_product": "Producto",
+  "ui_board_layer_media": "Sonido e imagen"
 }

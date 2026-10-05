@@ -103,8 +103,9 @@ const stageStyle = [
   .cateyelid {
     background: #d2b389 !important;
   }
-  .cat:hover .cateyelid,
-  .cat-stage[data-mood='stretch'] .cat .cateyelid {
+  /* Not mirrored for the stretch mood: without the lids the blink empties
+     his eyes. */
+  .cat:hover .cateyelid {
     background: transparent !important;
   }
   .cat-leg {

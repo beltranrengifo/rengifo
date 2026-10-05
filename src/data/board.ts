@@ -2,19 +2,26 @@ import type { Span } from './experience';
 
 /**
  * What board mode needs that the rest of the data does not carry: when each
- * project happened, and which technologies travelled through which roles and
- * projects. Ids are role ids (the title key without `exp_` and `_title`) and
- * project slugs.
+ * project happened, and how much each technology was used where.
+ *
+ * Weights are a rough feel, not a measurement — edit them freely:
+ *   3  the main stack of that job
+ *   2  used regularly
+ *   1  touched now and then
+ *
+ * Ids are role ids (the title key without `exp_` and `_title`) and project
+ * slugs.
  */
 
-export type Layer = 'backend' | 'frontend' | 'infra' | 'craft';
+export type Layer = 'backend' | 'frontend' | 'tools' | 'media';
+export type Weight = 1 | 2 | 3;
 
 export interface Tech {
   id: string;
   /** A name, or a pair when the name translates. */
   label: string | { en: string; es: string };
   layer: Layer;
-  usedIn: string[];
+  uses: Record<string, Weight>;
 }
 
 /** Project date spans, by slug — from each repository's history. */
@@ -25,162 +32,217 @@ export const projectSpans: Record<string, Span> = {
   'carabanchel-creativa': ['2021-01', '2021-05'],
 };
 
+/** Grouped by layer; the board orders the rows itself. */
 export const techs: Tech[] = [
-  // Backend & data
-  { id: 'java', label: 'Java', layer: 'backend', usedIn: ['liferay'] },
+  // Media — where it all started.
   {
-    id: 'node',
-    label: 'Node.js',
-    layer: 'backend',
-    usedIn: ['carabanchel-creativa', 'ironhack', 'tau'],
+    id: 'pro-tools',
+    label: 'Pro Tools',
+    layer: 'media',
+    uses: { prev: 3 },
   },
   {
-    id: 'python',
-    label: 'Python',
-    layer: 'backend',
-    usedIn: ['ensayadero', 'radio-perico'],
+    id: 'final-cut',
+    label: 'Final Cut',
+    layer: 'media',
+    uses: { prev: 2 },
   },
   {
-    id: 'fastapi',
-    label: 'FastAPI',
-    layer: 'backend',
-    usedIn: ['radio-perico'],
-  },
-  {
-    id: 'postgres',
-    label: 'Postgres · Supabase',
-    layer: 'backend',
-    usedIn: ['ensayadero', 'radio-perico', 'paellalab'],
-  },
-  {
-    id: 'strapi',
-    label: 'Strapi · MongoDB',
-    layer: 'backend',
-    usedIn: ['carabanchel-creativa'],
-  },
-  {
-    id: 'php',
-    label: 'PHP · WordPress',
-    layer: 'backend',
-    usedIn: ['aulacm', 'tau'],
-  },
-  {
-    id: 'llm',
-    label: 'LLMs · RAG',
-    layer: 'backend',
-    usedIn: ['radio-perico', 'paellalab'],
-  },
-  {
-    id: 'ml',
-    label: 'TensorFlow · PyTorch',
-    layer: 'backend',
-    usedIn: ['ensayadero'],
+    id: 'after-effects',
+    label: 'After Effects',
+    layer: 'media',
+    uses: { prev: 1 },
   },
 
   // Frontend
   {
-    id: 'react',
-    label: 'React',
+    id: 'javascript',
+    label: 'JavaScript',
     layer: 'frontend',
-    usedIn: [
-      'mews_squad',
-      'mews_techlead',
-      'mews_senior',
-      'liferay',
-      'ensayadero',
-      'radio-perico',
-      'paellalab',
-      'carabanchel-creativa',
-      'ironhack',
-    ],
+    uses: {
+      aulacm: 1,
+      tau: 2,
+      ironhack: 3,
+      indra_consultant: 2,
+      indra_po: 2,
+      docline: 2,
+      liferay: 2,
+      'carabanchel-creativa': 1,
+    },
   },
   {
     id: 'typescript',
     label: 'TypeScript',
     layer: 'frontend',
-    usedIn: [
-      'mews_squad',
-      'mews_techlead',
-      'mews_senior',
-      'liferay',
-      'docline',
-      'ensayadero',
-      'paellalab',
-    ],
+    uses: {
+      ironhack: 1,
+      docline: 2,
+      mews_senior: 3,
+      mews_techlead: 3,
+      mews_squad: 3,
+      paellalab: 1,
+      ensayadero: 1,
+    },
+  },
+  {
+    id: 'react',
+    label: 'React',
+    layer: 'frontend',
+    uses: {
+      ironhack: 2,
+      'carabanchel-creativa': 1,
+      liferay: 3,
+      mews_senior: 3,
+      mews_techlead: 3,
+      mews_squad: 3,
+      paellalab: 1,
+      ensayadero: 1,
+      'radio-perico': 1,
+    },
   },
   {
     id: 'vue',
     label: 'Vue',
     layer: 'frontend',
-    usedIn: ['docline', 'indra_consultant'],
+    uses: { indra_consultant: 3, docline: 3 },
   },
-  { id: 'next', label: 'Next.js', layer: 'frontend', usedIn: ['ensayadero'] },
-  { id: 'astro', label: 'Astro', layer: 'frontend', usedIn: ['paellalab'] },
-  { id: 'jquery', label: 'jQuery', layer: 'frontend', usedIn: ['tau'] },
+  {
+    id: 'angular',
+    label: 'Angular',
+    layer: 'frontend',
+    uses: { ironhack: 1 },
+  },
+  {
+    id: 'jquery',
+    label: 'jQuery',
+    layer: 'frontend',
+    uses: { aulacm: 1, tau: 3 },
+  },
   {
     id: 'css',
     label: 'CSS · SCSS',
     layer: 'frontend',
-    usedIn: ['aulacm', 'tau', 'docline'],
+    uses: {
+      aulacm: 2,
+      tau: 3,
+      ironhack: 2,
+      indra_consultant: 2,
+      docline: 2,
+      liferay: 2,
+      mews_senior: 2,
+      mews_techlead: 2,
+      mews_squad: 2,
+    },
+  },
+  {
+    id: 'meta-frameworks',
+    label: 'Next.js · Astro',
+    layer: 'frontend',
+    uses: { paellalab: 1, ensayadero: 1 },
   },
   {
     id: 'tanstack',
     label: 'TanStack',
     layer: 'frontend',
-    usedIn: ['mews_squad', 'mews_techlead'],
-  },
-  {
-    id: 'mapbox',
-    label: 'Mapbox',
-    layer: 'frontend',
-    usedIn: ['carabanchel-creativa'],
-  },
-
-  // Infrastructure & delivery
-  { id: 'docker', label: 'Docker', layer: 'infra', usedIn: ['ensayadero'] },
-  {
-    id: 'vercel',
-    label: 'Vercel',
-    layer: 'infra',
-    usedIn: ['radio-perico', 'paellalab'],
-  },
-  { id: 'cicd', label: 'CI/CD', layer: 'infra', usedIn: ['mews_senior'] },
-  {
-    id: 'tokens',
-    label: 'Style Dictionary',
-    layer: 'infra',
-    usedIn: ['mews_senior'],
-  },
-
-  // Craft
-  {
-    id: 'design-systems',
-    label: 'Design systems',
-    layer: 'craft',
-    usedIn: ['mews_techlead', 'mews_senior', 'indra_consultant', 'docline'],
+    uses: { mews_techlead: 2, mews_squad: 2 },
   },
   {
     id: 'a11y',
     label: { en: 'Accessibility', es: 'Accesibilidad' },
-    layer: 'craft',
-    usedIn: ['mews_techlead'],
+    layer: 'frontend',
+    uses: { mews_senior: 1, mews_techlead: 3, mews_squad: 1 },
+  },
+
+  // Backend & data
+  {
+    id: 'php',
+    label: 'PHP',
+    layer: 'backend',
+    uses: { aulacm: 2, tau: 3, indra_po: 2, docline: 1 },
   },
   {
-    id: 'leadership',
-    label: { en: 'Leadership', es: 'Liderazgo' },
-    layer: 'craft',
-    usedIn: ['mews_squad', 'docline', 'indra_po', 'tau'],
+    id: 'wordpress',
+    label: 'WordPress',
+    layer: 'backend',
+    uses: { aulacm: 3, tau: 3 },
   },
   {
-    id: 'teaching',
-    label: { en: 'Teaching', es: 'Docencia' },
-    layer: 'craft',
-    usedIn: ['ironhack', 'aulacm'],
+    id: 'node',
+    label: 'Node · Express',
+    layer: 'backend',
+    uses: {
+      tau: 1,
+      ironhack: 3,
+      indra_consultant: 2,
+      'carabanchel-creativa': 1,
+    },
   },
-  { id: 'pro-tools', label: 'Pro Tools', layer: 'craft', usedIn: ['prev'] },
+  {
+    id: 'java',
+    label: 'Java',
+    layer: 'backend',
+    uses: { indra_consultant: 3, liferay: 3 },
+  },
+  { id: 'go', label: 'Go', layer: 'backend', uses: { indra_consultant: 1 } },
+  {
+    id: 'dotnet',
+    label: '.NET',
+    layer: 'backend',
+    uses: { tau: 1, mews_senior: 1, mews_techlead: 1, mews_squad: 2 },
+  },
+  {
+    id: 'graphql',
+    label: 'GraphQL',
+    layer: 'backend',
+    uses: { indra_po: 2, mews_senior: 1, mews_techlead: 1, mews_squad: 1 },
+  },
+  {
+    id: 'cms',
+    label: 'Strapi · MongoDB',
+    layer: 'backend',
+    uses: { ironhack: 2, indra_po: 2, 'carabanchel-creativa': 1 },
+  },
+  {
+    id: 'python',
+    label: 'Python',
+    layer: 'backend',
+    uses: { ensayadero: 1, 'radio-perico': 1 },
+  },
+  {
+    id: 'postgres',
+    label: 'Postgres · Supabase',
+    layer: 'backend',
+    uses: { paellalab: 1, ensayadero: 1, 'radio-perico': 1 },
+  },
+  {
+    id: 'llm',
+    label: 'LLMs · RAG',
+    layer: 'backend',
+    uses: { paellalab: 1, 'radio-perico': 1 },
+  },
+
+  // Tools & delivery
+  {
+    id: 'storybook',
+    label: 'Storybook',
+    layer: 'tools',
+    uses: { indra_consultant: 2, mews_senior: 2, mews_techlead: 2 },
+  },
+  {
+    id: 'tokens',
+    label: 'Design tokens',
+    layer: 'tools',
+    uses: { mews_senior: 2, mews_techlead: 2 },
+  },
+  {
+    id: 'cicd',
+    label: 'CI/CD',
+    layer: 'tools',
+    uses: { mews_senior: 1, mews_techlead: 1, ensayadero: 1 },
+  },
 ];
 
-/** The four eras drawn behind the nodes, as fractional years. */
+/** The four eras, as fractional years, named along the floor. */
 export const eras = [
   { key: 'ui_board_era_sound', start: 2004, end: 2012 },
   { key: 'ui_board_era_agency', start: 2012, end: 2018 },
