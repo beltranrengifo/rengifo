@@ -148,5 +148,7 @@
   "ui_board_era_product": "Producto",
   "ui_board_layer_media": "Sonido e imagen",
   "ui_board_reset": "Recolocar",
-  "ui_board_visit": "Ver"
+  "ui_board_visit": "Ver",
+  "ui_board_highlight": "Destacado",
+  "ui_board_highlights_note": "Cientos de producciones de cine y televisión en esos años; el tablero solo muestra algunas destacadas."
 }

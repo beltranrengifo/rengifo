@@ -173,6 +173,9 @@ const caseStudyHref = (slug: string) =>
           </p>
           <h2>{role.title}</h2>
           <p>{t(role.blurbKey, locale)}</p>
+          {role.id === 'prev' && (
+            <p class="board-note">{t('ui_board_highlights_note', locale)}</p>
+          )}
         </section>
       ))
     }
@@ -201,7 +204,9 @@ const caseStudyHref = (slug: string) =>
     {
       works.map(({ id, span, work }) => (
         <section data-panel={id} hidden>
-          <p class="board-kicker">{span[0].slice(0, 4)}</p>
+          <p class="board-kicker">
+            {t('ui_board_highlight', locale)} · {span[0].slice(0, 4)}
+          </p>
           <h2>{work.label}</h2>
           <p>{work.note[locale]}</p>
           {work.href && (
@@ -570,6 +575,13 @@ const caseStudyHref = (slug: string) =>
     font-size: 12px !important;
     letter-spacing: 0.16em;
     text-transform: uppercase;
+    color: var(--color-muted, #5c6166) !important;
+  }
+  .board-note {
+    padding-top: 12px;
+    border-top: 1px solid rgba(22, 24, 26, 0.08);
+    font-family: var(--font-serif, Georgia, serif);
+    font-style: italic;
     color: var(--color-muted, #5c6166) !important;
   }
   .board-stack {
