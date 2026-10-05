@@ -12,7 +12,7 @@ import {
 import { experience, type Span } from '../data/experience';
 import { projects } from '../data/caseStudies';
 import { techs, projectSpans, eras } from '../data/board';
-import { buildModel, yearOf, START_YEAR } from '../board/model';
+import { buildModel, yearOf } from '../board/model';
 
 const locale = resolveLocale(Astro.currentLocale);
 
@@ -63,6 +63,37 @@ const model = buildModel({
   techs: rows.map((tech) => ({ ...tech, label: techLabel(tech.label) })),
 });
 
+// What each node says on the board: short, like a chart's annotations.
+const labels: Record<string, { title: string; sub?: string; years?: string }> =
+  Object.fromEntries([
+    ...roles.map((role) => [
+      role.id,
+      {
+        title: role.company,
+        sub: role.title.split(' — ')[0]!.split(', ')[0],
+        years: formatSpan(role.span, locale),
+      },
+    ]),
+    ...shownProjects.map((project) => [
+      project.id,
+      { title: project.label, years: formatSpan(project.span, locale) },
+    ]),
+    ...rows.map((tech) => [
+      `tech:${tech.id}`,
+      { title: techLabel(tech.label) },
+    ]),
+  ]);
+
+const boardData = {
+  ...model,
+  labels,
+  eras: eras.map((era) => ({
+    label: t(era.key, locale),
+    start: era.start,
+    end: era.end,
+  })),
+};
+
 const spanOf = new Map<string, Span>(clips.map((c) => [c.id, c.span]));
 const labelOf = new Map<string, string>(clips.map((c) => [c.id, c.label]));
 
@@ -72,11 +103,6 @@ const layerHeading = {
   tools: 'cap_h_infra',
   media: 'ui_board_layer_media',
 } as const;
-
-const years = Array.from(
-  { length: 2026 - START_YEAR + 1 },
-  (_, i) => START_YEAR + i,
-);
 
 const caseStudyHref = (slug: string) =>
   localisedPath(`/work/${slug}/`, 'en', locale);
@@ -89,49 +115,9 @@ const caseStudyHref = (slug: string) =>
   aria-label={t('ui_board_label', locale)}
 >
   <div class="board-stage" data-board-stage>
-    <canvas class="board-canvas" data-board-canvas aria-hidden="true"></canvas>
-    <div class="board-still" data-board-still></div>
-
-    <div class="board-overlay">
-      {
-        eras.map((era) => (
-          <span
-            class="board-era"
-            data-era
-            data-start={era.start}
-            aria-hidden="true"
-          >
-            {t(era.key, locale)}
-          </span>
-        ))
-      }
-
-      {
-        clips.map((clip) => (
-          <button
-            type="button"
-            class:list={['board-clip', `is-${clip.kind}`]}
-            data-clip={clip.id}
-          >
-            {clip.label}
-          </button>
-        ))
-      }
-
-      {
-        rows.map((tech, row) => (
-          <button type="button" class="board-row" data-row={row} tabindex="-1">
-            {techLabel(tech.label)}
-          </button>
-        ))
-      }
-
-      <span class="board-hover" data-board-hover hidden aria-hidden="true"
-      ></span>
-
-      <div class="board-poncho" data-poncho aria-hidden="true">
-        <Cat size={2.4} />
-      </div>
+    <svg class="board-svg" data-board-svg aria-hidden="false"></svg>
+    <div class="board-poncho" data-poncho aria-hidden="true">
+      <Cat size={2.2} />
     </div>
   </div>
 
@@ -153,17 +139,6 @@ const caseStudyHref = (slug: string) =>
       </a>
     </nav>
   </header>
-
-  <div class="board-ruler" aria-label={t('ui_board_ruler', locale)}>
-    {
-      years.map((year) => (
-        <button type="button" class="board-tick" data-year={year} tabindex="-1">
-          {year % 2 === 0 ? year : ''}
-          <span class="sr-only">{year % 2 === 0 ? '' : year}</span>
-        </button>
-      ))
-    }
-  </div>
 
   <aside class="board-panel" data-board-panel hidden aria-live="polite">
     <div class="board-sheet-handle" data-sheet-handle aria-hidden="true"></div>
@@ -235,7 +210,7 @@ const caseStudyHref = (slug: string) =>
   <script
     type="application/json"
     data-board-model
-    set:html={JSON.stringify(model)}
+    set:html={JSON.stringify(boardData)}
   />
 </div>
 
@@ -262,127 +237,155 @@ const caseStudyHref = (slug: string) =>
   .board-stage {
     position: absolute;
     inset: 0;
+    cursor: grab;
   }
-  .board-canvas {
+  .board[data-holding] .board-stage,
+  .board-stage:active {
+    cursor: grabbing;
+  }
+  .board-svg {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  .board[data-mode='still'] .board-canvas {
-    display: none;
-  }
-  .board-still {
-    position: absolute;
-    inset: 0;
-    display: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    touch-action: pan-x;
-  }
-  .board[data-mode='still'] .board-still {
-    display: block;
-  }
-  .board-still-svg {
-    display: block;
-  }
-  .board-still-ridge {
-    fill: var(--board-bg);
-    stroke: var(--board-ink);
-    stroke-width: 1;
-    stroke-linejoin: round;
+    overflow: visible;
   }
 
-  /* ── Overlay: what you read, laid over the landscape ──────── */
-  .board-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+  /* ── The chart: hairlines, small type, a lot of air ────────── */
+  .board-year-line {
+    stroke: var(--board-ink);
+    stroke-opacity: 0.06;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
   }
-  .board-overlay > * {
+  .board-year {
+    font: 500 11px var(--font-sans, system-ui, sans-serif);
+    letter-spacing: 0.08em;
+    fill: var(--board-ink);
+    fill-opacity: 0.4;
+  }
+  .board-era-bracket {
+    fill: none;
+    stroke: var(--board-ink);
+    stroke-opacity: 0.22;
+    vector-effect: non-scaling-stroke;
+  }
+  .board-era {
+    font: italic 300 17px var(--font-serif, Georgia, serif);
+    fill: var(--board-ink);
+    fill-opacity: 0.55;
+  }
+
+  .board-link {
+    fill: none;
+    stroke: var(--board-ink);
+    stroke-opacity: calc(0.05 + var(--w, 1) * 0.045);
+    stroke-width: calc(0.4px + var(--w, 1) * 0.3px);
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke 0.3s ease,
+      stroke-opacity 0.3s ease;
+  }
+
+  .board-node {
+    cursor: pointer;
+    outline: none;
+    transition: opacity 0.3s ease;
+  }
+  .board-dot {
+    vector-effect: non-scaling-stroke;
+    transition:
+      fill 0.3s ease,
+      stroke 0.3s ease;
+  }
+  .board-node.is-role .board-dot {
+    fill: #fbfaf8;
+    stroke: var(--board-ink);
+    stroke-width: 1;
+  }
+  .board-node.is-project .board-dot {
+    fill: #fbfaf8;
+    stroke: var(--board-project);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+  }
+  .board-node.is-tech .board-dot {
+    fill: var(--board-ink);
+  }
+
+  .board-title,
+  .board-sub,
+  .board-years-label {
+    text-anchor: middle;
+    fill: var(--board-ink);
+  }
+  .board-title {
+    font: italic 400 16px var(--font-serif, Georgia, serif);
+  }
+  .board-node.is-project .board-title {
+    font-size: 14px;
+    fill: color-mix(in srgb, var(--board-project) 75%, var(--board-ink));
+  }
+  .board-sub {
+    font: 500 10px var(--font-sans, system-ui, sans-serif);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    fill-opacity: 0.62;
+  }
+  .board-years-label {
+    font: 400 10px var(--font-sans, system-ui, sans-serif);
+    letter-spacing: 0.06em;
+    fill-opacity: 0.42;
+  }
+  .board-tech-label {
+    font: 500 11.5px var(--font-sans, system-ui, sans-serif);
+    fill: var(--board-ink);
+    fill-opacity: 0.75;
+  }
+
+  /* Focus: the node and its neighbours stay, everything else steps back. */
+  .board-svg[data-focus] .board-node:not(.is-active, .is-related) {
+    opacity: 0.16;
+  }
+  .board-svg[data-focus] .board-link:not(.is-active) {
+    stroke-opacity: 0.025;
+  }
+  .board-link.is-active {
+    stroke: var(--accent);
+    stroke-opacity: 0.8;
+  }
+  .board-node.is-active .board-dot,
+  .board-node.is-related.is-tech .board-dot {
+    stroke: var(--accent);
+  }
+  .board-node.is-active.is-tech .board-dot,
+  .board-node.is-related.is-tech .board-dot {
+    fill: var(--accent);
+  }
+  .board-node.is-active.is-role .board-dot,
+  .board-node.is-active.is-project .board-dot {
+    fill: color-mix(in srgb, var(--accent) 8%, #fbfaf8);
+    stroke-width: 1.5;
+  }
+  .board-node.is-active .board-title,
+  .board-node.is-active .board-tech-label {
+    fill: var(--accent);
+    fill-opacity: 1;
+  }
+  .board-node:focus-visible .board-dot {
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+
+  /* Poncho: anchored at his paws, so he sits on the rim. */
+  .board-poncho {
     position: absolute;
     top: 0;
     left: 0;
-    will-change: transform;
-  }
-
-  .board-clip {
-    translate: 0 -100%;
-    padding: 0 0 6px;
-    border: 0;
-    background: none;
-    font: 500 13px/1.2 var(--font-sans, system-ui, sans-serif);
-    letter-spacing: 0.01em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--board-ink);
-    cursor: pointer;
-    pointer-events: auto;
-    transition: opacity 0.3s ease;
-  }
-  .board-clip.is-project {
-    font-size: 12px;
-    color: color-mix(in srgb, var(--board-project) 80%, var(--board-ink));
-  }
-  .board-clip.is-dim {
-    opacity: 0.25;
-  }
-  .board-clip:hover,
-  .board-clip:focus-visible {
-    color: var(--accent);
-  }
-  .board-clip:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
-  .board[data-mode='still'] .board-clip {
-    position: absolute;
-    translate: 0 0;
-  }
-
-  .board-row {
-    translate: -50% -100%;
-    padding: 2px 7px;
-    border: 0;
-    border-radius: 3px;
-    background: var(--board-bg);
-    font: 500 11.5px/1.3 var(--font-sans, system-ui, sans-serif);
-    letter-spacing: 0.02em;
-    color: var(--accent);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-  .board-row.is-on {
-    opacity: 1;
-    pointer-events: auto;
-    cursor: pointer;
-  }
-
-  .board-hover {
-    padding: 3px 8px;
-    border-radius: 3px;
-    background: var(--board-ink);
-    font: 500 12px/1.3 var(--font-sans, system-ui, sans-serif);
-    color: var(--board-bg);
-    white-space: nowrap;
-  }
-
-  .board-era {
-    font-family: var(--font-serif, Georgia, serif);
-    font-style: italic;
-    font-weight: 300;
-    font-size: 22px;
-    color: rgba(22, 24, 26, 0.38);
-    white-space: nowrap;
-  }
-
-  /* Poncho sits on the floor: his paws, not his middle, on the point. */
-  .board-poncho {
-    translate: -50% -94%;
+    translate: -50% -91%;
     transform-origin: 50% 100%;
     pointer-events: auto;
+    will-change: transform;
   }
 
   /* ── Bar ────────────────────────────────────────────────────── */
@@ -426,37 +429,6 @@ const caseStudyHref = (slug: string) =>
   }
   .board-classic {
     color: var(--color-ink, #16181a) !important;
-  }
-
-  /* ── Ruler ──────────────────────────────────────────────────── */
-  .board-ruler {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 44px;
-    border-top: 1px solid rgba(22, 24, 26, 0.08);
-    background: color-mix(in srgb, var(--board-bg) 86%, transparent);
-    backdrop-filter: blur(6px);
-  }
-  .board-tick {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    padding: 0 0 0 6px;
-    border: 0;
-    border-left: 1px solid rgba(22, 24, 26, 0.18);
-    background: none;
-    font: 500 11px/44px
-      var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
-    letter-spacing: 0.1em;
-    color: var(--color-muted, #5c6166);
-    cursor: pointer;
-  }
-  .board-tick:hover {
-    color: var(--accent);
-    border-left-color: var(--accent);
   }
 
   /* ── Panel ──────────────────────────────────────────────────── */

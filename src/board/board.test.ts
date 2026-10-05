@@ -3,7 +3,7 @@ import { techs, projectSpans } from '../data/board';
 import { experience } from '../data/experience';
 import { projects } from '../data/caseStudies';
 import { buildModel, yearOf } from './model';
-import { envelope, level } from './spectrum';
+import { createLayout, settle, timeX, YEAR_PX } from './layout';
 import { Poncho } from './poncho';
 
 /** A deterministic random, so the cat's dice do not flake. */
@@ -66,34 +66,31 @@ describe('board data', () => {
   });
 });
 
-describe('spectrum', () => {
+describe('model', () => {
   it('reads months, and bare years as mid-year', () => {
     expect(yearOf('2021-06')).toBeCloseTo(2021 + 5 / 12);
     expect(yearOf('2018')).toBe(2018.5);
   });
+});
 
-  it('swells in, holds, and fades without going silent', () => {
-    expect(envelope(2009, 2010, 2012)).toBe(0);
-    expect(envelope(2011, 2010, 2012)).toBe(1);
-    const later = envelope(2016, 2010, 2012);
-    expect(later).toBeGreaterThan(0.1);
-    expect(later).toBeLessThan(0.4);
+describe('layout', () => {
+  it('keeps every role and project near its date', () => {
+    const layout = createLayout(realModel(), seeded(7));
+    settle(layout, 400);
+    for (const node of layout.nodes) {
+      if (node.kind === 'tech') continue;
+      expect(Math.abs(node.x - node.homeX), node.id).toBeLessThan(
+        YEAR_PX * 0.6,
+      );
+    }
   });
 
-  it('makes React loud at Mews and quiet before it was used', () => {
-    const model = realModel();
-    const react = model.tracks.find((track) => track.id === 'react')!;
-    expect(level(model, react, 2025)).toBeGreaterThan(2.5);
-    expect(level(model, react, 2010)).toBe(0);
-  });
-
-  it('keeps side projects quieter than the job running at the same time', () => {
-    const model = realModel();
-    const python = model.tracks.find((track) => track.id === 'python')!;
-    const typescript = model.tracks.find((t) => t.id === 'typescript')!;
-    expect(level(model, python, 2026.5)).toBeLessThan(
-      level(model, typescript, 2026.3),
-    );
+  it('places a technology among the work that used it most', () => {
+    const layout = createLayout(realModel(), seeded(3));
+    const java = layout.nodes.find((node) => node.id === 'tech:java')!;
+    // Indra and Liferay: between 2018 and 2023.
+    expect(java.homeX).toBeGreaterThan(timeX(2018));
+    expect(java.homeX).toBeLessThan(timeX(2023));
   });
 });
 
