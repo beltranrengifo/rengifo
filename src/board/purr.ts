@@ -90,22 +90,22 @@ export function pawStep(): void {
     context ??= new AudioContext();
     const ctx = context;
     if (ctx.state === 'suspended') void ctx.resume();
-    const length = Math.floor(ctx.sampleRate * 0.06);
+    const length = Math.floor(ctx.sampleRate * 0.04);
     const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < length; i++) {
       // Noise that dies away fast: a tap, not a hiss.
-      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 4);
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 6);
     }
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     const filter = ctx.createBiquadFilter();
-    // Low and soft: a padded paw on the floor, not a click.
-    filter.type = 'lowpass';
-    filter.frequency.value = 180 + Math.random() * 60;
-    filter.Q.value = 0.7;
+    // Mid-low and short: a soft pat, neither a click nor a rumble.
+    filter.type = 'bandpass';
+    filter.frequency.value = 480 + Math.random() * 160;
+    filter.Q.value = 1.2;
     const gain = ctx.createGain();
-    gain.gain.value = 0.22 + Math.random() * 0.06;
+    gain.gain.value = 0.16 + Math.random() * 0.04;
     source.connect(filter).connect(gain).connect(ctx.destination);
     source.start();
   } catch {
@@ -113,7 +113,7 @@ export function pawStep(): void {
   }
 }
 
-/** A loud, plaintive meow: a voiced glide up and down, through a mouth. */
+/** A short, soft meow: a voice gliding up and down while the mouth opens and closes. */
 export function meow(): void {
   if (!unlocked) return;
   try {
@@ -121,27 +121,52 @@ export function meow(): void {
     const ctx = context;
     if (ctx.state === 'suspended') void ctx.resume();
     const t = ctx.currentTime;
-    const pitch = 0.9 + Math.random() * 0.2;
+    const end = t + 0.55;
+    const pitch = 0.95 + Math.random() * 0.1;
     const voice = ctx.createOscillator();
-    voice.type = 'sawtooth';
-    voice.frequency.setValueAtTime(420 * pitch, t);
-    voice.frequency.exponentialRampToValueAtTime(720 * pitch, t + 0.18);
-    voice.frequency.exponentialRampToValueAtTime(380 * pitch, t + 0.7);
-    // The mouth opens ("mi-") then closes ("-au").
-    const mouth = ctx.createBiquadFilter();
-    mouth.type = 'bandpass';
-    mouth.Q.value = 3;
-    mouth.frequency.setValueAtTime(900, t);
-    mouth.frequency.linearRampToValueAtTime(1800, t + 0.2);
-    mouth.frequency.linearRampToValueAtTime(700, t + 0.7);
+    voice.type = 'triangle';
+    voice.frequency.setValueAtTime(560 * pitch, t);
+    voice.frequency.linearRampToValueAtTime(760 * pitch, t + 0.16);
+    voice.frequency.linearRampToValueAtTime(520 * pitch, end);
+    // A little vibrato keeps it from sounding like a whistle.
+    const wobble = ctx.createOscillator();
+    wobble.frequency.value = 7;
+    const depth = ctx.createGain();
+    depth.gain.value = 12;
+    wobble.connect(depth).connect(voice.frequency);
+    // Two formants: "mi" opens to "a", closes to "u".
+    const low = ctx.createBiquadFilter();
+    low.type = 'peaking';
+    low.Q.value = 4;
+    low.gain.value = 10;
+    low.frequency.setValueAtTime(700, t);
+    low.frequency.linearRampToValueAtTime(1100, t + 0.18);
+    low.frequency.linearRampToValueAtTime(600, end);
+    const high = ctx.createBiquadFilter();
+    high.type = 'peaking';
+    high.Q.value = 5;
+    high.gain.value = 8;
+    high.frequency.setValueAtTime(2300, t);
+    high.frequency.linearRampToValueAtTime(1600, t + 0.2);
+    high.frequency.linearRampToValueAtTime(900, end);
+    const soft = ctx.createBiquadFilter();
+    soft.type = 'lowpass';
+    soft.frequency.value = 3000;
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.5, t + 0.05);
-    gain.gain.setValueAtTime(0.5, t + 0.45);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.75);
-    voice.connect(mouth).connect(gain).connect(ctx.destination);
+    gain.gain.exponentialRampToValueAtTime(0.07, t + 0.08);
+    gain.gain.setValueAtTime(0.07, t + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.0001, end);
+    voice
+      .connect(low)
+      .connect(high)
+      .connect(soft)
+      .connect(gain)
+      .connect(ctx.destination);
     voice.start(t);
-    voice.stop(t + 0.8);
+    wobble.start(t);
+    voice.stop(end + 0.05);
+    wobble.stop(end + 0.05);
   } catch {
     /* no audio, no meow */
   }
