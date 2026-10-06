@@ -187,34 +187,33 @@ document.querySelectorAll<HTMLElement>('[data-copy]').forEach((el) => {
   });
 });
 
-// ── Accent picker — the swatches in the header ───────────────
-const ACCENTS = ['#2f5d8a', '#16181a', '#6b705c', '#8c4a3b'];
+// ── Theme picker — the swatches in the header ────────────────
+// The saved theme is already applied before paint (see Layout.astro); this
+// only marks the chosen swatch and handles changes.
 const swatches = [
-  ...document.querySelectorAll<HTMLButtonElement>('[data-accent]'),
+  ...document.querySelectorAll<HTMLButtonElement>('[data-theme-option]'),
 ];
-const setAccent = (colour: string, save: boolean) => {
-  document.documentElement.style.setProperty('--accent', colour);
+const setTheme = (theme: string, save: boolean) => {
+  const root = document.documentElement;
+  if (theme === 'blue') delete root.dataset.theme;
+  else root.dataset.theme = theme;
   for (const swatch of swatches) {
-    const on = swatch.dataset.accent === colour;
+    const on = swatch.dataset.themeOption === theme;
     swatch.setAttribute('aria-checked', String(on));
     swatch.tabIndex = on ? 0 : -1;
   }
   if (!save) return;
   try {
-    localStorage.setItem('accent', colour);
+    localStorage.setItem('theme', theme);
+    localStorage.removeItem('accent');
   } catch {
     /* ignore */
   }
 };
-try {
-  const saved = localStorage.getItem('accent');
-  if (saved && ACCENTS.includes(saved)) setAccent(saved, false);
-} catch {
-  /* storage unavailable */
-}
+setTheme(document.documentElement.dataset.theme ?? 'blue', false);
 swatches.forEach((swatch, i) => {
   swatch.addEventListener('click', () =>
-    setAccent(swatch.dataset.accent!, true),
+    setTheme(swatch.dataset.themeOption!, true),
   );
   // Arrow keys move between swatches, as in any radio group.
   swatch.addEventListener('keydown', (event) => {

@@ -10,21 +10,65 @@
   --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Newsreader', ui-serif, Georgia, serif;
 
-  --color-canvas: #f6f5f2; /* cool off-white background */
-  --color-ink: #16181a; /* headings, strong text, footer bg */
-  --color-body: #3a3e42; /* body copy */
-  --color-muted: #5c6166; /* labels, dates */
-  --color-faint: #8a8e93; /* placeholders, years */
+  /* Runtime vars, so a theme can swap the whole palette (see :root). */
+  --color-canvas: var(--canvas); /* background */
+  --color-ink: var(--ink); /* headings, strong text, footer bg */
+  --color-body: var(--body); /* body copy */
+  --color-muted: var(--muted); /* labels, dates */
+  --color-faint: var(--faint); /* placeholders, years */
   --color-accent: var(--accent);
-  --color-hairline: rgba(22, 24, 26, 0.12); /* row dividers */
-  --color-hairline-soft: rgba(22, 24, 26, 0.1); /* education dividers */
+  --color-hairline: color-mix(
+    in srgb,
+    var(--ink) 12%,
+    transparent
+  ); /* row dividers */
+  --color-hairline-soft: color-mix(
+    in srgb,
+    var(--ink) 10%,
+    transparent
+  ); /* education dividers */
 
   --radius-xs: 2px; /* near-square, Nordic */
 }
 
 :root {
-  /* Accent — default muted slate blue. Alternates: #16181A #6B705C #8C4A3B */
-  --accent: #2f5d8a;
+  /* Blue, the default theme: cool paper, slate-blue accent. */
+  --canvas: #f6f5f2;
+  --ink: #16181a;
+  --body: #3a3e42;
+  --muted: #5c6166;
+  --faint: #8a8e93;
+  --accent: #2a62a6;
+  color-scheme: light;
+}
+/*
+ * Themes, chosen in the header. Each one changes the paper as well as the
+ * accent, so a switch is felt across the page; Ink is the dark one.
+ */
+:root[data-theme='sage'] {
+  --canvas: #eef1ea;
+  --ink: #171a16;
+  --body: #3b4239;
+  --muted: #5b6458;
+  --faint: #8a9386;
+  --accent: #4d7a47;
+}
+:root[data-theme='terracotta'] {
+  --canvas: #f7efe5;
+  --ink: #1e1a16;
+  --body: #47403a;
+  --muted: #6b6158;
+  --faint: #9b9085;
+  --accent: #b4532f;
+}
+:root[data-theme='ink'] {
+  --canvas: #131416;
+  --ink: #ecebe7;
+  --body: #c6c8cb;
+  --muted: #9a9ea3;
+  --faint: #6e7277;
+  --accent: #8fb6e8;
+  color-scheme: dark;
 }
 
 /* ── Base ────────────────────────────────────────────────────── */
@@ -32,6 +76,10 @@ body {
   margin: 0;
   background: var(--color-canvas);
   color: var(--color-ink);
+  /* A theme switch fades in rather than snapping. */
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.65;
@@ -189,7 +237,7 @@ a:not(.no-underline):not(.role-link):not(.proj-link):not(.company-link):hover {
 @property --orb-tint {
   syntax: '<color>';
   inherits: false;
-  initial-value: #2f5d8a;
+  initial-value: #2a62a6;
 }
 
 .orb {
@@ -260,6 +308,9 @@ a:not(.no-underline):not(.role-link):not(.proj-link):not(.company-link):hover {
   inset: 6px;
   border-radius: 50%;
   background: var(--swatch);
+  /* A hairline, so the dark swatch still shows on the dark theme. */
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--color-ink) 22%, transparent);
   transition: transform 0.2s ease;
 }
 .accent-picker > button:hover::before {
@@ -461,7 +512,7 @@ header a[aria-label]:hover svg {
   margin-top: 24px;
   font-size: 12px;
   letter-spacing: 0.04em;
-  color: rgba(246, 245, 242, 0.5);
+  color: color-mix(in srgb, var(--color-canvas) 50%, transparent);
 }
 @media (min-width: 640px) {
   .footer-kbd {
@@ -472,7 +523,7 @@ header a[aria-label]:hover svg {
   font-family: var(--font-sans);
   font-size: 11px;
   line-height: 1;
-  border: 1px solid rgba(246, 245, 242, 0.3);
+  border: 1px solid color-mix(in srgb, var(--color-canvas) 30%, transparent);
   border-radius: 4px;
   padding: 3px 6px;
   margin-right: 7px;
@@ -498,6 +549,17 @@ header a[aria-label]:hover svg {
 
 /* ── Print: clean résumé, no chrome/motion ───────────────────── */
 @media print {
+  /* Paper is always the default palette, whatever the screen shows. */
+  :root,
+  :root[data-theme] {
+    --canvas: #f6f5f2;
+    --ink: #16181a;
+    --body: #3a3e42;
+    --muted: #5c6166;
+    --faint: #8a8e93;
+    --accent: #2f5d8a;
+    color-scheme: light;
+  }
   [data-no-print] {
     display: none !important;
   }

@@ -10,19 +10,24 @@ import {
 
 const locale = resolveLocale(Astro.currentLocale);
 
-// Kept in step with ACCENTS in scripts/resume.ts.
-const accents = [
-  { value: '#2f5d8a', name: t('ui_accent_blue', locale) },
-  { value: '#16181a', name: t('ui_accent_ink', locale) },
-  { value: '#6b705c', name: t('ui_accent_sage', locale) },
-  { value: '#8c4a3b', name: t('ui_accent_terracotta', locale) },
+// Themes, each shown by its accent; the names match :root[data-theme] in
+// global.css. Blue is the default and sets no attribute.
+const themes = [
+  { id: 'blue', swatch: '#2a62a6', name: t('ui_accent_blue', locale) },
+  { id: 'ink', swatch: '#16181a', name: t('ui_accent_ink', locale) },
+  { id: 'sage', swatch: '#4d7a47', name: t('ui_accent_sage', locale) },
+  {
+    id: 'terracotta',
+    swatch: '#b4532f',
+    name: t('ui_accent_terracotta', locale),
+  },
 ];
 ---
 
 <header
   data-no-print
   data-header
-  class="group sticky top-0 z-50 flex items-center justify-between bg-[rgba(246,245,242,0.88)] px-6 py-5 backdrop-blur-md transition-[padding] duration-300 ease-out data-[scrolled]:py-[7px] sm:px-10"
+  class="group sticky top-0 z-50 flex items-center justify-between bg-[color-mix(in_srgb,var(--color-canvas)_88%,transparent)] px-6 py-5 backdrop-blur-md transition-[padding] duration-300 ease-out data-[scrolled]:py-[7px] sm:px-10"
 >
   <a
     href={homeHref(locale)}
@@ -42,16 +47,16 @@ const accents = [
       class="accent-picker"
     >
       {
-        accents.map((accent, i) => (
+        themes.map((theme, i) => (
           <button
             type="button"
             role="radio"
             aria-checked={i === 0 ? 'true' : 'false'}
             tabindex={i === 0 ? 0 : -1}
-            aria-label={accent.name}
-            title={accent.name}
-            data-accent={accent.value}
-            style={`--swatch: ${accent.value}`}
+            aria-label={theme.name}
+            title={theme.name}
+            data-theme-option={theme.id}
+            style={`--swatch: ${theme.swatch}`}
           />
         ))
       }
@@ -65,7 +70,7 @@ const accents = [
     <a
       href={pdfHref(locale)}
       download
-      class="text-ink hover:border-ink hover:bg-ink hover:text-canvas rounded-xs border border-[rgba(22,24,26,0.25)] px-[18px] py-[9px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200 group-data-[scrolled]:px-[12px] group-data-[scrolled]:py-[3px]"
+      class="text-ink hover:border-ink hover:bg-ink hover:text-canvas rounded-xs border border-[color-mix(in_srgb,var(--color-ink)_25%,transparent)] px-[18px] py-[9px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200 group-data-[scrolled]:px-[12px] group-data-[scrolled]:py-[3px]"
     >
       PDF
     </a>
