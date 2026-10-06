@@ -101,6 +101,18 @@ const locale = resolveLocale(Astro.currentLocale);
   .poncho-footer {
     overflow: visible;
   }
+  .poncho-footer :global(.poncho-purr),
+  .poncho-footer :global(.poncho-meow),
+  .poncho-footer :global(.poncho-zzz) {
+    font-family: var(--font-serif, Georgia, serif);
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+  }
+  .poncho-footer :global(.poncho-purr),
+  .poncho-footer :global(.poncho-zzz) {
+    fill: rgba(246, 245, 242, 0.7);
+  }
   .footer-link:hover {
     color: var(--accent);
     text-decoration-color: var(--accent);

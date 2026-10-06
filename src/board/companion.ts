@@ -10,6 +10,8 @@
  * move on their own.
  */
 
+import { Purr } from './purr';
+
 const NS = 'http://www.w3.org/2000/svg';
 
 const FUR = '#d6b68a';
@@ -59,6 +61,9 @@ export class Companion {
   /** 0 awake … 1 fast asleep, eased, so he drifts off and comes round. */
   private drowse = 0;
   private lastDraw = 0;
+  private purring = false;
+  private readonly purr = new Purr();
+  private purrText!: SVGTextElement;
 
   private readonly flip: SVGGElement;
   private readonly stand: SVGGElement;
@@ -331,6 +336,17 @@ export class Companion {
     );
     this.zzz.textContent = 'z z z';
 
+    this.purrText = el(
+      'text',
+      { x: 26, y: -70, class: 'poncho-purr', opacity: 0 },
+      this.root,
+    );
+    this.purrText.textContent = 'rrr';
+
+    // Stroke him with the pointer and he purrs.
+    this.root.addEventListener('pointerenter', () => this.setPurring(true));
+    this.root.addEventListener('pointerleave', () => this.setPurring(false));
+
     this.root.addEventListener('click', (event) => {
       event.stopPropagation();
       this.poke(performance.now(), true);
@@ -345,6 +361,18 @@ export class Companion {
       this.hopUntil = now + 650;
     } else if (hop) {
       this.hopUntil = now + 650;
+    }
+  }
+
+  /** Purr (eyes half shut, a little rumble) while the pointer is on him. */
+  setPurring(on: boolean): void {
+    if (on === this.purring) return;
+    this.purring = on;
+    if (on) {
+      this.poke(performance.now());
+      this.purr.start();
+    } else {
+      this.purr.stop();
     }
   }
 
@@ -460,9 +488,18 @@ export class Companion {
       hy = -56 + breathe * 0.4 + (-14 + 56) * d;
       tilt = look * (1 - d) + 12 * d;
     }
+    // Purring: a fine rumble through the head.
+    if (this.purring && !walking) {
+      hx += Math.sin(t * 160) * 0.35;
+      hy += Math.cos(t * 140) * 0.3;
+    }
     this.head.setAttribute(
       'transform',
       `translate(${hx} ${hy.toFixed(1)}) scale(${this.facing} 1) rotate(${(tilt * this.facing).toFixed(1)})`,
+    );
+    this.purrText.setAttribute(
+      'opacity',
+      this.purring && !walking ? String(0.4 + Math.sin(t * 3) * 0.2) : '0',
     );
 
     // Pupils follow what he is looking at; otherwise they look at you.
@@ -489,7 +526,9 @@ export class Companion {
     }
     const blink = now > this.blinkAt && now < this.blinkAt + 170 ? 1 : 0;
     // Heavy lids first, then the eyes shut.
-    const close = Math.max(blink, Math.min(1, d / 0.6));
+    // Contented while purring: eyes half shut.
+    const content = this.purring ? 0.55 : 0;
+    const close = Math.max(blink, content, Math.min(1, d / 0.6));
     this.lids.forEach((lid, i) => {
       const cx = i === 0 ? -7.5 : 7.5;
       const y = -6.6 + close * 5.8;
