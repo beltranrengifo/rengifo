@@ -1,0 +1,68 @@
+---
+// SPIKE — throwaway prototype, not linked from anywhere and not indexed.
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Lab · fruta</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500&family=Newsreader:ital,wght@1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #f6f5f2;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        touch-action: none;
+      }
+      .lab-hint {
+        position: fixed;
+        top: 20px;
+        left: 24px;
+        margin: 0;
+        font:
+          500 12.5px 'Schibsted Grotesk',
+          system-ui,
+          sans-serif;
+        color: #5c6166;
+      }
+      .lab-labels {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      .lab-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        translate: -50% 0;
+        font:
+          italic 400 15px 'Newsreader',
+          Georgia,
+          serif;
+        color: #16181a;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas data-lab></canvas>
+    <p class="lab-hint">Prototipo · coge una fruta y lánzala</p>
+    <div class="lab-labels" data-lab-labels></div>
+    <script>
+      import '../../lab/fruit.ts';
+    </script>
+  </body>
+</html>
