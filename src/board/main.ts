@@ -8,6 +8,7 @@ import {
   timeX,
   type Node,
 } from './layout';
+import { byMeaning, byWords, loadModel, type Hit } from './search';
 import { berryFor, drawFruit, KINDS, PROJECT_KINDS } from './fruit';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Companion } from './companion';
@@ -483,6 +484,74 @@ function boot(root: HTMLElement): void {
     if (event.key === 'Escape') setHelp(false);
   });
   stage.addEventListener('pointerdown', () => setHelp(false));
+
+  // ── Search ─────────────────────────────────────────────────────
+  // Words as you type; then, once the model is in, by meaning too.
+  const searchInput = q<HTMLInputElement>('[data-board-search]');
+  const searchPop = q<HTMLElement>('#board-search-results');
+  const searchList = q<HTMLElement>('[data-board-search-list]');
+  const searchStatus = q<HTMLElement>('[data-board-search-status]');
+  const searchItems = sections.map((section) => ({
+    id: section.dataset.panel!,
+    label: section.querySelector('h2')?.textContent?.trim() ?? '',
+    text: section.textContent ?? '',
+  }));
+  const showHits = (hits: Hit[]) => {
+    searchList.replaceChildren(
+      ...hits.slice(0, 8).map((hit, k) => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.goto = hit.id;
+        button.textContent = hit.label;
+        if (k === 0) button.dataset.first = '';
+        li.append(button);
+        return li;
+      }),
+    );
+  };
+  let searchRun = 0;
+  let searchTimer = 0;
+  const runSearch = async () => {
+    const query = searchInput.value.trim();
+    const run = ++searchRun;
+    searchPop.hidden = query === '';
+    if (!query) return;
+    const words = byWords(searchItems, query);
+    showHits(words);
+    searchStatus.textContent = searchStatus.dataset.loading ?? '';
+    const meaning = await byMeaning(searchItems, query);
+    if (run !== searchRun) return;
+    const seen = new Set(words.map((hit) => hit.id));
+    const hits = [...words, ...(meaning ?? []).filter((h) => !seen.has(h.id))];
+    showHits(hits);
+    searchStatus.textContent =
+      hits.length === 0 ? (searchStatus.dataset.empty ?? '') : '';
+  };
+  searchInput.addEventListener('focus', () => void loadModel(), { once: true });
+  searchInput.addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => void runSearch(), 180);
+  });
+  searchInput.addEventListener('keydown', (event) => {
+    // The board's own keys (arrows, +/-) stay out of the field.
+    event.stopPropagation();
+    if (event.key === 'Escape') {
+      searchInput.value = '';
+      searchPop.hidden = true;
+      searchInput.blur();
+    }
+    if (event.key === 'Enter') {
+      searchList.querySelector<HTMLButtonElement>('button')?.click();
+    }
+  });
+  searchPop.addEventListener('click', (event) => {
+    const goto = (event.target as Element).closest<HTMLElement>('[data-goto]');
+    if (!goto) return;
+    searchPop.hidden = true;
+    open(goto.dataset.goto!);
+  });
+  stage.addEventListener('pointerdown', () => (searchPop.hidden = true));
 
   // Reset: every node goes back to where the layout first put it.
   const homes = nodes.map((node) => [node.homeX, node.homeY] as const);

@@ -22,5 +22,10 @@ export default defineConfig({
         outdir: './src/paraglide',
       }),
     ],
+    // transformers.js (the board's search) loads its own WASM at runtime;
+    // pre-bundling it breaks the lazy import in dev.
+    optimizeDeps: {
+      exclude: ['@huggingface/transformers'],
+    },
   },
 });
