@@ -17,7 +17,6 @@ import { Poncho } from './poncho';
 
 const NS = 'http://www.w3.org/2000/svg';
 const NARROW = '(max-width: 720px)';
-const PANEL_WIDTH = 420;
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 1.8;
 const TOP = -540;
@@ -266,7 +265,9 @@ function boot(root: HTMLElement): void {
   // The space the panel takes, eased so the board slides aside with it
   // instead of jumping.
   let insetNow = 0;
-  const insetTarget = () => (panelOpen && !narrow.matches ? PANEL_WIDTH : 0);
+  // The panel's width follows the window (see Board.astro), so measure it.
+  const insetTarget = () =>
+    panelOpen && !narrow.matches ? panel.offsetWidth : 0;
   const inset = () => insetNow;
   const viewW = () => stage.clientWidth - inset();
   const fit = () =>
@@ -350,6 +351,22 @@ function boot(root: HTMLElement): void {
     const section = sections.find((s) => s.dataset.panel === id);
     if (!section) return;
     for (const s of sections) s.hidden = s !== section;
+    // The node's fruit, large, heads its panel.
+    section.querySelector('.board-panel-fruit')?.remove();
+    const fruitOfNode =
+      nodeEls[nodes.findIndex((node) => node.id === id)]?.querySelector(
+        '.board-fruit > g',
+      );
+    if (fruitOfNode) {
+      const head = document.createElementNS(NS, 'svg');
+      head.setAttribute('class', 'board-panel-fruit');
+      head.setAttribute('viewBox', '-1.25 -1.45 2.5 2.7');
+      head.setAttribute('aria-hidden', 'true');
+      const copy = fruitOfNode.cloneNode(true) as SVGGElement;
+      copy.removeAttribute('transform');
+      head.append(copy);
+      section.prepend(head);
+    }
     if (!panelOpen) {
       lastFocus = document.activeElement as HTMLElement | SVGElement | null;
     }
