@@ -22,8 +22,6 @@ export interface Tech {
   label: string | { en: string; es: string };
   layer: Layer;
   uses: Record<string, Weight>;
-  /** Somewhere to read about it — shown in the panel. */
-  href?: string;
 }
 
 /** Project date spans, by slug — from each repository's history. */
@@ -34,17 +32,27 @@ export const projectSpans: Record<string, Span> = {
   'carabanchel-creativa': ['2021-01', '2021-05'],
 };
 
+type Text = { en: string; es: string };
+
 /**
  * Work that only the board shows: films and the like, too far from a résumé
- * to belong on the classic page.
+ * to belong on the classic page. The panel carries the facts, so a link is
+ * only worth adding when there is something to watch.
  */
 export interface BoardWork {
   id: string;
   label: string;
   span: Span;
-  note: { en: string; es: string };
-  href?: string;
+  note: Text;
+  facts: { label: Text; value: Text | string }[];
+  /** Where to watch it, if anywhere. */
+  watch?: string;
 }
+
+const DIRECTION = { en: 'Director', es: 'Dirección' };
+const PRODUCTION = { en: 'Production', es: 'Producción' };
+const RUNTIME = { en: 'Runtime', es: 'Duración' };
+const AWARDS = { en: 'Awards', es: 'Premios' };
 
 export const boardWorks: BoardWork[] = [
   {
@@ -52,20 +60,79 @@ export const boardWorks: BoardWork[] = [
     label: 'En la cuna del aire',
     span: ['2005-01', '2005-12'],
     note: {
-      en: 'Documentary short. Goya for Best Documentary Short Film, 2006.',
-      es: 'Cortometraje documental. Goya al mejor cortometraje documental, 2006.',
+      en: 'Documentary short.',
+      es: 'Cortometraje documental.',
     },
-    href: 'https://www.youtube.com/watch?v=04DO6E_X7e0',
+    facts: [
+      {
+        label: AWARDS,
+        value: {
+          en: 'Goya for Best Documentary Short Film, 2006',
+          es: 'Goya al mejor cortometraje documental, 2006',
+        },
+      },
+    ],
+    watch: 'https://www.youtube.com/watch?v=04DO6E_X7e0',
   },
   {
     id: 'flores-de-ruanda',
     label: 'Flores de Ruanda',
     span: ['2009-01', '2009-12'],
     note: {
-      en: 'Documentary short by David Muñoz on Rwanda after the genocide. Goya for Best Documentary Short Film, 2010.',
-      es: 'Cortometraje documental de David Muñoz sobre Ruanda tras el genocidio. Goya al mejor cortometraje documental, 2010.',
+      en: 'A documentary short on Rwanda after the genocide, asking whether killers and survivors can live side by side — through reconciliation, forgiveness and the role of education.',
+      es: 'Cortometraje documental sobre Ruanda tras el genocidio, que se pregunta si asesinos y supervivientes pueden convivir en paz: la reconciliación, el perdón y el papel de la educación.',
     },
-    href: 'https://sede.mcu.gob.es/CatalogoICAA/Peliculas/Detalle?Pelicula=150809',
+    facts: [
+      {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: { en: 'Sound design', es: 'Diseño de sonido' },
+      },
+      { label: DIRECTION, value: 'David Muñoz' },
+      { label: PRODUCTION, value: 'Híbrida' },
+      { label: RUNTIME, value: '19 min' },
+      {
+        label: AWARDS,
+        value: {
+          en: 'Goya for Best Documentary Short Film, 2010 · Best Documentary at West Chester and Benalmádena · over 80 festivals',
+          es: 'Goya al mejor cortometraje documental, 2010 · Mejor documental en West Chester y Benalmádena · más de 80 festivales',
+        },
+      },
+    ],
+  },
+  {
+    id: 'about-ndugu',
+    label: 'About Ndugu',
+    span: ['2012-06', '2013-02'],
+    note: {
+      en: 'A short shot in Kenya with the children of an orphanage: Ndugu sets out to find a new wife for his foster father in America, who has just been widowed.',
+      es: 'Un corto rodado en Kenia con los niños de un orfanato: Ndugu se propone encontrarle una nueva esposa a su padre de acogida en Estados Unidos, que acaba de enviudar.',
+    },
+    facts: [
+      { label: DIRECTION, value: 'David Muñoz' },
+      { label: PRODUCTION, value: 'Híbrida' },
+      { label: RUNTIME, value: '15 min' },
+      {
+        label: { en: 'Shot', es: 'Rodaje' },
+        value: {
+          en: 'Nyumbani, Kenya, June 2012',
+          es: 'Nyumbani, Kenia, junio de 2012',
+        },
+      },
+      {
+        label: { en: 'Premiere', es: 'Estreno' },
+        value: {
+          en: 'Berlinale Shorts, 2013 (world premiere)',
+          es: 'Berlinale Shorts, 2013 (estreno mundial)',
+        },
+      },
+      {
+        label: AWARDS,
+        value: {
+          en: 'Best Short Film, One Shot · Best Andalusian Short, Almería en Corto',
+          es: 'Mejor cortometraje, One Shot · Mejor corto andaluz, Almería en Corto',
+        },
+      },
+    ],
   },
 ];
 
@@ -76,43 +143,42 @@ export const techs: Tech[] = [
     id: 'pro-tools',
     label: 'Pro Tools',
     layer: 'media',
-    uses: { prev: 3, 'en-la-cuna-del-aire': 3, 'flores-de-ruanda': 3 },
-    href: 'https://www.avid.com/pro-tools',
+    uses: {
+      prev: 3,
+      'en-la-cuna-del-aire': 3,
+      'flores-de-ruanda': 3,
+      'about-ndugu': 3,
+    },
   },
   {
     id: 'logic',
     label: 'Logic',
     layer: 'media',
     uses: { prev: 2 },
-    href: 'https://www.apple.com/logic-pro/',
   },
   {
     id: 'avid',
     label: 'Avid Media Composer',
     layer: 'media',
     uses: { prev: 2 },
-    href: 'https://www.avid.com/media-composer',
   },
   {
     id: 'final-cut',
     label: 'Final Cut',
     layer: 'media',
     uses: { prev: 2 },
-    href: 'https://www.apple.com/final-cut-pro/',
   },
   {
     id: 'davinci',
     label: 'DaVinci Resolve',
     layer: 'media',
     uses: { prev: 1 },
-    href: 'https://www.blackmagicdesign.com/products/davinciresolve',
   },
   {
     id: 'after-effects',
     label: 'After Effects',
     layer: 'media',
     uses: { prev: 1 },
-    href: 'https://www.adobe.com/products/aftereffects.html',
   },
 
   // Frontend
