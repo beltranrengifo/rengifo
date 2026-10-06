@@ -1,6 +1,6 @@
 import type { ForceX, ForceY } from 'd3-force';
 import { createLayout, settle, timeX, type Node } from './layout';
-import { drawFruit, KINDS } from './fruit';
+import { berryFor, drawFruit, KINDS, PROJECT_KINDS } from './fruit';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Companion } from './companion';
 import { Poncho } from './poncho';
@@ -137,6 +137,8 @@ function boot(root: HTMLElement): void {
     return path;
   });
 
+  /** How much larger a technology's fruit is than its hit circle. */
+  const TECH_FRUIT = 1.5;
   const fruitOf = new Map<string, string>();
   const fruits = new Map<Node, SVGGElement>();
   /** Per-fruit spring state for the jelly: deformation and its velocity. */
@@ -156,6 +158,14 @@ function boot(root: HTMLElement): void {
       if (!fruitOf.has(company)) {
         fruitOf.set(company, KINDS[(fruitOf.size * 3) % KINDS.length]!);
       }
+    });
+  // Projects have fruit of their own, so none looks like one of the jobs.
+  const projectFruit = new Map<Node, string>();
+  nodes
+    .filter((node) => node.kind === 'project')
+    .sort((a, b) => a.homeX - b.homeX)
+    .forEach((node, i) => {
+      projectFruit.set(node, PROJECT_KINDS[i % PROJECT_KINDS.length]!);
     });
   const nodeEls = nodes.map((node) => {
     const label = model.labels[node.id]!;
@@ -177,10 +187,19 @@ function boot(root: HTMLElement): void {
       fruits.set(node, drawFruit(g, fruitOf.get(companyOf(node))!, node.r));
       jelly.set(node, { dx: 0, dy: 0, vx: 0, vy: 0, px: node.x, py: node.y });
     }
+    // Projects too, each its own.
+    if (node.kind === 'project') {
+      fruits.set(node, drawFruit(g, projectFruit.get(node)!, node.r));
+      jelly.set(node, { dx: 0, dy: 0, vx: 0, vy: 0, px: node.x, py: node.y });
+    }
     if (node.kind === 'tech') {
+      // Technologies are small fruit, one kind per layer, drawn a little
+      // larger than their hit circle so the shape reads.
+      fruits.set(node, drawFruit(g, berryFor(node.layer), node.r * TECH_FRUIT));
+      jelly.set(node, { dx: 0, dy: 0, vx: 0, vy: 0, px: node.x, py: node.y });
       const text = el(
         'text',
-        { x: node.r + 7, y: 4, class: 'board-tech-label' },
+        { x: node.r * TECH_FRUIT + 6, y: 4, class: 'board-tech-label' },
         g,
       );
       text.textContent = label.title;

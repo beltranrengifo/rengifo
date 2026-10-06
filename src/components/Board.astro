@@ -306,7 +306,6 @@ const caseStudyHref = (slug: string) =>
     --board-bg: #f6f5f2;
     --board-ink: #16181a;
     --board-role: var(--accent);
-    --board-project: #b8654a;
     position: fixed;
     inset: 0;
     overflow: hidden;
@@ -386,8 +385,8 @@ const caseStudyHref = (slug: string) =>
       fill 0.3s ease,
       stroke 0.3s ease;
   }
-  /* Roles are fruit; their circle stays as an invisible hit area. */
-  .board-node.is-role .board-dot {
+  /* Every node is fruit; its circle stays as an invisible hit area. */
+  .board-node .board-dot {
     fill: transparent;
     stroke: none;
   }
@@ -401,19 +400,11 @@ const caseStudyHref = (slug: string) =>
       stroke-opacity 0.3s ease;
   }
   .board-node.is-active .fruit-body,
+  .board-node.is-related.is-tech .fruit-body,
   .board-node:focus-visible .fruit-body {
     stroke: var(--accent);
     stroke-opacity: 1;
     stroke-width: 1.8;
-  }
-  .board-node.is-project .board-dot {
-    fill: #fbfaf8;
-    stroke: var(--board-project);
-    stroke-width: 1;
-    stroke-dasharray: 2 3;
-  }
-  .board-node.is-tech .board-dot {
-    fill: var(--board-ink);
   }
 
   .board-title,
@@ -424,10 +415,6 @@ const caseStudyHref = (slug: string) =>
   }
   .board-title {
     font: italic 400 16px var(--font-serif, Georgia, serif);
-  }
-  .board-node.is-project .board-title {
-    font-size: 14px;
-    fill: color-mix(in srgb, var(--board-project) 75%, var(--board-ink));
   }
   .board-sub {
     font: 500 10px var(--font-sans, system-ui, sans-serif);
@@ -457,26 +444,10 @@ const caseStudyHref = (slug: string) =>
     stroke: var(--accent);
     stroke-opacity: 0.8;
   }
-  .board-node.is-active .board-dot,
-  .board-node.is-related.is-tech .board-dot {
-    stroke: var(--accent);
-  }
-  .board-node.is-active.is-tech .board-dot,
-  .board-node.is-related.is-tech .board-dot {
-    fill: var(--accent);
-  }
-  .board-node.is-active.is-project .board-dot {
-    fill: color-mix(in srgb, var(--accent) 8%, #fbfaf8);
-    stroke-width: 1.5;
-  }
   .board-node.is-active .board-title,
   .board-node.is-active .board-tech-label {
     fill: var(--accent);
     fill-opacity: 1;
-  }
-  .board-node:not(.is-role):focus-visible .board-dot {
-    stroke: var(--accent);
-    stroke-width: 2;
   }
 
   /* Poncho, the board's companion (see companion.ts). */
