@@ -21,7 +21,7 @@ export const YEAR_PX = 260;
 /** Vertical step between rows of roles that share years. */
 const ROLE_ROW = 150;
 
-export const LANE = { role: -250, tech: 40, project: 310 } as const;
+export const LANE = { role: -250, tech: 40, project: 280 } as const;
 
 export const timeX = (year: number): number => (year - START_YEAR) * YEAR_PX;
 
@@ -81,7 +81,7 @@ export function createLayout(
       kind: clip.kind,
       layer: clip.kind,
       index,
-      r: clip.kind === 'role' ? Math.min(64, 22 + 14 * Math.sqrt(years)) : 16,
+      r: clip.kind === 'role' ? Math.min(64, 22 + 14 * Math.sqrt(years)) : 28,
       labelLength: clip.label.length,
       homeX,
       homeY,
