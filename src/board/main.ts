@@ -1,5 +1,6 @@
 import type { ForceX, ForceY } from 'd3-force';
 import { createLayout, settle, timeX, type Node } from './layout';
+import { drawFruit, KINDS } from './fruit';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Companion } from './companion';
 import { Poncho } from './poncho';
@@ -136,6 +137,26 @@ function boot(root: HTMLElement): void {
     return path;
   });
 
+  const fruitOf = new Map<string, string>();
+  const fruits = new Map<Node, SVGGElement>();
+  /** Per-fruit spring state for the jelly: deformation and its velocity. */
+  const jelly = new Map<
+    Node,
+    { dx: number; dy: number; vx: number; vy: number; px: number; py: number }
+  >();
+  let lastJelly = performance.now();
+  // One fruit per company, handed out in time order so neighbours differ.
+  const companyOf = (node: Node) =>
+    model.clips[node.index]!.label.split(' · ').pop()!;
+  [...nodes]
+    .filter((node) => node.kind === 'role')
+    .sort((a, b) => a.homeX - b.homeX)
+    .forEach((node) => {
+      const company = companyOf(node);
+      if (!fruitOf.has(company)) {
+        fruitOf.set(company, KINDS[(fruitOf.size * 3) % KINDS.length]!);
+      }
+    });
   const nodeEls = nodes.map((node) => {
     const label = model.labels[node.id]!;
     const g = el(
@@ -151,6 +172,11 @@ function boot(root: HTMLElement): void {
       nodeLayer,
     );
     el('circle', { r: node.r, class: 'board-dot' }, g);
+    // Roles are fruit — one per company, so Mews stays one fruit.
+    if (node.kind === 'role') {
+      fruits.set(node, drawFruit(g, fruitOf.get(companyOf(node))!, node.r));
+      jelly.set(node, { dx: 0, dy: 0, vx: 0, vy: 0, px: node.x, py: node.y });
+    }
     if (node.kind === 'tech') {
       const text = el(
         'text',
@@ -457,6 +483,9 @@ function boot(root: HTMLElement): void {
       held = nodes[heldIndex]!;
       held.fx = held.x;
       held.fy = held.y;
+      // A squeeze when picked up.
+      const squeeze = jelly.get(held);
+      if (squeeze) squeeze.vy -= 6;
       root.dataset.holding = '';
     }
   });
@@ -559,6 +588,43 @@ function boot(root: HTMLElement): void {
       'transform',
       `translate(${f(viewW() / 2 - cx * zoom)} ${f(stage.clientHeight / 2 - cy * zoom)}) scale(${zoom.toFixed(4)})`,
     );
+    // The fruit float and the jelly. Each fruit bobs to its own rhythm,
+    // and its body is a damped spring: moving stretches it along the
+    // motion, stopping lets it wobble back, a grab squashes it.
+    if (!still) {
+      const now = performance.now();
+      const t = now / 1000;
+      const dt = Math.min((now - lastJelly) / 1000, 1 / 30);
+      lastJelly = now;
+      let k = 0;
+      for (const [node, fruit] of fruits) {
+        const j = jelly.get(node)!;
+        const phase = k++ * 1.7;
+        // Velocity in world units per second, from the last frame.
+        const vx = dt > 0 ? (node.x - j.px) / dt : 0;
+        const vy = dt > 0 ? (node.y - j.py) / dt : 0;
+        j.px = node.x;
+        j.py = node.y;
+        const speed = Math.hypot(vx, vy);
+        // The stretch it is pulled towards: along the motion, capped.
+        const tx = speed > 1 ? (vx / speed) * Math.min(speed / 900, 0.35) : 0;
+        const ty = speed > 1 ? (vy / speed) * Math.min(speed / 900, 0.35) : 0;
+        // Underdamped spring: overshoots, so it wobbles when it stops.
+        j.vx += ((tx - j.dx) * 180 - j.vx * 9) * dt;
+        j.vy += ((ty - j.dy) * 180 - j.vy * 9) * dt;
+        j.dx += j.vx * dt;
+        j.dy += j.vy * dt;
+        const amount = Math.min(Math.hypot(j.dx, j.dy), 0.45);
+        const angle = (Math.atan2(j.dy, j.dx) * 180) / Math.PI;
+        const bob = Math.sin(t * 0.9 + phase) * node.r * 0.06;
+        const sway = Math.sin(t * 0.6 + phase) * 4;
+        // Stretch along the motion, thin across it: roughly keeps the area.
+        fruit.setAttribute(
+          'transform',
+          `translate(0 ${f(bob)}) rotate(${sway.toFixed(2)}) rotate(${angle.toFixed(1)}) scale(${(1 + amount).toFixed(3)} ${(1 / (1 + amount)).toFixed(3)}) rotate(${(-angle).toFixed(1)})`,
+        );
+      }
+    }
     nodes.forEach((node, i) => {
       nodeEls[i]!.setAttribute(
         'transform',
