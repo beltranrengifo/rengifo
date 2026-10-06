@@ -10,7 +10,10 @@ let unlocked = false;
 
 // The first real gesture on the page unlocks audio for the purr.
 for (const type of ['pointerdown', 'keydown'] as const) {
-  window.addEventListener(type, () => (unlocked = true), { once: true });
+  window.addEventListener(type, () => (unlocked = true), {
+    once: true,
+    capture: true,
+  });
 }
 
 export class Purr {

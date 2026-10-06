@@ -27,7 +27,7 @@ const TROT_SPEED = 600;
 const SLEEP_AFTER = 15_000;
 const HOP_MS = 520;
 const HOP_HEIGHT = 9;
-const BELLY_MS = 3600;
+const BELLY_MS = 5000;
 /** Left this far behind, he calls out. */
 const LOST_AT = 600;
 const MEOW_EVERY = 8000;
@@ -83,6 +83,7 @@ export class Companion {
   /** Until when he lies on his back, asking for a belly rub. */
   private bellyUntil = 0;
   private lastMeow = 0;
+  private wasOnBack = false;
   private readonly standTail: SVGPathElement;
   private readonly sitTail: SVGPathElement;
   private readonly legs: Leg[] = [];
@@ -105,6 +106,13 @@ export class Companion {
     el(
       'ellipse',
       { cx: 0, cy: 0, rx: 30, ry: 3.5, fill: 'rgba(22,24,26,0.1)' },
+      this.root,
+    );
+    // A steady hit area, so changing pose under the pointer never reads as
+    // the pointer leaving him.
+    el(
+      'rect',
+      { x: -60, y: -80, width: 120, height: 84, fill: 'transparent' },
       this.root,
     );
     this.flip = el('g', {}, this.root);
@@ -382,24 +390,25 @@ export class Companion {
     );
     this.purrText.textContent = 'rrr';
 
+    // Keep the board from capturing a press on him (it would pan, and steal
+    // both the click and the hover).
+    this.root.addEventListener('pointerdown', (event) =>
+      event.stopPropagation(),
+    );
+
     // Stroke him with the pointer and he purrs.
     this.root.addEventListener('pointerenter', () => this.setPurring(true));
     this.root.addEventListener('pointerleave', () => this.setPurring(false));
 
-    // A click rolls him onto his back for a belly rub (or, mid-walk, a hop).
+    // A click rolls him onto his back for a belly rub, even mid-walk; he
+    // stays there while the pointer keeps scratching him.
     this.root.addEventListener('click', (event) => {
       event.stopPropagation();
       const now = performance.now();
-      if (this.state === 'walk') {
-        this.poke(now, true);
-        return;
-      }
       this.poke(now);
+      this.state = 'sit';
       this.bellyUntil = now + BELLY_MS;
       this.purr.start();
-      window.setTimeout(() => {
-        if (!this.purring) this.purr.stop();
-      }, BELLY_MS);
     });
   }
 
@@ -437,7 +446,14 @@ export class Companion {
     const gap = target - this.x;
     const far = Math.abs(gap);
 
-    if (far > 40) {
+    const onBack = now < this.bellyUntil;
+    // Being scratched keeps him on his back.
+    if (onBack && this.purring) this.bellyUntil = now + BELLY_MS / 2;
+    if (this.wasOnBack && !onBack && !this.purring) this.purr.stop();
+    this.wasOnBack = onBack;
+
+    // On his back he ignores the camera, unless it leaves him behind.
+    if (far > (onBack ? LOST_AT : 40)) {
       this.bellyUntil = 0;
       this.state = 'walk';
       this.facing = Math.sign(gap);
