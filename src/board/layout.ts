@@ -55,6 +55,8 @@ function drift(strength: number, random: () => number) {
   let nodes: Node[] = [];
   const force = () => {
     for (const node of nodes) {
+      // Only technologies drift; roles and projects sit on their track.
+      if (node.kind !== 'tech') continue;
       node.vx = (node.vx ?? 0) + (random() - 0.5) * strength;
       node.vy = (node.vy ?? 0) + (random() - 0.5) * strength;
     }
@@ -146,7 +148,7 @@ export function createLayout(
     .force(
       'lane',
       forceY<Node>((node) => node.homeY).strength((node) =>
-        node.kind === 'tech' ? 0.02 : node.kind === 'role' ? 0.35 : 0.12,
+        node.kind === 'tech' ? 0.02 : node.kind === 'role' ? 0.8 : 0.12,
       ),
     )
     .force(

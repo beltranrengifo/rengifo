@@ -10,7 +10,13 @@ import {
 } from '../lib/i18n';
 import { experience, type Span } from '../data/experience';
 import { projects } from '../data/caseStudies';
-import { techs, projectSpans, eras, boardWorks } from '../data/board';
+import {
+  techs,
+  projectSpans,
+  eras,
+  boardWorks,
+  builtSites,
+} from '../data/board';
 import { buildModel, yearOf } from '../board/model';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -173,6 +179,17 @@ const caseStudyHref = (slug: string) =>
           </p>
           <h2>{role.title}</h2>
           <p>{t(role.blurbKey, locale)}</p>
+          {builtSites[role.id] && (
+            <a
+              href={builtSites[role.id]}
+              target="_blank"
+              rel="noopener"
+              class="board-cta no-underline"
+            >
+              {t('ui_board_built_site', locale)}{' '}
+              <span aria-hidden="true">↗</span>
+            </a>
+          )}
           {role.id === 'prev' && (
             <p class="board-note">{t('ui_board_highlights_note', locale)}</p>
           )}
@@ -209,14 +226,22 @@ const caseStudyHref = (slug: string) =>
           </p>
           <h2>{work.label}</h2>
           <p>{work.note[locale]}</p>
-          {work.href && (
+          <dl class="board-facts">
+            {work.facts.map(({ label, value }) => (
+              <>
+                <dt>{label[locale]}</dt>
+                <dd>{typeof value === 'string' ? value : value[locale]}</dd>
+              </>
+            ))}
+          </dl>
+          {work.watch && (
             <a
-              href={work.href}
+              href={work.watch}
               target="_blank"
               rel="noopener"
               class="board-cta no-underline"
             >
-              {t('ui_board_visit', locale)} <span aria-hidden="true">↗</span>
+              {t('ui_board_watch', locale)} <span aria-hidden="true">↗</span>
             </a>
           )}
         </section>
@@ -228,16 +253,6 @@ const caseStudyHref = (slug: string) =>
         <section data-panel={`tech:${tech.id}`} hidden>
           <p class="board-kicker">{t(layerHeading[tech.layer], locale)}</p>
           <h2>{techLabel(tech.label)}</h2>
-          {tech.href && (
-            <a
-              href={tech.href}
-              target="_blank"
-              rel="noopener"
-              class="board-cta no-underline"
-            >
-              {t('ui_board_visit', locale)} <span aria-hidden="true">↗</span>
-            </a>
-          )}
           <p class="board-used">{t('ui_board_used_in', locale)}</p>
           <ul class="board-uses">
             {Object.keys(tech.uses)
@@ -576,6 +591,27 @@ const caseStudyHref = (slug: string) =>
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-muted, #5c6166) !important;
+  }
+  .board-facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px 18px;
+    margin: 18px 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(22, 24, 26, 0.08);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .board-facts dt {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted, #5c6166);
+    padding-top: 2px;
+  }
+  .board-facts dd {
+    margin: 0;
+    color: var(--color-ink, #16181a);
   }
   .board-note {
     padding-top: 12px;

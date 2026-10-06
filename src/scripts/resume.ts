@@ -74,7 +74,7 @@ if (glow && !reduced && finePointer) {
   document.documentElement.addEventListener('mouseleave', () => {
     glow.style.opacity = '0';
   });
-  document.querySelectorAll('a, button, .cat-stage').forEach((el) => {
+  document.querySelectorAll('a, button, .poncho-footer').forEach((el) => {
     el.addEventListener('mouseenter', () => {
       hovering = true;
       glow.style.opacity = '0.85';
@@ -229,7 +229,7 @@ if (bar) {
 
 // ── Click a cat → a heart floats up ──────────────────────────
 if (!reduced) {
-  document.querySelectorAll('.cat-stage').forEach((cat) => {
+  document.querySelectorAll('.poncho-footer').forEach((cat) => {
     cat.addEventListener('click', (e) => {
       const ev = e as MouseEvent;
       const heart = document.createElement('span');
