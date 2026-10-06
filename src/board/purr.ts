@@ -90,7 +90,7 @@ export function pawStep(): void {
     context ??= new AudioContext();
     const ctx = context;
     if (ctx.state === 'suspended') void ctx.resume();
-    const length = Math.floor(ctx.sampleRate * 0.035);
+    const length = Math.floor(ctx.sampleRate * 0.06);
     const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < length; i++) {
@@ -100,14 +100,49 @@ export function pawStep(): void {
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 900 + Math.random() * 500;
-    filter.Q.value = 1.4;
+    // Low and soft: a padded paw on the floor, not a click.
+    filter.type = 'lowpass';
+    filter.frequency.value = 180 + Math.random() * 60;
+    filter.Q.value = 0.7;
     const gain = ctx.createGain();
-    gain.gain.value = 0.1 + Math.random() * 0.04;
+    gain.gain.value = 0.22 + Math.random() * 0.06;
     source.connect(filter).connect(gain).connect(ctx.destination);
     source.start();
   } catch {
     /* no audio, no steps */
+  }
+}
+
+/** A loud, plaintive meow: a voiced glide up and down, through a mouth. */
+export function meow(): void {
+  if (!unlocked) return;
+  try {
+    context ??= new AudioContext();
+    const ctx = context;
+    if (ctx.state === 'suspended') void ctx.resume();
+    const t = ctx.currentTime;
+    const pitch = 0.9 + Math.random() * 0.2;
+    const voice = ctx.createOscillator();
+    voice.type = 'sawtooth';
+    voice.frequency.setValueAtTime(420 * pitch, t);
+    voice.frequency.exponentialRampToValueAtTime(720 * pitch, t + 0.18);
+    voice.frequency.exponentialRampToValueAtTime(380 * pitch, t + 0.7);
+    // The mouth opens ("mi-") then closes ("-au").
+    const mouth = ctx.createBiquadFilter();
+    mouth.type = 'bandpass';
+    mouth.Q.value = 3;
+    mouth.frequency.setValueAtTime(900, t);
+    mouth.frequency.linearRampToValueAtTime(1800, t + 0.2);
+    mouth.frequency.linearRampToValueAtTime(700, t + 0.7);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.5, t + 0.05);
+    gain.gain.setValueAtTime(0.5, t + 0.45);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.75);
+    voice.connect(mouth).connect(gain).connect(ctx.destination);
+    voice.start(t);
+    voice.stop(t + 0.8);
+  } catch {
+    /* no audio, no meow */
   }
 }

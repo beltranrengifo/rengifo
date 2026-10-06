@@ -10,7 +10,7 @@
  * move on their own.
  */
 
-import { Purr, pawStep } from './purr';
+import { Purr, meow, pawStep } from './purr';
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -27,6 +27,10 @@ const TROT_SPEED = 600;
 const SLEEP_AFTER = 15_000;
 const HOP_MS = 520;
 const HOP_HEIGHT = 9;
+const BELLY_MS = 3600;
+/** Left this far behind, he calls out. */
+const LOST_AT = 600;
+const MEOW_EVERY = 8000;
 
 type State = 'walk' | 'sit' | 'sleep';
 
@@ -73,6 +77,12 @@ export class Companion {
   private readonly stand: SVGGElement;
   private readonly sit: SVGGElement;
   private readonly sleep: SVGGElement;
+  private readonly belly: SVGGElement;
+  private readonly bellyLegs: SVGGElement[] = [];
+  private readonly bellyTail: SVGPathElement;
+  /** Until when he lies on his back, asking for a belly rub. */
+  private bellyUntil = 0;
+  private lastMeow = 0;
   private readonly standTail: SVGPathElement;
   private readonly sitTail: SVGPathElement;
   private readonly legs: Leg[] = [];
@@ -189,6 +199,45 @@ export class Companion {
         this.sit,
       );
     }
+
+    // ── Belly up: on his back, paws in the air ─────────────────
+    this.belly = el('g', { display: 'none' }, this.flip);
+    this.bellyTail = el(
+      'path',
+      {
+        fill: 'none',
+        stroke: SHADE,
+        'stroke-width': 10,
+        'stroke-linecap': 'round',
+      },
+      this.belly,
+    );
+    for (const x of [-16, -6, 8, 18]) {
+      const g = el('g', { transform: `translate(${x} -20)` }, this.belly);
+      el(
+        'path',
+        {
+          d: 'M-4.5 0 L-4.5 -12 Q-4.5 -16 0 -16 Q4.5 -16 4.5 -12 L4.5 0 Z',
+          fill: FUR,
+        },
+        g,
+      );
+      el('ellipse', { cx: 0, cy: -15.5, rx: 5, ry: 2.6, fill: CREAM }, g);
+      this.bellyLegs.push(g);
+    }
+    el(
+      'path',
+      { d: 'M-30 -2 C-34 -14 -20 -26 0 -26 C20 -26 32 -16 30 -2 Z', fill: FUR },
+      this.belly,
+    );
+    el(
+      'path',
+      {
+        d: 'M-20 -20 C-10 -26 12 -26 22 -18 C14 -12 -10 -12 -20 -20 Z',
+        fill: CREAM,
+      },
+      this.belly,
+    );
 
     // ── Asleep: curled up, tail round the front ────────────────
     this.sleep = el('g', {}, this.flip);
@@ -337,9 +386,20 @@ export class Companion {
     this.root.addEventListener('pointerenter', () => this.setPurring(true));
     this.root.addEventListener('pointerleave', () => this.setPurring(false));
 
+    // A click rolls him onto his back for a belly rub (or, mid-walk, a hop).
     this.root.addEventListener('click', (event) => {
       event.stopPropagation();
-      this.poke(performance.now(), true);
+      const now = performance.now();
+      if (this.state === 'walk') {
+        this.poke(now, true);
+        return;
+      }
+      this.poke(now);
+      this.bellyUntil = now + BELLY_MS;
+      this.purr.start();
+      window.setTimeout(() => {
+        if (!this.purring) this.purr.stop();
+      }, BELLY_MS);
     });
   }
 
@@ -378,9 +438,15 @@ export class Companion {
     const far = Math.abs(gap);
 
     if (far > 40) {
+      this.bellyUntil = 0;
       this.state = 'walk';
       this.facing = Math.sign(gap);
-      const trotting = far > 600;
+      const trotting = far > LOST_AT;
+      // Left off screen: a proper meow, then he trots to catch up.
+      if (trotting && now - this.lastMeow > MEOW_EVERY) {
+        this.lastMeow = now;
+        meow();
+      }
       const step = Math.min(far, (trotting ? TROT_SPEED : WALK_SPEED) * dt);
       this.x += step * this.facing;
       const before = Math.floor(this.gait / Math.PI);
@@ -409,8 +475,11 @@ export class Companion {
       Math.sign(target - this.drowse) *
       Math.min(Math.abs(target - this.drowse), rate * dt);
     const d = this.drowse * this.drowse * (3 - 2 * this.drowse);
-    const sitting = !walking;
-    const sleeping = !walking && d > 0.98;
+    const onBack = !walking && now < this.bellyUntil;
+    const sitting = !walking && !onBack;
+    const sleeping = sitting && d > 0.98;
+    // Eyes shut and content: asleep, or on his back being rubbed.
+    const eyesShut = sleeping || onBack;
 
     let lift = 0;
     if (now < this.hopUntil) {
@@ -442,6 +511,23 @@ export class Companion {
     this.sleep.setAttribute('display', sitting && d > 0 ? 'inline' : 'none');
     this.sit.setAttribute('opacity', String(1 - d));
     this.sleep.setAttribute('opacity', String(d));
+    this.belly.setAttribute('display', onBack ? 'inline' : 'none');
+    if (onBack) {
+      // Paws pedal lazily in the air; the tail sweeps the floor.
+      this.bellyLegs.forEach((leg, i) => {
+        const x = [-16, -6, 8, 18][i]!;
+        const wave = Math.sin(t * 3 + i * 1.3) * 12;
+        leg.setAttribute(
+          'transform',
+          `translate(${x} -20) rotate(${wave.toFixed(1)})`,
+        );
+      });
+      const sweep = Math.sin(t * 2) * 6;
+      this.bellyTail.setAttribute(
+        'd',
+        `M-28 -6 C-40 -4 ${(-46 + sweep).toFixed(1)} 0 ${(-52 + sweep).toFixed(1)} -2`,
+      );
+    }
 
     const breathe = Math.sin(t * (sleeping ? 1.3 : 2)) * (sleeping ? 1 : 0.5);
     const bob = walking ? Math.abs(Math.sin(this.gait)) * 1.8 : 0;
@@ -484,6 +570,12 @@ export class Companion {
     let hx = 24;
     let hy = -40 - bob;
     let tilt = Math.sin(this.gait) * 2;
+    if (onBack) {
+      // Head on the floor, tipped back, looking up at you.
+      hx = 30;
+      hy = -12;
+      tilt = -24;
+    }
     if (sitting) {
       // From upright to resting on his paws, as drowsiness takes over.
       const look = this.look
@@ -503,13 +595,15 @@ export class Companion {
     );
     this.purrText.setAttribute(
       'opacity',
-      this.purring && !walking ? String(0.4 + Math.sin(t * 3) * 0.2) : '0',
+      (this.purring || onBack) && !walking
+        ? String(0.4 + Math.sin(t * 3) * 0.2)
+        : '0',
     );
 
     // Pupils follow what he is looking at; otherwise they look at you.
     let ox = 0;
     let oy = 0;
-    if (this.look && !sleeping) {
+    if (this.look && !eyesShut) {
       const dx = this.look.x - this.x;
       const dy = this.look.y - (this.floor + hy);
       const d = Math.hypot(dx, dy) || 1;
@@ -545,14 +639,14 @@ export class Companion {
         'd',
         `M${cx - 6} -6.8 L${cx + 6} -6.8 L${cx + 6} ${y.toFixed(2)} Q${cx} ${(y + close * 2).toFixed(2)} ${cx - 6} ${y.toFixed(2)} Z`,
       );
-      lid.setAttribute('display', sleeping ? 'none' : 'inline');
+      lid.setAttribute('display', eyesShut ? 'none' : 'inline');
     });
     for (const p of [...this.pupils, ...this.shines]) {
-      p.setAttribute('display', sleeping ? 'none' : 'inline');
+      p.setAttribute('display', eyesShut ? 'none' : 'inline');
     }
     this.sleepFace.setAttribute(
       'opacity',
-      String(Math.max(0, Math.min(1, (d - 0.6) / 0.4))),
+      onBack ? '1' : String(Math.max(0, Math.min(1, (d - 0.6) / 0.4))),
     );
 
     this.zzz.setAttribute(
