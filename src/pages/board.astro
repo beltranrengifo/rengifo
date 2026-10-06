@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Board from '../components/Board.astro';
+import { t } from '../lib/i18n';
+---
+
+<Layout
+  lang="en"
+  title={t('ui_board_title', 'en')}
+  description={t('ui_board_description', 'en')}
+>
+  <Board />
+</Layout>

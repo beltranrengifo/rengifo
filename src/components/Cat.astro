@@ -103,6 +103,8 @@ const stageStyle = [
   .cateyelid {
     background: #d2b389 !important;
   }
+  /* Not mirrored for the stretch mood: without the lids the blink empties
+     his eyes. */
   .cat:hover .cateyelid {
     background: transparent !important;
   }
@@ -161,7 +163,8 @@ const stageStyle = [
     transform-origin: 20% 30%;
     transition: 0.4s ease-in-out;
   }
-  .cat:hover .cat-inner {
+  .cat:hover .cat-inner,
+  .cat-stage[data-mood='stretch'] .cat .cat-inner {
     transform: translateY(-70%) translateX(-50%) rotate(0deg);
     left: 46%;
   }
@@ -286,7 +289,8 @@ const stageStyle = [
     transform: translateX(-50%);
     transition: 0.4s ease-in-out;
   }
-  .cat:hover .cat-meow {
+  .cat:hover .cat-meow,
+  .cat-stage[data-mood='stretch'] .cat .cat-meow {
     animation: meow 1s ease-in-out 6s 1;
   }
 
@@ -334,7 +338,8 @@ const stageStyle = [
     height: 4em;
     width: 4em;
   }
-  .cat:hover .cateye.inner-2 {
+  .cat:hover .cateye.inner-2,
+  .cat-stage[data-mood='stretch'] .cat .cateye.inner-2 {
     height: 2em;
     width: 2em;
     left: 40%;
@@ -494,7 +499,8 @@ const stageStyle = [
     z-index: -1;
     transition: 0.4s ease-in-out;
   }
-  .cat:hover .cat-hind-leg {
+  .cat:hover .cat-hind-leg,
+  .cat-stage[data-mood='stretch'] .cat .cat-hind-leg {
     height: 15em;
     width: 10em;
     border-radius: 10em 4em 0 10em;
@@ -503,7 +509,8 @@ const stageStyle = [
     bottom: -7%;
     transform-origin: 20% 30%;
   }
-  .cat:hover .cat-hind-leg2 {
+  .cat:hover .cat-hind-leg2,
+  .cat-stage[data-mood='stretch'] .cat .cat-hind-leg2 {
     height: 15em;
     width: 10em;
     border-radius: 10em 4em 0 10em;
@@ -512,7 +519,8 @@ const stageStyle = [
     bottom: -7%;
     transform-origin: 20% 30%;
   }
-  .cat:hover .cat-hind-foot {
+  .cat:hover .cat-hind-foot,
+  .cat-stage[data-mood='stretch'] .cat .cat-hind-foot {
     height: 2.7em;
     width: 7em;
     border-radius: 0;
@@ -520,7 +528,8 @@ const stageStyle = [
     bottom: -66%;
     transform: rotate(-38deg);
   }
-  .cat:hover .cat-hind-foot2 {
+  .cat:hover .cat-hind-foot2,
+  .cat-stage[data-mood='stretch'] .cat .cat-hind-foot2 {
     height: 2.7em;
     width: 7em;
     border-radius: 0;
@@ -529,12 +538,14 @@ const stageStyle = [
     transform: rotate(-38deg);
     z-index: -1;
   }
-  .cat:hover .cat-hind-leg-top {
+  .cat:hover .cat-hind-leg-top,
+  .cat-stage[data-mood='stretch'] .cat .cat-hind-leg-top {
     transform: rotate(-27deg);
     top: 89%;
     right: 19%;
   }
-  .cat:hover .cat-hind-leg-top2 {
+  .cat:hover .cat-hind-leg-top2,
+  .cat-stage[data-mood='stretch'] .cat .cat-hind-leg-top2 {
     transform: rotate(-27deg);
     top: 89%;
     right: 23%;
@@ -556,7 +567,8 @@ const stageStyle = [
     z-index: 1;
     transition: 0.4s ease-in-out;
   }
-  .cat:hover .cat-tail {
+  .cat:hover .cat-tail,
+  .cat-stage[data-mood='stretch'] .cat .cat-tail {
     height: 20em;
     width: 9em;
     right: -18%;
@@ -571,20 +583,29 @@ const stageStyle = [
     border-radius: 0% 25% 25% 0%;
     transition: 0.4s ease-in-out;
   }
-  .cat:hover .cat-tail-end {
+  .cat:hover .cat-tail-end,
+  .cat-stage[data-mood='stretch'] .cat .cat-tail-end {
     right: -51%;
   }
 
   /* ── Hover: ears perk up (idle twitch stops) ────────────────── */
-  .cat:hover .cat-ear {
+  .cat:hover .cat-ear,
+  .cat-stage[data-mood='stretch'] .cat .cat-ear {
     transform: rotate(40deg) skewX(-30deg) scale(1, 0.566);
     animation: none;
   }
-  .cat:hover .cat-ear2 {
+  .cat:hover .cat-ear2,
+  .cat-stage[data-mood='stretch'] .cat .cat-ear2 {
     transform: rotate(98deg) skewX(-30deg) scale(1, 0.566);
   }
 
   /* ── Keyframes ──────────────────────────────────────────────── */
+  /* Moods, set from script (board mode): asleep, eyes shut. */
+  .cat-stage[data-mood='sleep'] .cateyelid {
+    animation: none !important;
+    margin-bottom: 0 !important;
+  }
+
   @keyframes catblink {
     0% {
       margin-bottom: -50%;

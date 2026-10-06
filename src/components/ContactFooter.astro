@@ -1,7 +1,14 @@
 ---
 import Logo from './Logo.astro';
 import Cat from './Cat.astro';
-import { t, resolveLocale, contact, currentYear, pdfHref } from '../lib/i18n';
+import {
+  t,
+  resolveLocale,
+  contact,
+  currentYear,
+  pdfHref,
+  localisedPath,
+} from '../lib/i18n';
 
 const locale = resolveLocale(Astro.currentLocale);
 ---
@@ -63,13 +70,21 @@ const locale = resolveLocale(Astro.currentLocale);
     </p>
   </div>
 
-  {/* A quiet hello from the old rengifo.es — hover it */}
-  <div
-    class="pointer-events-auto flex justify-center pb-10 sm:absolute sm:right-6 sm:bottom-3 sm:block sm:pb-0"
+  {
+    /*
+     * A quiet hello from the old rengifo.es — hover it. Poncho is also the
+     * secret door to board mode: no link announces it, the cat is the link.
+     */
+  }
+  <a
+    href={localisedPath('/board/', 'en', locale)}
+    aria-label={t('ui_board_link', locale)}
+    title={`${t('ui_board_link', locale)} ${t('ui_board_link_aside', locale)}`}
+    class="pointer-events-auto flex justify-center pb-10 no-underline sm:absolute sm:right-6 sm:bottom-3 sm:block sm:pb-0"
     data-no-print
   >
     <Cat />
-  </div>
+  </a>
 </section>
 
 <style>
