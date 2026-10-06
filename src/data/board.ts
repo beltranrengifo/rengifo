@@ -345,6 +345,12 @@ export const techs: Tech[] = [
     uses: { ensayadero: 1, 'radio-perico': 1 },
   },
   {
+    id: 'sql',
+    label: 'SQL · MySQL',
+    layer: 'backend',
+    uses: { aulacm: 2, tau: 3, indra_consultant: 2, indra_po: 2, docline: 1 },
+  },
+  {
     id: 'postgres',
     label: 'Postgres · Supabase',
     layer: 'backend',
