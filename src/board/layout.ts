@@ -18,6 +18,9 @@ import { START_YEAR, type BoardModel } from './model';
  */
 
 export const YEAR_PX = 260;
+/** Vertical step between rows of roles that share years. */
+const ROLE_ROW = 150;
+
 export const LANE = { role: -250, tech: 40, project: 310 } as const;
 
 export const timeX = (year: number): number => (year - START_YEAR) * YEAR_PX;
@@ -86,6 +89,22 @@ export function createLayout(
       y: homeY + (random() - 0.5) * 30,
     };
   });
+
+  // Roles that overlap in time would write their names over each other.
+  // Give each one the first row where its label clears the previous one;
+  // extra rows step down, below the year numbers at the top.
+  const rowEnds: number[] = [];
+  clipNodes
+    .filter((node) => node.kind === 'role')
+    .sort((a, b) => a.homeX - b.homeX)
+    .forEach((node) => {
+      const half = Math.max(node.r, Math.min(node.labelLength * 3.4, 110)) + 18;
+      let row = rowEnds.findIndex((end) => node.homeX - half > end);
+      if (row < 0) row = rowEnds.length;
+      rowEnds[row] = node.homeX + half;
+      node.homeY = LANE.role + row * ROLE_ROW;
+      node.y = node.homeY;
+    });
 
   // Technologies used by a single long role would all land on its middle;
   // spread them along its years instead, in the order they are listed.

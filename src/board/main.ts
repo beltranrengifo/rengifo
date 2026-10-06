@@ -168,9 +168,25 @@ function boot(root: HTMLElement): void {
       text.textContent = label.title;
       return g;
     }
+    // Long role titles wrap onto two short lines instead of spreading
+    // sideways into the next role.
+    const wrap = (text: string, max = 24): string[] => {
+      const out: string[] = [];
+      let line = '';
+      for (const word of text.split(' ')) {
+        if (line && (line + ' ' + word).length > max) {
+          out.push(line);
+          line = word;
+        } else {
+          line = line ? `${line} ${word}` : word;
+        }
+      }
+      if (line) out.push(line);
+      return out;
+    };
     const lines = [
       ['board-title', label.title],
-      ['board-sub', label.sub],
+      ...(label.sub ? wrap(label.sub).map((l) => ['board-sub', l]) : []),
       ['board-years-label', label.years],
     ].filter(([, text]) => text) as [string, string][];
     // Roles are written above their circle and projects below, so the
