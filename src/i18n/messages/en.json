@@ -174,9 +174,10 @@
   "ai_practice_mcp": "MCP connectors: Gmail, Calendar, Drive, Dropbox, Vercel, the browser",
   "ai_practice_tokens": "Caveman and RTK to keep token use lean",
   "ai_practice_own": "My own skills on the Anthropic API for Jira, team work and Scrum ceremonies, and my own Claude Code hooks; one branch and one pull request per change, whoever writes the code",
+  "ai_built_perico": "Radio Perico — a RAG pipeline in Python over a corpus of my own",
+  "ai_built_ensayadero": "Ensayadero.studio — in-house audio ML for stems, MIDI and chords, no paid APIs",
+  "ai_built_paella": "PaellaLab — a cooking assistant with semantic search and Llama 3.3 70B on Groq",
   "ai_built_voice": "agent-voice — Claude Code that speaks",
   "ai_built_worktree": "worktree-flow",
-  "ai_built_review": "Assisted Review — grades a course's submissions in batches with Claude against a rubric; the code computes the mark",
-  "ai_built_perico": "Radio Perico — a RAG pipeline in Python",
-  "ai_built_paella": "PaellaLab — a small cooking assistant"
+  "ai_built_review": "Assisted Review — grading submissions with Claude, in progress"
 }
