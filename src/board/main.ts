@@ -1,5 +1,13 @@
 import type { ForceX, ForceY } from 'd3-force';
-import { createLayout, isMinor, settle, timeX, type Node } from './layout';
+import {
+  createLayout,
+  isMinor,
+  LANE,
+  settle,
+  TECH_BAND,
+  timeX,
+  type Node,
+} from './layout';
 import { berryFor, drawFruit, KINDS, PROJECT_KINDS } from './fruit';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Companion } from './companion';
@@ -374,6 +382,7 @@ function boot(root: HTMLElement): void {
     panel.inert = false;
     panelOpen = true;
     root.dataset.panel = 'open';
+    dismissIntro();
     const i = nodes.findIndex((node) => node.id === id);
     if (i >= 0) {
       focus(i);
@@ -626,10 +635,47 @@ function boot(root: HTMLElement): void {
     return `M${f(sx)} ${f(sy)} C${f(sx)} ${f(my)} ${f(tx)} ${f(my)} ${f(tx)} ${f(ty)}`;
   };
 
+  // The title steps aside at the first touch, or when a panel opens.
+  const intro = root.querySelector<HTMLElement>('[data-board-intro]');
+  let introShown = intro !== null;
+  const dismissIntro = () => {
+    if (!introShown) return;
+    introShown = false;
+    intro?.toggleAttribute('data-hidden', true);
+    // The board rises into its usual place.
+    tz = fit();
+    tcy = -40;
+  };
+  // While the title shows, the whole board fits in the space below it.
+  if (intro) {
+    const below = intro.offsetTop + intro.offsetHeight + 24;
+    const room = stage.clientHeight - below - 24;
+    zoom = tz = Math.min(fit(), Math.max(MIN_ZOOM, room / (BOTTOM - TOP + 60)));
+    cx = tcx = clampX(Infinity, zoom);
+    cy = tcy = TOP - 30 + (stage.clientHeight / 2 - below) / zoom;
+  }
+  for (const type of ['pointerdown', 'wheel'] as const) {
+    stage.addEventListener(type, dismissIntro, { once: true, passive: true });
+  }
+  window.addEventListener('keydown', dismissIntro, { once: true });
+
+  // Lane names follow their band up and down as the camera moves.
+  const laneY = {
+    role: LANE.role,
+    tech: (TECH_BAND[0] + TECH_BAND[1]) / 2,
+    project: LANE.project,
+  };
+  const laneEls = [...root.querySelectorAll<HTMLElement>('[data-lane]')].map(
+    (el) => [el, laneY[el.dataset.lane as keyof typeof laneY]] as const,
+  );
+
   // Zoomed in past this, the minor technologies show.
   const CLOSE_ZOOM = 1.15;
   const draw = () => {
     svg.classList.toggle('is-close', zoom >= Math.max(CLOSE_ZOOM, fit() * 1.4));
+    for (const [el, y] of laneEls) {
+      el.style.transform = `translateY(${f(stage.clientHeight / 2 + (y - cy) * zoom - 6)}px)`;
+    }
     world.setAttribute(
       'transform',
       `translate(${f(viewW() / 2 - cx * zoom)} ${f(stage.clientHeight / 2 - cy * zoom)}) scale(${zoom.toFixed(4)})`,

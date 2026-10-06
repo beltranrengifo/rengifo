@@ -168,6 +168,17 @@ const caseStudyHref = (slug: string) =>
     </a>
   </header>
 
+  <div class="board-intro" data-board-intro>
+    <h1>{t('ui_board_intro_title', locale)}</h1>
+    <p>{t('ui_board_intro_body', locale)}</p>
+  </div>
+
+  <div class="board-lanes" aria-hidden="true">
+    <span data-lane="role">{t('ui_board_lane_roles', locale)}</span>
+    <span data-lane="tech">{t('ui_board_lane_techs', locale)}</span>
+    <span data-lane="project">{t('ui_board_lane_projects', locale)}</span>
+  </div>
+
   <footer class="board-foot">
     <div class="board-help">
       <button
@@ -564,6 +575,47 @@ const caseStudyHref = (slug: string) =>
     top: 0;
     left: 0;
     padding: 18px 24px;
+  }
+  /* A title over the canvas: what this is, before you start exploring.
+     It steps aside at the first touch. */
+  .board-intro {
+    position: absolute;
+    top: 64px;
+    left: 24px;
+    max-width: min(560px, calc(100% - 48px));
+    pointer-events: none;
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+  .board-intro[data-hidden] {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  .board-intro h1 {
+    margin: 0 0 10px;
+    font: 400 clamp(40px, 6vw, 76px) / 0.95 var(--font-serif, Georgia, serif);
+    letter-spacing: -0.03em;
+    color: var(--board-ink);
+  }
+  .board-intro p {
+    margin: 0;
+    max-width: 44ch;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--color-muted, #5c6166);
+  }
+  /* Lane names in the left margin, riding with the camera. */
+  .board-lanes span {
+    position: absolute;
+    top: 0;
+    left: 24px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-faint, #8a8e93);
+    pointer-events: none;
+    white-space: nowrap;
   }
   .board-home {
     color: var(--color-ink, #16181a);
