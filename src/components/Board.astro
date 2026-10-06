@@ -457,7 +457,8 @@ const caseStudyHref = (slug: string) =>
     stroke: var(--accent);
     stroke-opacity: 0.8;
   }
-  .board-node.is-active .board-dot,
+  /* Roles show focus on the fruit itself, never on their hit circle. */
+  .board-node.is-active:not(.is-role) .board-dot,
   .board-node.is-related.is-tech .board-dot {
     stroke: var(--accent);
   }
