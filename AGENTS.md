@@ -13,6 +13,26 @@ This project uses **bd** (beads) for issue tracking. Run `bd prime` for full wor
 > source of truth; don't `bd import` during normal operation; don't
 > reach for third-party Dolt hosting before trying the default).
 
+## Git Workflow
+
+Every change goes on its own branch and reaches `main` through a pull
+request — never a direct commit or push to `main`. One PR per change keeps
+each one easy to review and easy to revert.
+
+```bash
+git switch -c <type>/<short-description>   # e.g. content/hero-copy
+# …commit…
+git push -u origin HEAD
+gh pr create --fill
+```
+
+Merging to `main` deploys to production (Vercel) and regenerates the
+résumé PDF (`.github/workflows/pdf.yml`), so merging is the owner's call.
+
+Commits and pull requests are the owner's: no AI co-author trailers in
+commit messages and no "generated with" lines in pull requests. Pull
+requests follow `.github/pull_request_template.md`.
+
 ## Quick Reference
 
 ```bash
