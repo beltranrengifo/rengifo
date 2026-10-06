@@ -116,7 +116,10 @@ export function pawStep(): void {
   }
 }
 
-/** A short, soft meow: a voice gliding up and down while the mouth opens and closes. */
+/**
+ * A short meow, "m-ya-u": a buzzy voice shaped by the formants of a mouth
+ * that opens from a hum and closes again, with the pitch rising and falling.
+ */
 export function meow(): void {
   if (!unlocked) return;
   try {
@@ -124,52 +127,67 @@ export function meow(): void {
     const ctx = context;
     if (ctx.state === 'suspended') void ctx.resume();
     const t = ctx.currentTime;
-    const end = t + 0.55;
+    const end = t + 0.6;
     const pitch = 0.95 + Math.random() * 0.1;
     const voice = ctx.createOscillator();
-    voice.type = 'triangle';
-    voice.frequency.setValueAtTime(560 * pitch, t);
-    voice.frequency.linearRampToValueAtTime(760 * pitch, t + 0.16);
-    voice.frequency.linearRampToValueAtTime(520 * pitch, end);
-    // A little vibrato keeps it from sounding like a whistle.
-    const wobble = ctx.createOscillator();
-    wobble.frequency.value = 7;
-    const depth = ctx.createGain();
-    depth.gain.value = 12;
-    wobble.connect(depth).connect(voice.frequency);
-    // Two formants: "mi" opens to "a", closes to "u".
-    const low = ctx.createBiquadFilter();
-    low.type = 'peaking';
-    low.Q.value = 4;
-    low.gain.value = 10;
-    low.frequency.setValueAtTime(700, t);
-    low.frequency.linearRampToValueAtTime(1100, t + 0.18);
-    low.frequency.linearRampToValueAtTime(600, end);
-    const high = ctx.createBiquadFilter();
-    high.type = 'peaking';
-    high.Q.value = 5;
-    high.gain.value = 8;
-    high.frequency.setValueAtTime(2300, t);
-    high.frequency.linearRampToValueAtTime(1600, t + 0.2);
-    high.frequency.linearRampToValueAtTime(900, end);
-    const soft = ctx.createBiquadFilter();
-    soft.type = 'lowpass';
-    soft.frequency.value = 3000;
+    voice.type = 'sawtooth';
+    voice.frequency.setValueAtTime(380 * pitch, t);
+    voice.frequency.linearRampToValueAtTime(540 * pitch, t + 0.2);
+    voice.frequency.linearRampToValueAtTime(330 * pitch, end);
+
+    // Formants in parallel: the vowel moves from "i" through "a" to "u".
+    const mix = ctx.createGain();
+    const formant = (
+      points: [number, number][],
+      q: number,
+      level: number,
+    ): void => {
+      const band = ctx.createBiquadFilter();
+      band.type = 'bandpass';
+      band.Q.value = q;
+      band.frequency.setValueAtTime(points[0]![1], t);
+      for (const [at, hz] of points.slice(1)) {
+        band.frequency.linearRampToValueAtTime(hz, t + at);
+      }
+      const amount = ctx.createGain();
+      amount.gain.value = level;
+      voice.connect(band).connect(amount).connect(mix);
+    };
+    formant(
+      [
+        [0, 500],
+        [0.2, 1000],
+        [0.6, 550],
+      ],
+      6,
+      1,
+    );
+    formant(
+      [
+        [0, 2000],
+        [0.2, 1600],
+        [0.6, 900],
+      ],
+      8,
+      0.6,
+    );
+    formant([[0, 2800]], 10, 0.25);
+
+    // The mouth: closed (a hum) at the start, open, then closing.
+    const mouth = ctx.createBiquadFilter();
+    mouth.type = 'lowpass';
+    mouth.frequency.setValueAtTime(400, t);
+    mouth.frequency.exponentialRampToValueAtTime(3200, t + 0.1);
+    mouth.frequency.exponentialRampToValueAtTime(800, end);
+
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.07, t + 0.08);
-    gain.gain.setValueAtTime(0.07, t + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.35, t + 0.06);
+    gain.gain.setValueAtTime(0.35, t + 0.35);
     gain.gain.exponentialRampToValueAtTime(0.0001, end);
-    voice
-      .connect(low)
-      .connect(high)
-      .connect(soft)
-      .connect(gain)
-      .connect(ctx.destination);
+    mix.connect(mouth).connect(gain).connect(ctx.destination);
     voice.start(t);
-    wobble.start(t);
     voice.stop(end + 0.05);
-    wobble.stop(end + 0.05);
   } catch {
     /* no audio, no meow */
   }

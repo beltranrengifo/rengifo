@@ -208,7 +208,7 @@ export class Companion {
       );
     }
 
-    // ── Belly up: on his back, paws in the air ─────────────────
+    // ── Belly up: rolled on his side, belly out, paws curled ───
     this.belly = el('g', { display: 'none' }, this.flip);
     this.bellyTail = el(
       'path',
@@ -220,32 +220,26 @@ export class Companion {
       },
       this.belly,
     );
-    for (const x of [-16, -6, 8, 18]) {
-      const g = el('g', { transform: `translate(${x} -20)` }, this.belly);
+    el(
+      'path',
+      { d: 'M-30 -1 C-34 -16 -18 -27 2 -27 C22 -27 32 -16 30 -2 Z', fill: FUR },
+      this.belly,
+    );
+    el('ellipse', { cx: 2, cy: -9, rx: 19, ry: 8, fill: CREAM }, this.belly);
+    // Hind paw first, then the two front paws folded over the chest.
+    for (let i = 0; i < 3; i++) {
+      const g = el('g', {}, this.belly);
       el(
         'path',
         {
-          d: 'M-4.5 0 L-4.5 -12 Q-4.5 -16 0 -16 Q4.5 -16 4.5 -12 L4.5 0 Z',
+          d: 'M-3.5 0 L-3.5 -8 Q-3.5 -11.5 0 -11.5 Q3.5 -11.5 3.5 -8 L3.5 0 Z',
           fill: FUR,
         },
         g,
       );
-      el('ellipse', { cx: 0, cy: -15.5, rx: 5, ry: 2.6, fill: CREAM }, g);
+      el('ellipse', { cx: 0, cy: -11, rx: 4, ry: 2.2, fill: CREAM }, g);
       this.bellyLegs.push(g);
     }
-    el(
-      'path',
-      { d: 'M-30 -2 C-34 -14 -20 -26 0 -26 C20 -26 32 -16 30 -2 Z', fill: FUR },
-      this.belly,
-    );
-    el(
-      'path',
-      {
-        d: 'M-20 -20 C-10 -26 12 -26 22 -18 C14 -12 -10 -12 -20 -20 Z',
-        fill: CREAM,
-      },
-      this.belly,
-    );
 
     // ── Asleep: curled up, tail round the front ────────────────
     this.sleep = el('g', {}, this.flip);
@@ -529,16 +523,21 @@ export class Companion {
     this.sleep.setAttribute('opacity', String(d));
     this.belly.setAttribute('display', onBack ? 'inline' : 'none');
     if (onBack) {
-      // Paws pedal lazily in the air; the tail sweeps the floor.
+      // Front paws curl and knead the air, slowly; the hind paw barely moves.
+      const poses: [number, number, number][] = [
+        [-18, -12, -55],
+        [10, -20, 50],
+        [18, -16, 70],
+      ];
       this.bellyLegs.forEach((leg, i) => {
-        const x = [-16, -6, 8, 18][i]!;
-        const wave = Math.sin(t * 3 + i * 1.3) * 12;
+        const [x, y, angle] = poses[i]!;
+        const wave = Math.sin(t * 2 + i * 1.7) * (i === 0 ? 3 : 7);
         leg.setAttribute(
           'transform',
-          `translate(${x} -20) rotate(${wave.toFixed(1)})`,
+          `translate(${x} ${y}) rotate(${(angle + wave).toFixed(1)})`,
         );
       });
-      const sweep = Math.sin(t * 2) * 6;
+      const sweep = Math.sin(t * 1.5) * 4;
       this.bellyTail.setAttribute(
         'd',
         `M-28 -6 C-40 -4 ${(-46 + sweep).toFixed(1)} 0 ${(-52 + sweep).toFixed(1)} -2`,
@@ -587,10 +586,10 @@ export class Companion {
     let hy = -40 - bob;
     let tilt = Math.sin(this.gait) * 2;
     if (onBack) {
-      // Head on the floor, tipped back, looking up at you.
-      hx = 30;
-      hy = -12;
-      tilt = -24;
+      // Head resting low, tipped a little back, eyes shut with pleasure.
+      hx = 26;
+      hy = -22;
+      tilt = -14 + Math.sin(t * 1.5) * 2;
     }
     if (sitting) {
       // From upright to resting on his paws, as drowsiness takes over.
