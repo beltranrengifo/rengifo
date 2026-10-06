@@ -1,5 +1,6 @@
 import type { ForceX, ForceY } from 'd3-force';
 import { createLayout, settle, timeX, type Node } from './layout';
+import { drawFruit, KINDS } from './fruit';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Companion } from './companion';
 import { Poncho } from './poncho';
@@ -136,6 +137,20 @@ function boot(root: HTMLElement): void {
     return path;
   });
 
+  const fruitOf = new Map<string, string>();
+  const fruits = new Map<Node, SVGGElement>();
+  // One fruit per company, handed out in time order so neighbours differ.
+  const companyOf = (node: Node) =>
+    model.clips[node.index]!.label.split(' · ').pop()!;
+  [...nodes]
+    .filter((node) => node.kind === 'role')
+    .sort((a, b) => a.homeX - b.homeX)
+    .forEach((node) => {
+      const company = companyOf(node);
+      if (!fruitOf.has(company)) {
+        fruitOf.set(company, KINDS[(fruitOf.size * 3) % KINDS.length]!);
+      }
+    });
   const nodeEls = nodes.map((node) => {
     const label = model.labels[node.id]!;
     const g = el(
@@ -151,6 +166,10 @@ function boot(root: HTMLElement): void {
       nodeLayer,
     );
     el('circle', { r: node.r, class: 'board-dot' }, g);
+    // Roles are fruit — one per company, so Mews stays one fruit.
+    if (node.kind === 'role') {
+      fruits.set(node, drawFruit(g, fruitOf.get(companyOf(node))!, node.r));
+    }
     if (node.kind === 'tech') {
       const text = el(
         'text',
@@ -544,6 +563,21 @@ function boot(root: HTMLElement): void {
       'transform',
       `translate(${f(viewW() / 2 - cx * zoom)} ${f(stage.clientHeight / 2 - cy * zoom)}) scale(${zoom.toFixed(4)})`,
     );
+    // The fruit float: a slow bob and sway, each to its own rhythm, so the
+    // board is alive while it waits to be touched.
+    if (!still) {
+      const t = performance.now() / 1000;
+      let k = 0;
+      for (const [node, fruit] of fruits) {
+        const phase = k++ * 1.7;
+        const bob = Math.sin(t * 0.9 + phase) * node.r * 0.06;
+        const sway = Math.sin(t * 0.6 + phase) * 4;
+        fruit.setAttribute(
+          'transform',
+          `translate(0 ${f(bob)}) rotate(${sway.toFixed(2)})`,
+        );
+      }
+    }
     nodes.forEach((node, i) => {
       nodeEls[i]!.setAttribute(
         'transform',

@@ -386,10 +386,25 @@ const caseStudyHref = (slug: string) =>
       fill 0.3s ease,
       stroke 0.3s ease;
   }
+  /* Roles are fruit; their circle stays as an invisible hit area. */
   .board-node.is-role .board-dot {
-    fill: #fbfaf8;
+    fill: transparent;
+    stroke: none;
+  }
+  .fruit-body {
     stroke: var(--board-ink);
+    stroke-opacity: 0.55;
     stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke 0.3s ease,
+      stroke-opacity 0.3s ease;
+  }
+  .board-node.is-active .fruit-body,
+  .board-node:focus-visible .fruit-body {
+    stroke: var(--accent);
+    stroke-opacity: 1;
+    stroke-width: 1.8;
   }
   .board-node.is-project .board-dot {
     fill: #fbfaf8;
@@ -450,7 +465,6 @@ const caseStudyHref = (slug: string) =>
   .board-node.is-related.is-tech .board-dot {
     fill: var(--accent);
   }
-  .board-node.is-active.is-role .board-dot,
   .board-node.is-active.is-project .board-dot {
     fill: color-mix(in srgb, var(--accent) 8%, #fbfaf8);
     stroke-width: 1.5;
@@ -460,7 +474,7 @@ const caseStudyHref = (slug: string) =>
     fill: var(--accent);
     fill-opacity: 1;
   }
-  .board-node:focus-visible .board-dot {
+  .board-node:not(.is-role):focus-visible .board-dot {
     stroke: var(--accent);
     stroke-width: 2;
   }
