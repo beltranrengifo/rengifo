@@ -60,15 +60,9 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
     class="border-hairline mt-16 flex items-center gap-[14px] border-t pt-7"
     style={`animation: fadeUp 0.8s 0.24s ${EASE} both;`}
   >
-    <button
-      type="button"
-      data-accent-cycle
-      class="accent-dot shrink-0"
-      aria-label={t('ui_accent_label', locale)}
-      title={t('ui_accent_label', locale)}
-    >
+    <span class="accent-dot shrink-0" aria-hidden="true">
       <span></span>
-    </button>
+    </span>
     <p class="text-body m-0 text-[15px]">{t('ui_availability', locale)}</p>
   </div>
 
