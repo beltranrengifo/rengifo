@@ -13,7 +13,7 @@ import type { Span } from './experience';
  * slugs.
  */
 
-export type Layer = 'backend' | 'frontend' | 'tools' | 'media';
+export type Layer = 'backend' | 'frontend' | 'tools' | 'media' | 'practice';
 export type Weight = 1 | 2 | 3;
 
 export interface Tech {
@@ -150,24 +150,14 @@ export const techs: Tech[] = [
       'about-ndugu': 3,
     },
   },
-  {
-    id: 'logic',
-    label: 'Logic',
-    layer: 'media',
-    uses: { prev: 2 },
-  },
+  { id: 'logic', label: 'Logic', layer: 'media', uses: { prev: 2 } },
   {
     id: 'avid',
     label: 'Avid Media Composer',
     layer: 'media',
-    uses: { prev: 2 },
+    uses: { prev: 3 },
   },
-  {
-    id: 'final-cut',
-    label: 'Final Cut',
-    layer: 'media',
-    uses: { prev: 2 },
-  },
+  { id: 'final-cut', label: 'Final Cut', layer: 'media', uses: { prev: 3 } },
   {
     id: 'davinci',
     label: 'DaVinci Resolve',
@@ -179,6 +169,13 @@ export const techs: Tech[] = [
     label: 'After Effects',
     layer: 'media',
     uses: { prev: 1 },
+  },
+  { id: 'neve', label: 'Neve', layer: 'media', uses: { prev: 2 } },
+  {
+    id: 'dslr',
+    label: { en: 'DSLR cameras', es: 'Cámaras DSLR' },
+    layer: 'media',
+    uses: { prev: 2 },
   },
 
   // Frontend
@@ -202,7 +199,7 @@ export const techs: Tech[] = [
     label: 'TypeScript',
     layer: 'frontend',
     uses: {
-      ironhack: 1,
+      ironhack: 2,
       docline: 2,
       liferay: 2,
       mews_senior: 3,
@@ -226,6 +223,7 @@ export const techs: Tech[] = [
       paellalab: 1,
       ensayadero: 1,
       'radio-perico': 1,
+      indra_consultant: 2,
     },
   },
   {
@@ -234,12 +232,7 @@ export const techs: Tech[] = [
     layer: 'frontend',
     uses: { indra_consultant: 3, indra_po: 2, docline: 3 },
   },
-  {
-    id: 'angular',
-    label: 'Angular',
-    layer: 'frontend',
-    uses: { ironhack: 1 },
-  },
+  { id: 'angular', label: 'Angular', layer: 'frontend', uses: { ironhack: 1 } },
   {
     id: 'jquery',
     label: 'jQuery',
@@ -285,7 +278,15 @@ export const techs: Tech[] = [
     id: 'a11y',
     label: { en: 'Accessibility', es: 'Accesibilidad' },
     layer: 'frontend',
-    uses: { mews_senior: 1, mews_techlead: 3, mews_squad: 1 },
+    uses: { mews_senior: 2, mews_techlead: 3, mews_squad: 1, indra_po: 2 },
+  },
+  { id: 'vuex', label: 'Vuex', layer: 'frontend', uses: { docline: 2 } },
+  { id: 'redux', label: 'Redux', layer: 'frontend', uses: { liferay: 2 } },
+  {
+    id: 'react-context',
+    label: 'React Context',
+    layer: 'frontend',
+    uses: { liferay: 2 },
   },
 
   // Backend & data
@@ -293,20 +294,20 @@ export const techs: Tech[] = [
     id: 'php',
     label: 'PHP',
     layer: 'backend',
-    uses: { aulacm: 2, tau: 3, indra_po: 2, docline: 1 },
+    uses: { aulacm: 2, tau: 3, indra_po: 2, docline: 1, indra_consultant: 2 },
   },
   {
     id: 'wordpress',
     label: 'WordPress',
     layer: 'backend',
-    uses: { aulacm: 3, tau: 3 },
+    uses: { aulacm: 3, tau: 3, indra_consultant: 2 },
   },
   {
     id: 'node',
     label: 'Node · Express',
     layer: 'backend',
     uses: {
-      tau: 1,
+      tau: 2,
       ironhack: 3,
       indra_consultant: 2,
       'carabanchel-creativa': 1,
@@ -351,10 +352,30 @@ export const techs: Tech[] = [
   },
   {
     id: 'llm',
-    label: 'LLMs · RAG',
+    label: { en: 'AI · LLMs', es: 'IA · LLMs' },
     layer: 'backend',
-    uses: { paellalab: 1, 'radio-perico': 1 },
+    uses: {
+      mews_techlead: 1,
+      mews_squad: 3,
+      paellalab: 1,
+      'radio-perico': 1,
+      mews_senior: 3,
+    },
   },
+  {
+    id: 'fastapi',
+    label: 'FastAPI',
+    layer: 'backend',
+    uses: { 'radio-perico': 1 },
+  },
+  {
+    id: 'ml',
+    label: 'TensorFlow · PyTorch',
+    layer: 'backend',
+    uses: { ensayadero: 1 },
+  },
+  { id: 'apollo', label: 'Apollo', layer: 'backend', uses: { indra_po: 2 } },
+  { id: 'ruby', label: 'Ruby', layer: 'backend', uses: { ironhack: 2 } },
 
   // Tools & delivery
   {
@@ -375,10 +396,62 @@ export const techs: Tech[] = [
     uses: { mews_senior: 2, mews_techlead: 2 },
   },
   {
+    id: 'figma',
+    label: 'Figma',
+    layer: 'tools',
+    uses: { mews_senior: 1, mews_techlead: 2, indra_consultant: 2 },
+  },
+  { id: 'docker', label: 'Docker', layer: 'tools', uses: { ensayadero: 1 } },
+  {
     id: 'cicd',
     label: 'CI/CD',
     layer: 'tools',
     uses: { mews_senior: 1, mews_techlead: 1, ensayadero: 1 },
+  },
+  {
+    id: 'vitest',
+    label: 'Vitest',
+    layer: 'tools',
+    uses: { mews_senior: 2, mews_techlead: 2, mews_squad: 2 },
+  },
+  {
+    id: 'testing-library',
+    label: 'Testing Library',
+    layer: 'tools',
+    uses: { liferay: 1, mews_senior: 2, mews_techlead: 2, mews_squad: 2 },
+  },
+  {
+    id: 'jest',
+    label: 'Jest',
+    layer: 'tools',
+    uses: { docline: 2, indra_consultant: 2, liferay: 1 },
+  },
+  {
+    id: 'sketch',
+    label: 'Sketch',
+    layer: 'tools',
+    uses: { indra_consultant: 2 },
+  },
+
+  // Ways of working
+  {
+    id: 'scrum',
+    label: 'Scrum',
+    layer: 'practice',
+    uses: { indra_po: 2, mews_senior: 2, mews_squad: 2 },
+  },
+  {
+    id: 'kanban',
+    label: 'Kanban',
+    layer: 'practice',
+    uses: { mews_techlead: 2, mews_squad: 2 },
+  },
+  { id: 'jira', label: 'Jira', layer: 'practice', uses: { mews_squad: 2 } },
+  {
+    id: 'product',
+    label: { en: 'Product', es: 'Producto' },
+    layer: 'practice',
+    uses: { indra_po: 2, mews_squad: 2 },
   },
 ];
 
