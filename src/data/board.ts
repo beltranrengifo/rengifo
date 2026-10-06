@@ -43,7 +43,8 @@ export interface BoardWork {
   id: string;
   label: string;
   span: Span;
-  note: Text;
+  /** A line about the work, when the facts alone do not say enough. */
+  note?: Text;
   facts: { label: Text; value: Text | string }[];
   /** Where to watch it, if anywhere. */
   watch?: string;
@@ -55,6 +56,24 @@ const RUNTIME = { en: 'Runtime', es: 'Duración' };
 const AWARDS = { en: 'Awards', es: 'Premios' };
 
 export const boardWorks: BoardWork[] = [
+  {
+    id: 'lacasaestudio',
+    label: 'lacasaestudio',
+    span: ['2002', '2015'],
+    note: {
+      en: 'The company I founded with my friend Iván, still going: from recording and sound to video and websites.',
+      es: 'La empresa que fundé con mi amigo Iván, que sigue en marcha: de la grabación y el sonido al vídeo y las webs.',
+    },
+    facts: [
+      {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: {
+          en: 'Music recording, sound engineering, video and websites',
+          es: 'Grabación musical, ingeniería de sonido, vídeo y webs',
+        },
+      },
+    ],
+  },
   {
     id: 'en-la-cuna-del-aire',
     label: 'En la cuna del aire',
@@ -107,6 +126,20 @@ export const boardWorks: BoardWork[] = [
     ],
   },
   {
+    id: 'mtv',
+    label: 'MTV',
+    span: ['2008', '2012'],
+    facts: [
+      {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: {
+          en: 'Sound post-production and sound engineering',
+          es: 'Postproducción e ingeniería de sonido',
+        },
+      },
+    ],
+  },
+  {
     id: 'about-ndugu',
     label: 'About Ndugu',
     span: ['2012-06', '2013-02'],
@@ -118,8 +151,8 @@ export const boardWorks: BoardWork[] = [
       {
         label: { en: 'My role', es: 'Mi papel' },
         value: {
-          en: 'Location sound, post-production and mixing',
-          es: 'Sonido directo, postproducción y mezclas',
+          en: 'Location sound and miking in Kenya, translations and dubbing, then post-production: foley, the mix, and recording and mixing the music we taped in the villages',
+          es: 'Sonido directo y microfonía en Kenia, traducciones y doblajes; después la postproducción: foleys, mezclas, y la grabación y mezcla de la música que grabamos en las aldeas',
         },
       },
       { label: DIRECTION, value: 'David Muñoz' },
@@ -158,20 +191,31 @@ export const techs: Tech[] = [
     label: 'Pro Tools',
     layer: 'media',
     uses: {
+      lacasaestudio: 3,
       prev: 3,
       'en-la-cuna-del-aire': 3,
       'flores-de-ruanda': 3,
       'about-ndugu': 3,
     },
   },
-  { id: 'logic', label: 'Logic', layer: 'media', uses: { prev: 2 } },
+  {
+    id: 'logic',
+    label: 'Logic',
+    layer: 'media',
+    uses: { lacasaestudio: 3, prev: 2 },
+  },
   {
     id: 'avid',
     label: 'Avid Media Composer',
     layer: 'media',
     uses: { prev: 3 },
   },
-  { id: 'final-cut', label: 'Final Cut', layer: 'media', uses: { prev: 3 } },
+  {
+    id: 'final-cut',
+    label: 'Final Cut',
+    layer: 'media',
+    uses: { lacasaestudio: 3, prev: 3 },
+  },
   {
     id: 'davinci',
     label: 'DaVinci Resolve',
@@ -184,12 +228,58 @@ export const techs: Tech[] = [
     layer: 'media',
     uses: { prev: 1 },
   },
-  { id: 'neve', label: 'Neve', layer: 'media', uses: { prev: 2 } },
+  {
+    id: 'neve',
+    label: 'Neve',
+    layer: 'media',
+    uses: { lacasaestudio: 2, prev: 2 },
+  },
+  // The craft itself, not just the software: what he did on each film.
+  {
+    id: 'location-sound',
+    label: { en: 'Location sound', es: 'Sonido directo' },
+    layer: 'media',
+    uses: { prev: 3, 'about-ndugu': 3 },
+  },
+  {
+    id: 'sound-design',
+    label: { en: 'Sound design', es: 'Diseño de sonido' },
+    layer: 'media',
+    uses: { prev: 2, 'flores-de-ruanda': 3 },
+  },
+  {
+    id: 'foley-dubbing',
+    label: { en: 'Foley · dubbing', es: 'Foley · doblaje' },
+    layer: 'media',
+    uses: { prev: 2, 'about-ndugu': 3 },
+  },
+  {
+    id: 'mixing',
+    label: { en: 'Mixing', es: 'Mezcla' },
+    layer: 'media',
+    uses: {
+      prev: 3,
+      'en-la-cuna-del-aire': 3,
+      'about-ndugu': 3,
+      lacasaestudio: 3,
+    },
+  },
+  {
+    id: 'music-recording',
+    label: { en: 'Music recording', es: 'Grabación musical' },
+    layer: 'media',
+    uses: {
+      prev: 2,
+      'en-la-cuna-del-aire': 3,
+      'about-ndugu': 3,
+      lacasaestudio: 3,
+    },
+  },
   {
     id: 'dslr',
     label: { en: 'DSLR cameras', es: 'Cámaras DSLR' },
     layer: 'media',
-    uses: { prev: 2 },
+    uses: { lacasaestudio: 2, prev: 2 },
   },
 
   // Frontend
@@ -263,7 +353,7 @@ export const techs: Tech[] = [
     id: 'jquery',
     label: 'jQuery',
     layer: 'frontend',
-    uses: { aulacm: 1, tau: 3 },
+    uses: { lacasaestudio: 2, aulacm: 1, tau: 3 },
   },
   {
     id: 'css',
@@ -320,13 +410,20 @@ export const techs: Tech[] = [
     id: 'php',
     label: 'PHP',
     layer: 'backend',
-    uses: { aulacm: 2, tau: 3, indra_po: 2, docline: 1, indra_consultant: 2 },
+    uses: {
+      lacasaestudio: 2,
+      aulacm: 2,
+      tau: 3,
+      indra_po: 2,
+      docline: 1,
+      indra_consultant: 2,
+    },
   },
   {
     id: 'wordpress',
     label: 'WordPress',
     layer: 'backend',
-    uses: { aulacm: 3, tau: 3, indra_consultant: 2 },
+    uses: { lacasaestudio: 2, aulacm: 3, tau: 3, indra_consultant: 2 },
   },
   {
     id: 'node',
@@ -374,7 +471,14 @@ export const techs: Tech[] = [
     id: 'sql',
     label: 'SQL · MySQL',
     layer: 'backend',
-    uses: { aulacm: 2, tau: 3, indra_consultant: 2, indra_po: 2, docline: 1 },
+    uses: {
+      lacasaestudio: 2,
+      aulacm: 2,
+      tau: 3,
+      indra_consultant: 2,
+      indra_po: 2,
+      docline: 1,
+    },
   },
   {
     id: 'postgres',
