@@ -47,6 +47,12 @@ const shownProjects = projects.map((project) => ({
   project,
 }));
 
+// A work's years: one year, or the first and last when it ran longer.
+const workYears = (span: Span) => {
+  const [from, to] = [span[0].slice(0, 4), span[1].slice(0, 4)];
+  return from === to ? from : `${from} — ${to}`;
+};
+
 // Films and other work only the board shows; drawn like projects.
 const works = boardWorks.map((work) => ({
   id: work.id,
@@ -89,7 +95,7 @@ const labels: Record<string, { title: string; sub?: string; years?: string }> =
     ]),
     ...works.map((work) => [
       work.id,
-      { title: work.label, years: work.span[0].slice(0, 4) },
+      { title: work.label, years: workYears(work.span) },
     ]),
     ...rows.map((tech) => [
       `tech:${tech.id}`,
@@ -109,6 +115,25 @@ const boardData = {
 
 const spanOf = new Map<string, Span>(clips.map((c) => [c.id, c.span]));
 const labelOf = new Map<string, string>(clips.map((c) => [c.id, c.label]));
+
+// The technologies a node used, heaviest first, with their berry's colour
+// (see board/fruit.ts), for the chips in its panel.
+const BERRY: Record<string, string> = {
+  backend: '#b5483f',
+  frontend: '#5f7299',
+  tools: '#8d73a0',
+  media: '#c25a6c',
+  practice: '#c8574a',
+};
+const techsOf = (id: string) =>
+  techs
+    .filter((tech) => tech.uses[id])
+    .sort((a, b) => b.uses[id]! - a.uses[id]!)
+    .map((tech) => ({
+      id: `tech:${tech.id}`,
+      label: techLabel(tech.label),
+      colour: BERRY[tech.layer] ?? '#b5483f',
+    }));
 
 const layerHeading = {
   backend: 'cap_h_backend',
@@ -219,6 +244,24 @@ const caseStudyHref = (slug: string) =>
           {role.id === 'prev' && (
             <p class="board-note">{t('ui_board_highlights_note', locale)}</p>
           )}
+          {techsOf(role.id).length > 0 && (
+            <>
+              <p class="board-used">{t('ui_board_techs', locale)}</p>
+              <ul class="board-chips">
+                {techsOf(role.id).map((tech) => (
+                  <li>
+                    <button
+                      type="button"
+                      data-goto={tech.id}
+                      style={`--berry: ${tech.colour}`}
+                    >
+                      {tech.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </section>
       ))
     }
@@ -231,7 +274,24 @@ const caseStudyHref = (slug: string) =>
           </p>
           <h2>{project.name}</h2>
           <p>{t(project.rowKey, locale)}</p>
-          <p class="board-stack">{project.stack.join(' · ')}</p>
+          {techsOf(id).length > 0 && (
+            <>
+              <p class="board-used">{t('ui_board_techs', locale)}</p>
+              <ul class="board-chips">
+                {techsOf(id).map((tech) => (
+                  <li>
+                    <button
+                      type="button"
+                      data-goto={tech.id}
+                      style={`--berry: ${tech.colour}`}
+                    >
+                      {tech.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {project.page !== false && (
             <a
               href={caseStudyHref(project.slug)}
@@ -248,10 +308,10 @@ const caseStudyHref = (slug: string) =>
       works.map(({ id, span, work }) => (
         <section data-panel={id} hidden>
           <p class="board-kicker">
-            {t('ui_board_highlight', locale)} · {span[0].slice(0, 4)}
+            {t('ui_board_highlight', locale)} · {workYears(span)}
           </p>
           <h2>{work.label}</h2>
-          <p>{work.note[locale]}</p>
+          {work.note && <p>{work.note[locale]}</p>}
           <dl class="board-facts">
             {work.facts.map(({ label, value }) => (
               <>
@@ -260,6 +320,24 @@ const caseStudyHref = (slug: string) =>
               </>
             ))}
           </dl>
+          {techsOf(id).length > 0 && (
+            <>
+              <p class="board-used">{t('ui_board_techs', locale)}</p>
+              <ul class="board-chips">
+                {techsOf(id).map((tech) => (
+                  <li>
+                    <button
+                      type="button"
+                      data-goto={tech.id}
+                      style={`--berry: ${tech.colour}`}
+                    >
+                      {tech.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {work.watch && (
             <a
               href={work.watch}
@@ -637,9 +715,10 @@ const caseStudyHref = (slug: string) =>
     top: 0;
     right: 0;
     bottom: 0;
-    width: 420px;
+    /* Wide enough to read: about 60 characters a line. */
+    width: clamp(460px, 40vw, 660px);
     overflow-y: auto;
-    padding: 72px 36px 48px;
+    padding: 56px 56px 56px;
     background: color-mix(in srgb, var(--board-bg) 94%, white);
     border-left: 1px solid rgba(22, 24, 26, 0.08);
     box-shadow: -24px 0 60px rgba(22, 24, 26, 0.06);
@@ -667,16 +746,15 @@ const caseStudyHref = (slug: string) =>
     opacity: 0;
   }
   .board-panel h2 {
-    margin: 0 0 16px;
-    font-size: 26px;
-    line-height: 1.15;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    font: italic 400 38px/1.1 var(--font-serif, Georgia, serif);
+    letter-spacing: -0.01em;
   }
   .board-panel p {
-    margin: 0 0 14px;
-    font-size: 15px;
-    line-height: 1.6;
+    max-width: 62ch;
+    margin: 0 0 16px;
+    font-size: 17px;
+    line-height: 1.65;
     color: var(--color-body, #3a3d40);
   }
   .board-kicker {
@@ -803,6 +881,49 @@ const caseStudyHref = (slug: string) =>
   }
   .board-sheet-handle {
     display: none;
+  }
+  /* The node's own fruit, large, at the head of its panel. */
+  .board-panel-fruit {
+    display: block;
+    width: 72px;
+    height: 72px;
+    margin: 0 0 22px;
+    overflow: visible;
+  }
+  .board-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 22px;
+    padding: 0;
+    list-style: none;
+  }
+  .board-chips button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 9px;
+    border: 1px solid rgba(22, 24, 26, 0.12);
+    border-radius: 999px;
+    background: none;
+    font: 14px/1.2 var(--font-sans, 'Schibsted Grotesk', system-ui, sans-serif);
+    color: var(--color-ink, #16181a);
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .board-chips button::before {
+    content: '';
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--berry);
+  }
+  .board-chips button:hover,
+  .board-chips button:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   @media (max-width: 720px) {

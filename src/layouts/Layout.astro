@@ -58,6 +58,26 @@ const person = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // The saved theme, before first paint, so the page never flashes the
+      // default. Older visits saved an accent colour; map it across. Board
+      // mode keeps its own palette.
+      if (!/\/board\/?$/.test(location.pathname))
+        try {
+          const old = {
+            '#16181a': 'ink',
+            '#6b705c': 'sage',
+            '#8c4a3b': 'terracotta',
+          };
+          const theme =
+            localStorage.getItem('theme') ||
+            old[localStorage.getItem('accent')];
+          if (theme && theme !== 'blue')
+            document.documentElement.dataset.theme = theme;
+        } catch {
+          /* storage unavailable: the default theme */
+        }
+    </script>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#F6F5F2" />
     {canonical && <link rel="canonical" href={canonical.href} />}

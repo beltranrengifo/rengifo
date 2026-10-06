@@ -1,0 +1,49 @@
+name: AI stack review
+
+# "How I work with AI" is a dated snapshot, and the stack moves fast. Every
+# four weeks this opens an issue asking for a fresh look. It never changes
+# the page itself: the review, and the new `reviewedOn` date, are by hand.
+on:
+  schedule:
+    # Mondays at 09:00 UTC; the job itself keeps only every fourth week.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every fourth week only
+        id: due
+        run: |
+          week=$(date -u +%V)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ $((10#$week % 4)) -eq 0 ]; then
+            echo "due=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open the review issue
+        if: steps.due.outputs.due == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          title="Review the AI stack ($(date -u +%Y-%m))"
+          # One open reminder at a time.
+          if gh issue list --state open --search "Review the AI stack in:title" --json number --jq 'length' | grep -qv '^0$'; then
+            echo "A review issue is already open."
+            exit 0
+          fi
+          gh issue create --title "$title" --body "$(cat <<'EOF'
+          Time to look at **How I work with AI** again.
+
+          - [ ] Tools and models: anything new, anything dropped?
+          - [ ] How I work: still true?
+          - [ ] Built by me: new projects, links still live?
+          - [ ] Update `reviewedOn` in `src/data/ai.ts`.
+
+          Change it on its own branch with a pull request, as usual.
+          EOF
+          )"

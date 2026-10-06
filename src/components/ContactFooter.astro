@@ -47,14 +47,14 @@ const locale = resolveLocale(Astro.currentLocale);
         href={pdfHref(locale)}
         download
         data-no-print
-        class="footer-pdf rounded-xs border border-[rgba(246,245,242,0.35)] px-5 py-[10px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200"
+        class="footer-pdf rounded-xs border border-[color-mix(in_srgb,var(--color-canvas)_35%,transparent)] px-5 py-[10px] font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-all duration-200"
       >
         {t('ui_download_pdf', locale)}
       </a>
     </div>
 
     <p
-      class="mt-[90px] text-[13px] tracking-[0.1em] text-[rgba(246,245,242,0.45)]"
+      class="mt-[90px] text-[13px] tracking-[0.1em] text-[color-mix(in_srgb,var(--color-canvas)_45%,transparent)]"
     >
       {t('ui_footer_legal', locale, { year: currentYear })}
     </p>
@@ -85,8 +85,12 @@ const locale = resolveLocale(Astro.currentLocale);
 
 <style>
   .footer-link {
-    color: #f6f5f2;
-    text-decoration-color: rgba(246, 245, 242, 0.4);
+    color: var(--color-canvas);
+    text-decoration-color: color-mix(
+      in srgb,
+      var(--color-canvas) 40%,
+      transparent
+    );
   }
   /* Room above for the hop and the "miau", and never clipped. */
   .poncho-footer {
@@ -103,7 +107,7 @@ const locale = resolveLocale(Astro.currentLocale);
   .poncho-footer :global(.poncho-purr),
   .poncho-footer :global(.poncho-meow),
   .poncho-footer :global(.poncho-zzz) {
-    fill: rgba(246, 245, 242, 0.7);
+    fill: color-mix(in srgb, var(--color-canvas) 70%, transparent);
   }
   .footer-link:hover {
     color: var(--accent);
