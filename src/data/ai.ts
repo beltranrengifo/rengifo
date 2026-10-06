@@ -41,9 +41,7 @@ export const aiStack: AiGroup[] = [
       { key: 'ai_practice_beads' },
       { key: 'ai_practice_mcp' },
       { key: 'ai_practice_tokens' },
-      { key: 'ai_practice_hooks' },
-      { key: 'ai_practice_skills' },
-      { key: 'ai_practice_prs' },
+      { key: 'ai_practice_own' },
     ],
   },
   {
