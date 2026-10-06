@@ -10,7 +10,7 @@
  * move on their own.
  */
 
-import { Purr } from './purr';
+import { Purr, pawStep } from './purr';
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -383,7 +383,10 @@ export class Companion {
       const trotting = far > 600;
       const step = Math.min(far, (trotting ? TROT_SPEED : WALK_SPEED) * dt);
       this.x += step * this.facing;
+      const before = Math.floor(this.gait / Math.PI);
       this.gait += (step / 16) * (trotting ? 1.2 : 1);
+      // A paw lands twice per stride: pat, pat.
+      if (Math.floor(this.gait / Math.PI) !== before) pawStep();
       this.lastActivity = now;
     } else if (this.state === 'walk') {
       this.state = 'sit';

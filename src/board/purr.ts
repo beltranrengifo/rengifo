@@ -79,3 +79,35 @@ export class Purr {
     this.gain = null;
   }
 }
+
+/**
+ * A paw on the floor: a very short, soft tap of filtered noise, slightly
+ * different each time. Same rule as the purr — only once audio is unlocked.
+ */
+export function pawStep(): void {
+  if (!unlocked) return;
+  try {
+    context ??= new AudioContext();
+    const ctx = context;
+    if (ctx.state === 'suspended') void ctx.resume();
+    const length = Math.floor(ctx.sampleRate * 0.035);
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i++) {
+      // Noise that dies away fast: a tap, not a hiss.
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 4);
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 900 + Math.random() * 500;
+    filter.Q.value = 1.4;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.1 + Math.random() * 0.04;
+    source.connect(filter).connect(gain).connect(ctx.destination);
+    source.start();
+  } catch {
+    /* no audio, no steps */
+  }
+}
