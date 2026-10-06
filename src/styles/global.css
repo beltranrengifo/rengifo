@@ -42,6 +42,8 @@ body {
 
 html {
   scroll-behavior: smooth;
+  /* Jumps to a section clear the sticky header. */
+  scroll-padding-top: 88px;
   overflow-x: clip;
 }
 
