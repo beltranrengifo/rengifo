@@ -47,6 +47,12 @@ const shownProjects = projects.map((project) => ({
   project,
 }));
 
+// A work's years: one year, or the first and last when it ran longer.
+const workYears = (span: Span) => {
+  const [from, to] = [span[0].slice(0, 4), span[1].slice(0, 4)];
+  return from === to ? from : `${from} — ${to}`;
+};
+
 // Films and other work only the board shows; drawn like projects.
 const works = boardWorks.map((work) => ({
   id: work.id,
@@ -89,7 +95,7 @@ const labels: Record<string, { title: string; sub?: string; years?: string }> =
     ]),
     ...works.map((work) => [
       work.id,
-      { title: work.label, years: work.span[0].slice(0, 4) },
+      { title: work.label, years: workYears(work.span) },
     ]),
     ...rows.map((tech) => [
       `tech:${tech.id}`,
@@ -237,7 +243,7 @@ const caseStudyHref = (slug: string) =>
       works.map(({ id, span, work }) => (
         <section data-panel={id} hidden>
           <p class="board-kicker">
-            {t('ui_board_highlight', locale)} · {span[0].slice(0, 4)}
+            {t('ui_board_highlight', locale)} · {workYears(span)}
           </p>
           <h2>{work.label}</h2>
           <p>{work.note[locale]}</p>

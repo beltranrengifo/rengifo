@@ -56,6 +56,24 @@ const AWARDS = { en: 'Awards', es: 'Premios' };
 
 export const boardWorks: BoardWork[] = [
   {
+    id: 'lacasaestudio',
+    label: 'lacasaestudio',
+    span: ['2002', '2015'],
+    note: {
+      en: 'The studio I founded with my friend Iván, still going.',
+      es: 'El estudio que fundé con mi amigo Iván, que sigue en marcha.',
+    },
+    facts: [
+      {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: {
+          en: 'Music recording, sound engineering and video recording',
+          es: 'Grabación musical, ingeniería de sonido y grabación de vídeo',
+        },
+      },
+    ],
+  },
+  {
     id: 'en-la-cuna-del-aire',
     label: 'En la cuna del aire',
     span: ['2005-01', '2005-12'],
@@ -95,6 +113,24 @@ export const boardWorks: BoardWork[] = [
         value: {
           en: 'Goya for Best Documentary Short Film, 2010 · Best Documentary at West Chester and Benalmádena · over 80 festivals',
           es: 'Goya al mejor cortometraje documental, 2010 · Mejor documental en West Chester y Benalmádena · más de 80 festivales',
+        },
+      },
+    ],
+  },
+  {
+    id: 'mtv',
+    label: 'MTV',
+    span: ['2008', '2012'],
+    note: {
+      en: 'Sound for the channel.',
+      es: 'Sonido para el canal.',
+    },
+    facts: [
+      {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: {
+          en: 'Sound post-production and sound engineering',
+          es: 'Postproducción e ingeniería de sonido',
         },
       },
     ],
