@@ -10,7 +10,7 @@ export const reviewedOn = '2026-10';
 export interface AiItem {
   /** Message key for the line. */
   key: string;
-  /** Where to see it, when it is his own work. */
+  /** Where to see it: the code, or the deployed app when the code is private. */
   href?: string;
 }
 
@@ -24,9 +24,12 @@ export const aiStack: AiGroup[] = [
     headingKey: 'ai_h_tools',
     items: [
       { key: 'ai_tools_claude_code' },
+      { key: 'ai_tools_plugins' },
       { key: 'ai_tools_models' },
+      { key: 'ai_tools_codex' },
       { key: 'ai_tools_supabase' },
       { key: 'ai_tools_voice' },
+      { key: 'ai_tools_chrome' },
       { key: 'ai_tools_local' },
     ],
   },
@@ -38,16 +41,15 @@ export const aiStack: AiGroup[] = [
       { key: 'ai_practice_beads' },
       { key: 'ai_practice_mcp' },
       { key: 'ai_practice_tokens' },
-      { key: 'ai_practice_prs' },
+      { key: 'ai_practice_own' },
     ],
-  },
-  {
-    headingKey: 'ai_h_mews',
-    items: [{ key: 'ai_mews_moxley' }, { key: 'ai_mews_skills' }],
   },
   {
     headingKey: 'ai_h_built',
     items: [
+      { key: 'ai_built_perico', href: 'https://radioperico.com' },
+      { key: 'ai_built_ensayadero', href: 'https://ensayadero.studio/' },
+      { key: 'ai_built_paella', href: 'https://paella-lab.vercel.app/' },
       {
         key: 'ai_built_voice',
         href: 'https://github.com/beltranrengifo/agent-voice',
@@ -56,8 +58,7 @@ export const aiStack: AiGroup[] = [
         key: 'ai_built_worktree',
         href: 'https://github.com/beltranrengifo/worktree-flow',
       },
-      { key: 'ai_built_perico' },
-      { key: 'ai_built_paella' },
+      { key: 'ai_built_review', href: 'https://assisted-review.vercel.app/' },
     ],
   },
 ];
