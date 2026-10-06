@@ -136,15 +136,6 @@ export const boardWorks: BoardWork[] = [
   },
 ];
 
-/**
- * Roles whose company site was built by Beltrán himself: only those get a
- * link on the board, since the site is the work.
- */
-export const builtSites: Record<string, string> = {
-  aulacm: 'https://aulacm.com/',
-  tau: 'https://taudesign.com/',
-};
-
 /** Grouped by layer; the board orders the rows itself. */
 export const techs: Tech[] = [
   // Sound and image — where it all started.

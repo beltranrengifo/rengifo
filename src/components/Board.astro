@@ -10,13 +10,7 @@ import {
 } from '../lib/i18n';
 import { experience, type Span } from '../data/experience';
 import { projects } from '../data/caseStudies';
-import {
-  techs,
-  projectSpans,
-  eras,
-  boardWorks,
-  builtSites,
-} from '../data/board';
+import { techs, projectSpans, eras, boardWorks } from '../data/board';
 import { buildModel, yearOf } from '../board/model';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -38,6 +32,7 @@ const roles = experience.flatMap((entry) =>
       label: `${title.split(' — ')[0]!.split(', ')[0]} · ${company}`,
       title,
       company,
+      companyHref: entry.companyHref,
       span: role.dates ?? entry.period,
       blurbKey: role.blurbKey,
     };
@@ -175,21 +170,22 @@ const caseStudyHref = (slug: string) =>
       roles.map((role) => (
         <section data-panel={role.id} hidden>
           <p class="board-kicker">
-            {role.company} · {formatSpan(role.span, locale)}
+            {role.companyHref ? (
+              <a
+                href={role.companyHref}
+                target="_blank"
+                rel="noopener"
+                class="board-company"
+              >
+                {role.company}
+              </a>
+            ) : (
+              role.company
+            )}{' '}
+            · {formatSpan(role.span, locale)}
           </p>
           <h2>{role.title}</h2>
           <p>{t(role.blurbKey, locale)}</p>
-          {builtSites[role.id] && (
-            <a
-              href={builtSites[role.id]}
-              target="_blank"
-              rel="noopener"
-              class="board-cta no-underline"
-            >
-              {t('ui_board_built_site', locale)}{' '}
-              <span aria-hidden="true">↗</span>
-            </a>
-          )}
           {role.id === 'prev' && (
             <p class="board-note">{t('ui_board_highlights_note', locale)}</p>
           )}
@@ -612,6 +608,13 @@ const caseStudyHref = (slug: string) =>
   .board-facts dd {
     margin: 0;
     color: var(--color-ink, #16181a);
+  }
+  /* The company links out, quietly, as on the classic page. */
+  .board-company {
+    color: inherit;
+  }
+  .board-company:hover {
+    color: var(--accent);
   }
   .board-note {
     padding-top: 12px;
