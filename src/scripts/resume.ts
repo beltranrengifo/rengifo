@@ -244,3 +244,50 @@ if (!reduced) {
 }
 
 /* Paw-print cursor trail removed — too noisy. */
+
+// ── Section rail — shows past the hero, marks where you are ──
+const rail = document.querySelector<HTMLElement>('[data-section-nav]');
+if (rail) {
+  const links = [
+    ...rail.querySelectorAll<HTMLAnchorElement>('[data-section-link]'),
+  ];
+  const sections = links
+    .map((link) => document.getElementById(link.dataset.sectionLink!))
+    .filter((section): section is HTMLElement => section !== null);
+  const mark = () => {
+    const y = window.scrollY;
+    const line = y + window.innerHeight * 0.35;
+    rail.toggleAttribute(
+      'data-visible',
+      sections[0] !== undefined &&
+        y + window.innerHeight * 0.6 > sections[0].offsetTop,
+    );
+    // The section you are in is the last one whose top is above the line;
+    // at the very bottom, the last one.
+    const atEnd =
+      y + window.innerHeight >= document.documentElement.scrollHeight - 2;
+    let current = -1;
+    sections.forEach((section, i) => {
+      if (section.getBoundingClientRect().top + y <= line) current = i;
+    });
+    if (atEnd) current = sections.length - 1;
+    links.forEach((link, i) =>
+      link.setAttribute('aria-current', String(i === current)),
+    );
+  };
+  let queued = false;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        mark();
+      });
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', mark);
+  mark();
+}

@@ -1,0 +1,143 @@
+---
+import { t, resolveLocale } from '../lib/i18n';
+
+const locale = resolveLocale(Astro.currentLocale);
+
+// The page's sections, in order; ids live on each section.
+const sections = [
+  { id: 'experience', number: '01', key: 'ui_section_experience' },
+  { id: 'work', number: '02', key: 'ui_section_projects' },
+  { id: 'capabilities', number: '03', key: 'ui_section_capabilities' },
+  { id: 'ai', number: '04', key: 'ui_section_ai' },
+  { id: 'education', number: '05', key: 'ui_section_education' },
+  { id: 'contact', number: '06', key: 'ui_section_contact' },
+];
+---
+
+<nav
+  class="section-nav"
+  aria-label={t('ui_section_nav', locale)}
+  data-section-nav
+  data-no-print
+>
+  <ol>
+    {
+      sections.map((section) => (
+        <li>
+          <a
+            href={`#${section.id}`}
+            class="no-underline"
+            data-section-link={section.id}
+          >
+            <span class="section-nav-number">{section.number}</span>
+            <span class="section-nav-label">{t(section.key, locale)}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  /* A quiet rail in the left margin, only where the margin has room, and
+     only once the hero is behind you. */
+  .section-nav {
+    display: none;
+  }
+  @media (min-width: 1360px) {
+    .section-nav {
+      display: block;
+      position: fixed;
+      top: 50%;
+      left: 32px;
+      z-index: 40;
+      transform: translate(-8px, -50%);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        visibility 0s linear 0.35s;
+    }
+    .section-nav[data-visible] {
+      transform: translate(0, -50%);
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+    }
+  }
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 4px;
+  }
+  a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 5px 0;
+    color: var(--color-muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+  .section-nav-number {
+    position: relative;
+    min-width: 18px;
+  }
+  /* A hairline grows under the number of the section you are in. */
+  .section-nav-number::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  /* Labels stay out of the way until you reach for the rail. */
+  .section-nav-label {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    white-space: nowrap;
+  }
+  .section-nav:hover .section-nav-label,
+  .section-nav:focus-within .section-nav-label,
+  a[aria-current='true'] .section-nav-label {
+    opacity: 1;
+    transform: none;
+  }
+  a:hover,
+  a:focus-visible {
+    color: var(--color-ink);
+  }
+  a[aria-current='true'] {
+    color: var(--accent);
+  }
+  a[aria-current='true'] .section-nav-number::after {
+    transform: none;
+  }
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .section-nav,
+    .section-nav-label,
+    .section-nav-number::after {
+      transition: none;
+    }
+  }
+</style>
