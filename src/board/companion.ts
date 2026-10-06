@@ -62,6 +62,9 @@ export class Companion {
   private lastActivity = 0;
   private gait = 0;
   private hopUntil = 0;
+  /** When he last meowed: the word floats up and his mouth opens. */
+  private meowAt = -Infinity;
+  private readonly mouth: SVGEllipseElement;
   private blinkAt = 0;
   private look: { x: number; y: number } | null = null;
   /** 0 awake … 1 fast asleep, eased, so he drifts off and comes round. */
@@ -332,6 +335,11 @@ export class Companion {
       },
       this.head,
     );
+    this.mouth = el(
+      'ellipse',
+      { cx: 0, cy: 10.2, rx: 2.8, ry: 0, fill: '#7a3d3d', display: 'none' },
+      this.head,
+    );
     for (const side of [-1, 1]) {
       for (const dy of [-1, 1.5]) {
         el(
@@ -414,7 +422,10 @@ export class Companion {
   poke(now: number, hop = false): void {
     this.lastActivity = now;
     if (this.state === 'sleep') this.state = 'sit';
-    if (hop && now > this.hopUntil) this.hopUntil = now + HOP_MS;
+    if (hop && now > this.hopUntil) {
+      this.hopUntil = now + HOP_MS;
+      this.meowAt = now;
+    }
   }
 
   /** Purr (eyes half shut, a little rumble) while the pointer is on him. */
@@ -455,6 +466,7 @@ export class Companion {
       // Left off screen: a proper meow, then he trots to catch up.
       if (trotting && now - this.lastMeow > MEOW_EVERY) {
         this.lastMeow = now;
+        this.meowAt = now;
         meow();
       }
       const step = Math.min(far, (trotting ? TROT_SPEED : WALK_SPEED) * dt);
@@ -503,8 +515,13 @@ export class Companion {
     );
     this.flip.setAttribute('transform', `scale(${this.facing} 1)`);
     // The meow rises a little and fades over about a second.
-    const since = now - (this.hopUntil - HOP_MS);
-    const meowing = this.hopUntil > 0 && since >= 0 && since < 1100;
+    const since = now - this.meowAt;
+    const meowing = since >= 0 && since < 1100;
+    // The mouth opens wide on the "ya" and closes on the "u".
+    const open =
+      since >= 0 && since < 600 ? Math.sin((since / 600) * Math.PI) : 0;
+    this.mouth.setAttribute('ry', (open * 3).toFixed(2));
+    this.mouth.setAttribute('display', open > 0.02 ? 'inline' : 'none');
     const m = meowing ? since / 1100 : 1;
     this.meow.setAttribute(
       'opacity',
