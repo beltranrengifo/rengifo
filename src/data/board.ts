@@ -360,9 +360,22 @@ export const techs: Tech[] = [
   },
   {
     id: 'llm',
-    label: 'LLMs · RAG',
+    label: { en: 'AI · LLMs', es: 'IA · LLMs' },
     layer: 'backend',
-    uses: { paellalab: 1, 'radio-perico': 1 },
+    uses: { mews_techlead: 1, mews_squad: 3, paellalab: 1, 'radio-perico': 1 },
+  },
+
+  {
+    id: 'fastapi',
+    label: 'FastAPI',
+    layer: 'backend',
+    uses: { 'radio-perico': 1 },
+  },
+  {
+    id: 'ml',
+    label: 'TensorFlow · PyTorch',
+    layer: 'backend',
+    uses: { ensayadero: 1 },
   },
 
   // Tools & delivery
@@ -382,6 +395,24 @@ export const techs: Tech[] = [
     label: 'Design tokens',
     layer: 'tools',
     uses: { mews_senior: 2, mews_techlead: 2 },
+  },
+  {
+    id: 'testing',
+    label: 'Vitest · Testing Library',
+    layer: 'tools',
+    uses: { liferay: 1, mews_senior: 2, mews_techlead: 2, mews_squad: 2 },
+  },
+  {
+    id: 'figma',
+    label: 'Figma',
+    layer: 'tools',
+    uses: { mews_senior: 1, mews_techlead: 2 },
+  },
+  {
+    id: 'docker',
+    label: 'Docker',
+    layer: 'tools',
+    uses: { ensayadero: 1 },
   },
   {
     id: 'cicd',
