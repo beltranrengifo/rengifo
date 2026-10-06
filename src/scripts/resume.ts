@@ -1,7 +1,7 @@
 /**
  * Client behaviour for the résumé page — all progressive enhancement.
  * Print · reveals · cursor glow · parallax · copy-to-clipboard ·
- * accent switcher · keyboard shortcuts · a console hello.
+ * accent picker · keyboard shortcuts · a console hello.
  */
 
 // ── PDF ──
@@ -178,29 +178,48 @@ document.querySelectorAll<HTMLElement>('[data-copy]').forEach((el) => {
   });
 });
 
-// ── Accent switcher — tap the availability dot ───────────────
+// ── Accent picker — the swatches in the header ───────────────
 const ACCENTS = ['#2f5d8a', '#16181a', '#6b705c', '#8c4a3b'];
-let accentIndex = 0;
+const swatches = [
+  ...document.querySelectorAll<HTMLButtonElement>('[data-accent]'),
+];
+const setAccent = (colour: string, save: boolean) => {
+  document.documentElement.style.setProperty('--accent', colour);
+  for (const swatch of swatches) {
+    const on = swatch.dataset.accent === colour;
+    swatch.setAttribute('aria-checked', String(on));
+    swatch.tabIndex = on ? 0 : -1;
+  }
+  if (!save) return;
+  try {
+    localStorage.setItem('accent', colour);
+  } catch {
+    /* ignore */
+  }
+};
 try {
   const saved = localStorage.getItem('accent');
-  const i = saved ? ACCENTS.indexOf(saved) : -1;
-  if (i >= 0) {
-    accentIndex = i;
-    document.documentElement.style.setProperty('--accent', ACCENTS[i]);
-  }
+  if (saved && ACCENTS.includes(saved)) setAccent(saved, false);
 } catch {
   /* storage unavailable */
 }
-document.querySelectorAll('[data-accent-cycle]').forEach((el) => {
-  el.addEventListener('click', () => {
-    accentIndex = (accentIndex + 1) % ACCENTS.length;
-    const c = ACCENTS[accentIndex];
-    document.documentElement.style.setProperty('--accent', c);
-    try {
-      localStorage.setItem('accent', c);
-    } catch {
-      /* ignore */
-    }
+swatches.forEach((swatch, i) => {
+  swatch.addEventListener('click', () =>
+    setAccent(swatch.dataset.accent!, true),
+  );
+  // Arrow keys move between swatches, as in any radio group.
+  swatch.addEventListener('keydown', (event) => {
+    const step =
+      event.key === 'ArrowRight' || event.key === 'ArrowDown'
+        ? 1
+        : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
+          ? -1
+          : 0;
+    if (!step) return;
+    event.preventDefault();
+    const next = swatches[(i + step + swatches.length) % swatches.length]!;
+    next.focus();
+    next.click();
   });
 });
 
