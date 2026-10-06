@@ -213,6 +213,7 @@ export const techs: Tech[] = [
     uses: {
       ironhack: 1,
       docline: 2,
+      liferay: 2,
       mews_senior: 3,
       mews_techlead: 3,
       mews_squad: 3,
