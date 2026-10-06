@@ -13,21 +13,17 @@ import { t, resolveLocale } from '../lib/i18n';
 const locale = resolveLocale(Astro.currentLocale);
 
 /*
- * The ambient flock. `top`/`left` are page-relative %, `w` is vw (capped by
+ * The ambient flock — four here, two more in the hero. The fewer, the calmer
+ * the page and the lighter the work for the GPU. `top`/`left` are page-relative %, `w` is vw (capped by
  * `max`), `a` the accent alpha, `kf` one of three drift paths so they never
  * move in unison, `px` the mouse-parallax strength and `ps` how much they lag
  * behind the scroll (higher = closer to the viewer).
  */
 const orbs = [
-  { top: 5, left: -12, w: 52, max: 660, a: 11, dur: 26, kf: 'drift', dir: 'alternate', px: 260, ps: 0.42, tdur: 48, tdel: -3 }, // prettier-ignore
   { top: 17, left: 68, w: 38, max: 480, a: 9, dur: 32, kf: 'drift2', dir: 'alternate-reverse', px: 170, ps: 0.26, tdur: 62, tdel: -21 }, // prettier-ignore
   { top: 29, left: 20, w: 28, max: 380, a: 8, dur: 23, kf: 'drift3', dir: 'alternate', px: 340, ps: 0.5, tdur: 41, tdel: -34 }, // prettier-ignore
-  { top: 40, left: -9, w: 44, max: 560, a: 10, dur: 30, kf: 'drift2', dir: 'alternate', px: 215, ps: 0.34, tdur: 55, tdel: -12 }, // prettier-ignore
   { top: 52, left: 60, w: 46, max: 580, a: 11, dur: 27, kf: 'drift', dir: 'alternate-reverse', px: 285, ps: 0.46, tdur: 44, tdel: -27 }, // prettier-ignore
-  { top: 63, left: 10, w: 32, max: 420, a: 8, dur: 35, kf: 'drift3', dir: 'alternate', px: 155, ps: 0.22, tdur: 67, tdel: -8 }, // prettier-ignore
-  { top: 73, left: 45, w: 40, max: 520, a: 10, dur: 24, kf: 'drift2', dir: 'alternate-reverse', px: 325, ps: 0.5, tdur: 39, tdel: -16 }, // prettier-ignore
   { top: 84, left: -7, w: 36, max: 460, a: 9, dur: 31, kf: 'drift', dir: 'alternate', px: 235, ps: 0.38, tdur: 58, tdel: -44 }, // prettier-ignore
-  { top: 92, left: 64, w: 34, max: 440, a: 8, dur: 28, kf: 'drift3', dir: 'alternate-reverse', px: 300, ps: 0.3, tdur: 51, tdel: -31 }, // prettier-ignore
 ];
 ---
 

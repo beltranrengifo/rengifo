@@ -65,6 +65,28 @@ window.addEventListener('beforeprint', () => {
   reveals.forEach((el) => el.classList.remove('reveal-hidden'));
 });
 
+// ── One animation loop, awake only while something is moving ──
+// Each step eases its own values and says whether it is still moving; the
+// loop stops when none is, and input wakes it again. (Browsers already
+// hold back frames in hidden tabs.)
+type Step = () => boolean;
+const steps: Step[] = [];
+let looping = false;
+const frame = (): void => {
+  let moving = false;
+  for (const step of steps) moving = step() || moving;
+  looping = moving;
+  if (looping) requestAnimationFrame(frame);
+};
+const wake = (): void => {
+  if (looping) return;
+  looping = true;
+  requestAnimationFrame(frame);
+};
+for (const type of ['mousemove', 'scroll', 'resize'] as const) {
+  window.addEventListener(type, wake, { passive: true });
+}
+
 // ── Adaptive cursor glow — grows + brightens over interactive ─
 const glow = document.querySelector<HTMLElement>('[data-cursor-glow]');
 if (glow && !reduced && finePointer) {
@@ -87,20 +109,27 @@ if (glow && !reduced && finePointer) {
     el.addEventListener('mouseenter', () => {
       hovering = true;
       glow.style.opacity = '0.85';
+      wake();
     });
     el.addEventListener('mouseleave', () => {
       hovering = false;
       glow.style.opacity = '0.5';
+      wake();
     });
   });
-  const tick = (): void => {
+  steps.push(() => {
     x += (tx - x) * 0.045;
     y += (ty - y) * 0.045;
-    scale += ((hovering ? 2.4 : 1) - scale) * 0.12;
+    const target = hovering ? 2.4 : 1;
+    scale += (target - scale) * 0.12;
     glow.style.transform = `translate(${x - HALF}px, ${y - HALF}px) scale(${scale})`;
-    requestAnimationFrame(tick);
-  };
-  tick();
+    return (
+      Math.abs(tx - x) > 0.3 ||
+      Math.abs(ty - y) > 0.3 ||
+      Math.abs(target - scale) > 0.002
+    );
+  });
+  wake();
 }
 
 // ── Parallax on the drifting shapes — mouse (lagged) + scroll ─
@@ -143,7 +172,9 @@ if (parallaxEls.length && !reduced) {
     );
   }
 
-  const tick = (): void => {
+  // Scroll lag follows the scroll directly, so only the mouse easing keeps
+  // this step moving; a scroll wakes the loop for the frames it needs.
+  steps.push(() => {
     cmx += (tmx - cmx) * 0.06;
     cmy += (tmy - cmy) * 0.06;
     const viewportCentre = window.scrollY + window.innerHeight / 2;
@@ -153,9 +184,9 @@ if (parallaxEls.length && !reduced) {
       const lag = (viewportCentre - bases[i]) * sf;
       el.style.transform = `translate3d(${cmx * f}px, ${cmy * f + lag}px, 0)`;
     });
-    requestAnimationFrame(tick);
-  };
-  tick();
+    return Math.abs(tmx - cmx) > 0.0005 || Math.abs(tmy - cmy) > 0.0005;
+  });
+  wake();
 }
 
 // ── Copy buttons — never on the mailto link itself ──────────
