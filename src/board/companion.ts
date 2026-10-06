@@ -25,6 +25,8 @@ const INK = '#2a2420';
 const WALK_SPEED = 240; // world px per second
 const TROT_SPEED = 600;
 const SLEEP_AFTER = 15_000;
+const HOP_MS = 520;
+const HOP_HEIGHT = 9;
 
 type State = 'walk' | 'sit' | 'sleep';
 
@@ -60,6 +62,8 @@ export class Companion {
   private look: { x: number; y: number } | null = null;
   /** 0 awake … 1 fast asleep, eased, so he drifts off and comes round. */
   private drowse = 0;
+  /** Where the pupils point, eased so the eyes glide instead of jump. */
+  private gaze = { x: 0, y: 0 };
   private lastDraw = 0;
   private purring = false;
   private readonly purr = new Purr();
@@ -77,7 +81,7 @@ export class Companion {
   private readonly pupils: SVGCircleElement[] = [];
   private readonly shines: SVGCircleElement[] = [];
   private readonly sleepFace: SVGGElement;
-  private readonly bubble: SVGGElement;
+  private readonly meow: SVGTextElement;
   private readonly zzz: SVGTextElement;
 
   constructor(parent: SVGGElement, x: number, floor: number, label: string) {
@@ -307,27 +311,13 @@ export class Companion {
       );
     }
 
-    this.bubble = el('g', { opacity: 0 }, this.root);
-    el(
-      'rect',
-      {
-        x: -2,
-        y: -96,
-        width: 48,
-        height: 22,
-        rx: 11,
-        fill: '#fbfaf8',
-        stroke: INK,
-        'stroke-opacity': 0.2,
-      },
-      this.bubble,
-    );
-    const meow = el(
+    // "miau" floats up from him and fades, like the z's when he sleeps.
+    this.meow = el(
       'text',
-      { x: 22, y: -81, 'text-anchor': 'middle', class: 'poncho-meow' },
-      this.bubble,
+      { x: 18, y: -66, class: 'poncho-meow', opacity: 0 },
+      this.root,
     );
-    meow.textContent = 'miau';
+    this.meow.textContent = 'miau';
 
     this.zzz = el(
       'text',
@@ -353,15 +343,15 @@ export class Companion {
     });
   }
 
-  /** Something happened: wake up, and maybe say so. */
+  /**
+   * Something happened: wake up (gently — the eyes open, no jump), and hop
+   * only when asked. A hop already in the air is never restarted, so quick
+   * repeated events cannot make him twitch.
+   */
   poke(now: number, hop = false): void {
     this.lastActivity = now;
-    if (this.state === 'sleep') {
-      this.state = 'sit';
-      this.hopUntil = now + 650;
-    } else if (hop) {
-      this.hopUntil = now + 650;
-    }
+    if (this.state === 'sleep') this.state = 'sit';
+    if (hop && now > this.hopUntil) this.hopUntil = now + HOP_MS;
   }
 
   /** Purr (eyes half shut, a little rumble) while the pointer is on him. */
@@ -421,15 +411,27 @@ export class Companion {
 
     let lift = 0;
     if (now < this.hopUntil) {
-      const p = 1 - (this.hopUntil - now) / 650;
-      lift = Math.sin(p * Math.PI) * 24;
+      // A small, eased hop.
+      const p = 1 - (this.hopUntil - now) / HOP_MS;
+      lift = Math.sin(p * Math.PI) ** 1.5 * HOP_HEIGHT;
     }
     this.root.setAttribute(
       'transform',
       `translate(${this.x.toFixed(1)} ${(this.floor - lift).toFixed(1)})`,
     );
     this.flip.setAttribute('transform', `scale(${this.facing} 1)`);
-    this.bubble.setAttribute('opacity', now < this.hopUntil + 450 ? '1' : '0');
+    // The meow rises a little and fades over about a second.
+    const since = now - (this.hopUntil - HOP_MS);
+    const meowing = this.hopUntil > 0 && since >= 0 && since < 1100;
+    const m = meowing ? since / 1100 : 1;
+    this.meow.setAttribute(
+      'opacity',
+      meowing ? (Math.sin(m * Math.PI) * 0.75).toFixed(3) : '0',
+    );
+    this.meow.setAttribute(
+      'transform',
+      `translate(${(m * 4).toFixed(1)} ${(-m * 14).toFixed(1)})`,
+    );
 
     this.stand.setAttribute('display', walking ? 'inline' : 'none');
     // Sitting and lying down cross-fade as he settles.
@@ -488,10 +490,9 @@ export class Companion {
       hy = -56 + breathe * 0.4 + (-14 + 56) * d;
       tilt = look * (1 - d) + 12 * d;
     }
-    // Purring: a fine rumble through the head.
+    // Purring: a slow, barely-there sway of the head.
     if (this.purring && !walking) {
-      hx += Math.sin(t * 160) * 0.35;
-      hy += Math.cos(t * 140) * 0.3;
+      hy += Math.sin(t * 9) * 0.25;
     }
     this.head.setAttribute(
       'transform',
@@ -512,6 +513,11 @@ export class Companion {
       ox = (dx / d) * 1.6;
       oy = (dy / d) * 1.4;
     }
+    const ease = 1 - Math.pow(0.002, dt);
+    this.gaze.x += (ox - this.gaze.x) * ease;
+    this.gaze.y += (oy - this.gaze.y) * ease;
+    ox = this.gaze.x;
+    oy = this.gaze.y;
     this.pupils.forEach((p, i) => {
       const cx = (i === 0 ? -7.5 : 7.5) + ox;
       p.setAttribute('cx', cx.toFixed(2));
