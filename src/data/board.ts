@@ -232,7 +232,19 @@ export const techs: Tech[] = [
     layer: 'frontend',
     uses: { indra_consultant: 3, indra_po: 2, docline: 3 },
   },
-  { id: 'angular', label: 'Angular', layer: 'frontend', uses: { ironhack: 1 } },
+  {
+    id: 'angular',
+    label: 'Angular',
+    layer: 'frontend',
+    uses: { tau: 1, ironhack: 1 },
+  },
+  {
+    id: 'bootstrap',
+    label: 'Bootstrap',
+    layer: 'frontend',
+    uses: { tau: 3 },
+  },
+  { id: 'less', label: 'Less', layer: 'frontend', uses: { tau: 3 } },
   {
     id: 'jquery',
     label: 'jQuery',
@@ -241,7 +253,7 @@ export const techs: Tech[] = [
   },
   {
     id: 'css',
-    label: 'CSS · SCSS',
+    label: 'CSS · Sass',
     layer: 'frontend',
     uses: {
       aulacm: 2,
