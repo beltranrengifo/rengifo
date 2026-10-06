@@ -150,5 +150,6 @@
   "ui_board_reset": "Reset",
   "ui_board_highlight": "Highlight",
   "ui_board_highlights_note": "Hundreds of film and TV productions over those years; the board shows only a few highlights.",
-  "ui_board_watch": "Watch"
+  "ui_board_watch": "Watch",
+  "ui_board_built_site": "The site I built"
 }

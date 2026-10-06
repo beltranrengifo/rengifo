@@ -10,7 +10,13 @@ import {
 } from '../lib/i18n';
 import { experience, type Span } from '../data/experience';
 import { projects } from '../data/caseStudies';
-import { techs, projectSpans, eras, boardWorks } from '../data/board';
+import {
+  techs,
+  projectSpans,
+  eras,
+  boardWorks,
+  builtSites,
+} from '../data/board';
 import { buildModel, yearOf } from '../board/model';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -173,6 +179,17 @@ const caseStudyHref = (slug: string) =>
           </p>
           <h2>{role.title}</h2>
           <p>{t(role.blurbKey, locale)}</p>
+          {builtSites[role.id] && (
+            <a
+              href={builtSites[role.id]}
+              target="_blank"
+              rel="noopener"
+              class="board-cta no-underline"
+            >
+              {t('ui_board_built_site', locale)}{' '}
+              <span aria-hidden="true">↗</span>
+            </a>
+          )}
           {role.id === 'prev' && (
             <p class="board-note">{t('ui_board_highlights_note', locale)}</p>
           )}
