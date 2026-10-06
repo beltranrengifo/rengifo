@@ -31,15 +31,6 @@ const locale = resolveLocale(Astro.currentLocale);
         data-copy={contact.email}
         class="footer-link">{contact.email}</a
       >
-      <span class="font-serif text-[rgba(246,245,242,0.6)] italic">
-        {t('ui_footer_gmail_aside', locale)}{' '}
-        <a
-          href={`mailto:${contact.gmail}`}
-          data-copy={contact.gmail}
-          class="footer-link font-sans text-[16px] not-italic"
-          >{contact.gmail}</a
-        >
-      </span>
       <a
         href={contact.linkedin}
         target="_blank"
