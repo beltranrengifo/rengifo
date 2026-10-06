@@ -80,8 +80,6 @@ function boot(root: HTMLElement): void {
   const world = el('g', { class: 'board-world' }, svg);
   const grid = el('g', { class: 'board-grid' }, world);
   const linkLayer = el('g', { class: 'board-links' }, world);
-  // Durations: a hairline from each role's start to its end, at its height.
-  const spanLayer = el('g', { class: 'board-spans' }, world);
   const nodeLayer = el('g', { class: 'board-nodes' }, world);
   const catLayer = el('g', { class: 'board-cat' }, world);
 
@@ -137,12 +135,6 @@ function boot(root: HTMLElement): void {
     path.style.setProperty('--w', String(link.weight));
     return path;
   });
-
-  const spanEls = nodes.map((node) =>
-    node.kind === 'tech'
-      ? null
-      : el('path', { class: `board-span is-${node.kind}` }, spanLayer),
-  );
 
   const nodeEls = nodes.map((node) => {
     const label = model.labels[node.id]!;
@@ -370,6 +362,19 @@ function boot(root: HTMLElement): void {
     layout.sim.alpha(0.3);
   };
 
+  // Help: a small popover behind the "?" in the corner.
+  const helpButton = q<HTMLButtonElement>('[data-board-help]');
+  const helpPop = q<HTMLElement>('#board-help');
+  const setHelp = (open: boolean) => {
+    helpPop.hidden = !open;
+    helpButton.setAttribute('aria-expanded', String(open));
+  };
+  helpButton.addEventListener('click', () => setHelp(helpPop.hidden === true));
+  root.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setHelp(false);
+  });
+  stage.addEventListener('pointerdown', () => setHelp(false));
+
   // Reset: every node goes back to where the layout first put it.
   const homes = nodes.map((node) => [node.homeX, node.homeY] as const);
   q<HTMLButtonElement>('[data-board-reset]').addEventListener('click', () => {
@@ -527,24 +532,6 @@ function boot(root: HTMLElement): void {
       nodeEls[i]!.setAttribute(
         'transform',
         `translate(${f(node.x)} ${f(node.y)})`,
-      );
-    });
-    nodes.forEach((node, i) => {
-      const span = spanEls[i];
-      if (!span) return;
-      const clip = model.clips[node.index]!;
-      const x1 = timeX(clip.start);
-      const x2 = timeX(clip.end);
-      // Roles share one straight track, whatever their circles do; a
-      // project's short span stays with its circle.
-      const y = node.kind === 'role' ? node.homeY : node.y;
-      span.setAttribute(
-        'd',
-        `M${f(x1)} ${f(y - 4)} V${f(y + 4)} M${f(x1)} ${f(y)} H${f(x2)} M${f(x2)} ${f(y - 4)} V${f(y + 4)}`,
-      );
-      span.classList.toggle(
-        'is-active',
-        nodeEls[i]!.classList.contains('is-active'),
       );
     });
     links.forEach((link, i) => {
