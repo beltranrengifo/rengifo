@@ -16,6 +16,15 @@ if (new URLSearchParams(location.search).has('pdf')) {
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 
+// ── Header — slims down once the page has scrolled ───────────
+const header = document.querySelector<HTMLElement>('[data-header]');
+if (header) {
+  const slim = () =>
+    header.toggleAttribute('data-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', slim, { passive: true });
+  slim();
+}
+
 // ── Reveals — fade + slide in on LOAD (staggered) and on SCROLL ──
 const reveals = Array.from(
   document.querySelectorAll<HTMLElement>('[data-reveal]'),
