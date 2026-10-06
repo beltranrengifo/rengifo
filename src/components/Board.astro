@@ -136,23 +136,41 @@ const caseStudyHref = (slug: string) =>
     <a
       href={homeHref(locale)}
       class="board-home no-underline"
-      aria-label="Beltrán Rengifo"
+      aria-label={t('ui_board_home', locale)}
+      title={t('ui_board_home', locale)}
     >
       <Logo width={16} height={22} />
     </a>
-    <p class="board-hint">{t('ui_board_hint', locale)}</p>
-    <nav class="board-nav">
-      <button type="button" class="board-reset" data-board-reset>
+  </header>
+
+  <footer class="board-foot">
+    <div class="board-help">
+      <button
+        type="button"
+        class="board-icon"
+        data-board-help
+        aria-expanded="false"
+        aria-controls="board-help"
+        aria-label={t('ui_board_help', locale)}
+        title={t('ui_board_help', locale)}
+      >
+        ?
+      </button>
+      <div class="board-help-pop" id="board-help" hidden>
+        <p>{t('ui_board_hint_travel', locale)}</p>
+        <p>{t('ui_board_hint_zoom', locale)}</p>
+        <p>{t('ui_board_hint_move', locale)}</p>
+      </div>
+    </div>
+    <nav class="board-foot-nav">
+      <button type="button" class="board-text-button" data-board-reset>
         {t('ui_board_reset', locale)}
       </button>
       <a href={alternateHref(locale, Astro.url.pathname)} class="no-underline">
         {t('ui_lang_switch', locale)}
       </a>
-      <a href={homeHref(locale)} class="board-classic no-underline">
-        {t('ui_board_classic', locale)}
-      </a>
     </nav>
-  </header>
+  </footer>
 
   <aside class="board-panel" data-board-panel inert aria-live="polite">
     <div class="board-sheet-handle" data-sheet-handle aria-hidden="true"></div>
@@ -382,21 +400,6 @@ const caseStudyHref = (slug: string) =>
   .board-node.is-tech .board-dot {
     fill: var(--board-ink);
   }
-  .board-span {
-    fill: none;
-    stroke: var(--board-ink);
-    stroke-opacity: 0.2;
-    transition: opacity 0.3s ease;
-    vector-effect: non-scaling-stroke;
-  }
-  .board-span.is-project {
-    stroke: var(--board-project);
-    stroke-opacity: 0.45;
-  }
-  .board-span.is-active {
-    stroke: var(--accent);
-    stroke-opacity: 0.7;
-  }
 
   .board-title,
   .board-sub,
@@ -431,9 +434,6 @@ const caseStudyHref = (slug: string) =>
   /* Focus: the node and its neighbours stay, everything else steps back. */
   .board-svg[data-focus] .board-node:not(.is-active, .is-related) {
     opacity: 0.16;
-  }
-  .board-svg[data-focus] .board-span:not(.is-active) {
-    opacity: 0.2;
   }
   .board-svg[data-focus] .board-link:not(.is-active) {
     stroke-opacity: 0.025;
@@ -484,60 +484,103 @@ const caseStudyHref = (slug: string) =>
     letter-spacing: 0.2em;
   }
 
-  /* ── Bar ────────────────────────────────────────────────────── */
+  /* ── Chrome: the logo top left, everything else quiet at the bottom ── */
   .board-bar {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    gap: 24px;
     padding: 18px 24px;
-    pointer-events: none;
-  }
-  .board-bar > * {
-    pointer-events: auto;
   }
   .board-home {
     color: var(--color-ink, #16181a);
     display: inline-flex;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
   }
-  .board-hint {
-    flex: 1;
-    margin: 0;
-    font-size: 12.5px;
-    letter-spacing: 0.04em;
-    color: var(--color-muted, #5c6166);
+  .board-home:hover {
+    opacity: 1;
   }
-  .board-nav {
+  .board-foot {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
-    gap: 20px;
-    font-size: 12.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
   }
-  .board-nav a {
+  .board-foot > * {
+    pointer-events: auto;
+  }
+  .board-help {
+    position: relative;
+  }
+  .board-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid rgba(22, 24, 26, 0.18);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--board-bg) 85%, white);
+    font: 500 13px var(--font-sans, system-ui, sans-serif);
     color: var(--color-muted, #5c6166);
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
-  .board-nav a:hover {
+  .board-icon:hover,
+  .board-icon[aria-expanded='true'] {
+    color: var(--color-ink, #16181a);
+    border-color: rgba(22, 24, 26, 0.4);
+  }
+  .board-help-pop {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: max-content;
+    max-width: min(320px, calc(100vw - 48px));
+    padding: 14px 16px;
+    border: 1px solid rgba(22, 24, 26, 0.1);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--board-bg) 92%, white);
+    box-shadow: 0 12px 30px rgba(22, 24, 26, 0.08);
+  }
+  .board-help-pop p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
     color: var(--color-ink, #16181a);
   }
-  .board-reset {
+  .board-help-pop p + p {
+    margin-top: 6px;
+  }
+  .board-foot-nav {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .board-foot-nav a,
+  .board-text-button {
+    color: var(--color-muted, #5c6166);
+  }
+  .board-text-button {
     padding: 0;
     border: 0;
     background: none;
     font: inherit;
     letter-spacing: inherit;
     text-transform: inherit;
-    color: var(--color-muted, #5c6166);
     cursor: pointer;
   }
-  .board-reset:hover {
+  .board-foot-nav a:hover,
+  .board-text-button:hover {
     color: var(--color-ink, #16181a);
-  }
-  .board-classic {
-    color: var(--color-ink, #16181a) !important;
   }
 
   /* ── Panel ──────────────────────────────────────────────────── */
@@ -715,12 +758,6 @@ const caseStudyHref = (slug: string) =>
   }
 
   @media (max-width: 720px) {
-    .board-hint {
-      display: none;
-    }
-    .board-bar {
-      justify-content: space-between;
-    }
     .board-panel {
       top: auto;
       left: 0;

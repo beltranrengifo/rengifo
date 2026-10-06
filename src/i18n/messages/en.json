@@ -137,8 +137,6 @@
   "ui_board_title": "Board — Beltrán Rengifo",
   "ui_board_description": "The career as an interactive timeline: roles, projects and technologies as jelly you can squeeze, stretch and follow through time.",
   "ui_board_label": "Career board",
-  "ui_board_hint": "Drag or scroll to travel through time · ⌘/Ctrl + scroll to zoom · pick a node up",
-  "ui_board_classic": "Classic view",
   "ui_board_close": "Close",
   "ui_board_used_in": "Used in",
   "ui_board_kind_project": "Project",
@@ -147,8 +145,13 @@
   "ui_board_era_consultancy": "Consultancy",
   "ui_board_era_product": "Product",
   "ui_board_layer_media": "Sound & image",
-  "ui_board_reset": "Reset",
+  "ui_board_reset": "Reset layout",
   "ui_board_highlight": "Highlight",
   "ui_board_highlights_note": "Hundreds of film and TV productions over those years; the board shows only a few highlights.",
-  "ui_board_watch": "Watch"
+  "ui_board_watch": "Watch",
+  "ui_board_home": "Back to the résumé",
+  "ui_board_help": "How to get around",
+  "ui_board_hint_travel": "Drag or scroll to travel through time.",
+  "ui_board_hint_zoom": "⌘/Ctrl + scroll, or pinch, to zoom.",
+  "ui_board_hint_move": "Pick a node up and move it; click it to read more."
 }
