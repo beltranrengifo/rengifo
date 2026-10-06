@@ -85,9 +85,9 @@ const locale = resolveLocale(Astro.currentLocale);
     <svg
       class="poncho-footer"
       data-poncho-footer
-      viewBox="-60 -110 130 118"
+      viewBox="-60 -140 130 148"
       width="130"
-      height="118"
+      height="148"
       aria-hidden="true"></svg>
   </a>
 </section>
@@ -96,6 +96,10 @@ const locale = resolveLocale(Astro.currentLocale);
   .footer-link {
     color: #f6f5f2;
     text-decoration-color: rgba(246, 245, 242, 0.4);
+  }
+  /* Room above for the hop and the "miau", and never clipped. */
+  .poncho-footer {
+    overflow: visible;
   }
   .footer-link:hover {
     color: var(--accent);
