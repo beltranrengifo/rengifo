@@ -10,7 +10,7 @@
  * move on their own.
  */
 
-import { Purr } from './purr';
+import { Purr, meow, pawStep } from './purr';
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -27,6 +27,10 @@ const TROT_SPEED = 600;
 const SLEEP_AFTER = 15_000;
 const HOP_MS = 520;
 const HOP_HEIGHT = 9;
+const BELLY_MS = 5000;
+/** Left this far behind, he calls out. */
+const LOST_AT = 600;
+const MEOW_EVERY = 8000;
 
 type State = 'walk' | 'sit' | 'sleep';
 
@@ -73,6 +77,13 @@ export class Companion {
   private readonly stand: SVGGElement;
   private readonly sit: SVGGElement;
   private readonly sleep: SVGGElement;
+  private readonly belly: SVGGElement;
+  private readonly bellyLegs: SVGGElement[] = [];
+  private readonly bellyTail: SVGPathElement;
+  /** Until when he lies on his back, asking for a belly rub. */
+  private bellyUntil = 0;
+  private lastMeow = 0;
+  private wasOnBack = false;
   private readonly standTail: SVGPathElement;
   private readonly sitTail: SVGPathElement;
   private readonly legs: Leg[] = [];
@@ -95,6 +106,13 @@ export class Companion {
     el(
       'ellipse',
       { cx: 0, cy: 0, rx: 30, ry: 3.5, fill: 'rgba(22,24,26,0.1)' },
+      this.root,
+    );
+    // A steady hit area, so changing pose under the pointer never reads as
+    // the pointer leaving him.
+    el(
+      'rect',
+      { x: -60, y: -80, width: 120, height: 84, fill: 'transparent' },
       this.root,
     );
     this.flip = el('g', {}, this.root);
@@ -188,6 +206,39 @@ export class Companion {
         { cx: px, cy: -2, rx: 6.5, ry: 3.4, fill: CREAM },
         this.sit,
       );
+    }
+
+    // ── Belly up: rolled on his side, belly out, paws curled ───
+    this.belly = el('g', { display: 'none' }, this.flip);
+    this.bellyTail = el(
+      'path',
+      {
+        fill: 'none',
+        stroke: SHADE,
+        'stroke-width': 10,
+        'stroke-linecap': 'round',
+      },
+      this.belly,
+    );
+    el(
+      'path',
+      { d: 'M-30 -1 C-34 -16 -18 -27 2 -27 C22 -27 32 -16 30 -2 Z', fill: FUR },
+      this.belly,
+    );
+    el('ellipse', { cx: 2, cy: -9, rx: 19, ry: 8, fill: CREAM }, this.belly);
+    // Hind paw first, then the two front paws folded over the chest.
+    for (let i = 0; i < 3; i++) {
+      const g = el('g', {}, this.belly);
+      el(
+        'path',
+        {
+          d: 'M-3.5 0 L-3.5 -8 Q-3.5 -11.5 0 -11.5 Q3.5 -11.5 3.5 -8 L3.5 0 Z',
+          fill: FUR,
+        },
+        g,
+      );
+      el('ellipse', { cx: 0, cy: -11, rx: 4, ry: 2.2, fill: CREAM }, g);
+      this.bellyLegs.push(g);
     }
 
     // ── Asleep: curled up, tail round the front ────────────────
@@ -333,13 +384,25 @@ export class Companion {
     );
     this.purrText.textContent = 'rrr';
 
+    // Keep the board from capturing a press on him (it would pan, and steal
+    // both the click and the hover).
+    this.root.addEventListener('pointerdown', (event) =>
+      event.stopPropagation(),
+    );
+
     // Stroke him with the pointer and he purrs.
     this.root.addEventListener('pointerenter', () => this.setPurring(true));
     this.root.addEventListener('pointerleave', () => this.setPurring(false));
 
+    // A click rolls him onto his back for a belly rub, even mid-walk; he
+    // stays there while the pointer keeps scratching him.
     this.root.addEventListener('click', (event) => {
       event.stopPropagation();
-      this.poke(performance.now(), true);
+      const now = performance.now();
+      this.poke(now);
+      this.state = 'sit';
+      this.bellyUntil = now + BELLY_MS;
+      this.purr.start();
     });
   }
 
@@ -377,13 +440,29 @@ export class Companion {
     const gap = target - this.x;
     const far = Math.abs(gap);
 
-    if (far > 40) {
+    const onBack = now < this.bellyUntil;
+    // Being scratched keeps him on his back.
+    if (onBack && this.purring) this.bellyUntil = now + BELLY_MS / 2;
+    if (this.wasOnBack && !onBack && !this.purring) this.purr.stop();
+    this.wasOnBack = onBack;
+
+    // On his back he ignores the camera, unless it leaves him behind.
+    if (far > (onBack ? LOST_AT : 40)) {
+      this.bellyUntil = 0;
       this.state = 'walk';
       this.facing = Math.sign(gap);
-      const trotting = far > 600;
+      const trotting = far > LOST_AT;
+      // Left off screen: a proper meow, then he trots to catch up.
+      if (trotting && now - this.lastMeow > MEOW_EVERY) {
+        this.lastMeow = now;
+        meow();
+      }
       const step = Math.min(far, (trotting ? TROT_SPEED : WALK_SPEED) * dt);
       this.x += step * this.facing;
+      const before = Math.floor(this.gait / Math.PI);
       this.gait += (step / 16) * (trotting ? 1.2 : 1);
+      // A paw lands twice per stride: pat, pat.
+      if (Math.floor(this.gait / Math.PI) !== before) pawStep();
       this.lastActivity = now;
     } else if (this.state === 'walk') {
       this.state = 'sit';
@@ -406,8 +485,11 @@ export class Companion {
       Math.sign(target - this.drowse) *
       Math.min(Math.abs(target - this.drowse), rate * dt);
     const d = this.drowse * this.drowse * (3 - 2 * this.drowse);
-    const sitting = !walking;
-    const sleeping = !walking && d > 0.98;
+    const onBack = !walking && now < this.bellyUntil;
+    const sitting = !walking && !onBack;
+    const sleeping = sitting && d > 0.98;
+    // Eyes shut and content: asleep, or on his back being rubbed.
+    const eyesShut = sleeping || onBack;
 
     let lift = 0;
     if (now < this.hopUntil) {
@@ -439,6 +521,28 @@ export class Companion {
     this.sleep.setAttribute('display', sitting && d > 0 ? 'inline' : 'none');
     this.sit.setAttribute('opacity', String(1 - d));
     this.sleep.setAttribute('opacity', String(d));
+    this.belly.setAttribute('display', onBack ? 'inline' : 'none');
+    if (onBack) {
+      // Front paws curl and knead the air, slowly; the hind paw barely moves.
+      const poses: [number, number, number][] = [
+        [-18, -12, -55],
+        [10, -20, 50],
+        [18, -16, 70],
+      ];
+      this.bellyLegs.forEach((leg, i) => {
+        const [x, y, angle] = poses[i]!;
+        const wave = Math.sin(t * 2 + i * 1.7) * (i === 0 ? 3 : 7);
+        leg.setAttribute(
+          'transform',
+          `translate(${x} ${y}) rotate(${(angle + wave).toFixed(1)})`,
+        );
+      });
+      const sweep = Math.sin(t * 1.5) * 4;
+      this.bellyTail.setAttribute(
+        'd',
+        `M-28 -6 C-40 -4 ${(-46 + sweep).toFixed(1)} 0 ${(-52 + sweep).toFixed(1)} -2`,
+      );
+    }
 
     const breathe = Math.sin(t * (sleeping ? 1.3 : 2)) * (sleeping ? 1 : 0.5);
     const bob = walking ? Math.abs(Math.sin(this.gait)) * 1.8 : 0;
@@ -481,6 +585,12 @@ export class Companion {
     let hx = 24;
     let hy = -40 - bob;
     let tilt = Math.sin(this.gait) * 2;
+    if (onBack) {
+      // Head resting low, tipped a little back, eyes shut with pleasure.
+      hx = 26;
+      hy = -22;
+      tilt = -14 + Math.sin(t * 1.5) * 2;
+    }
     if (sitting) {
       // From upright to resting on his paws, as drowsiness takes over.
       const look = this.look
@@ -500,13 +610,15 @@ export class Companion {
     );
     this.purrText.setAttribute(
       'opacity',
-      this.purring && !walking ? String(0.4 + Math.sin(t * 3) * 0.2) : '0',
+      (this.purring || onBack) && !walking
+        ? String(0.4 + Math.sin(t * 3) * 0.2)
+        : '0',
     );
 
     // Pupils follow what he is looking at; otherwise they look at you.
     let ox = 0;
     let oy = 0;
-    if (this.look && !sleeping) {
+    if (this.look && !eyesShut) {
       const dx = this.look.x - this.x;
       const dy = this.look.y - (this.floor + hy);
       const d = Math.hypot(dx, dy) || 1;
@@ -542,14 +654,14 @@ export class Companion {
         'd',
         `M${cx - 6} -6.8 L${cx + 6} -6.8 L${cx + 6} ${y.toFixed(2)} Q${cx} ${(y + close * 2).toFixed(2)} ${cx - 6} ${y.toFixed(2)} Z`,
       );
-      lid.setAttribute('display', sleeping ? 'none' : 'inline');
+      lid.setAttribute('display', eyesShut ? 'none' : 'inline');
     });
     for (const p of [...this.pupils, ...this.shines]) {
-      p.setAttribute('display', sleeping ? 'none' : 'inline');
+      p.setAttribute('display', eyesShut ? 'none' : 'inline');
     }
     this.sleepFace.setAttribute(
       'opacity',
-      String(Math.max(0, Math.min(1, (d - 0.6) / 0.4))),
+      onBack ? '1' : String(Math.max(0, Math.min(1, (d - 0.6) / 0.4))),
     );
 
     this.zzz.setAttribute(
