@@ -241,7 +241,7 @@ export const techs: Tech[] = [
     id: 'vue',
     label: 'Vue',
     layer: 'frontend',
-    uses: { indra_consultant: 3, docline: 3 },
+    uses: { indra_consultant: 3, indra_po: 2, docline: 3 },
   },
   {
     id: 'angular',
@@ -264,6 +264,7 @@ export const techs: Tech[] = [
       tau: 3,
       ironhack: 2,
       indra_consultant: 2,
+      indra_po: 2,
       docline: 2,
       liferay: 2,
       mews_senior: 2,
@@ -276,6 +277,12 @@ export const techs: Tech[] = [
     label: 'Next.js · Astro',
     layer: 'frontend',
     uses: { paellalab: 1, ensayadero: 1 },
+  },
+  {
+    id: 'mapbox',
+    label: 'Mapbox · Leaflet',
+    layer: 'frontend',
+    uses: { 'carabanchel-creativa': 3 },
   },
   {
     id: 'tanstack',
@@ -363,7 +370,12 @@ export const techs: Tech[] = [
     id: 'storybook',
     label: 'Storybook',
     layer: 'tools',
-    uses: { indra_consultant: 2, mews_senior: 2, mews_techlead: 2 },
+    uses: {
+      indra_consultant: 2,
+      indra_po: 1,
+      mews_senior: 2,
+      mews_techlead: 2,
+    },
   },
   {
     id: 'tokens',

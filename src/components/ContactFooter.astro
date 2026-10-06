@@ -1,6 +1,5 @@
 ---
 import Logo from './Logo.astro';
-import Cat from './Cat.astro';
 import {
   t,
   resolveLocale,
@@ -72,7 +71,7 @@ const locale = resolveLocale(Astro.currentLocale);
 
   {
     /*
-     * A quiet hello from the old rengifo.es — hover it. Poncho is also the
+     * Poncho, the same cat as on the board — hover him. He is also the
      * secret door to board mode: no link announces it, the cat is the link.
      */
   }
@@ -83,7 +82,13 @@ const locale = resolveLocale(Astro.currentLocale);
     class="pointer-events-auto flex justify-center pb-10 no-underline sm:absolute sm:right-6 sm:bottom-3 sm:block sm:pb-0"
     data-no-print
   >
-    <Cat />
+    <svg
+      class="poncho-footer"
+      data-poncho-footer
+      viewBox="-60 -110 130 118"
+      width="130"
+      height="118"
+      aria-hidden="true"></svg>
   </a>
 </section>
 
@@ -107,3 +112,7 @@ const locale = resolveLocale(Astro.currentLocale);
     color: var(--color-ink);
   }
 </style>
+
+<script>
+  import '../scripts/poncho-footer.ts';
+</script>
