@@ -61,15 +61,15 @@ export const boardWorks: BoardWork[] = [
     label: 'lacasaestudio',
     span: ['2002', '2015'],
     note: {
-      en: 'The studio I founded with my friend Iván, still going.',
-      es: 'El estudio que fundé con mi amigo Iván, que sigue en marcha.',
+      en: 'The company I founded with my friend Iván, still going: from recording and sound to websites and marketing campaigns.',
+      es: 'La empresa que fundé con mi amigo Iván, que sigue en marcha: de la grabación y el sonido a webs y campañas de marketing.',
     },
     facts: [
       {
         label: { en: 'My role', es: 'Mi papel' },
         value: {
-          en: 'Music recording, sound engineering and video recording',
-          es: 'Grabación musical, ingeniería de sonido y grabación de vídeo',
+          en: 'Music recording, sound engineering, video, websites and marketing campaigns',
+          es: 'Grabación musical, ingeniería de sonido, vídeo, webs y campañas de marketing',
         },
       },
     ],
@@ -177,20 +177,31 @@ export const techs: Tech[] = [
     label: 'Pro Tools',
     layer: 'media',
     uses: {
+      lacasaestudio: 3,
       prev: 3,
       'en-la-cuna-del-aire': 3,
       'flores-de-ruanda': 3,
       'about-ndugu': 3,
     },
   },
-  { id: 'logic', label: 'Logic', layer: 'media', uses: { prev: 2 } },
+  {
+    id: 'logic',
+    label: 'Logic',
+    layer: 'media',
+    uses: { lacasaestudio: 3, prev: 2 },
+  },
   {
     id: 'avid',
     label: 'Avid Media Composer',
     layer: 'media',
     uses: { prev: 3 },
   },
-  { id: 'final-cut', label: 'Final Cut', layer: 'media', uses: { prev: 3 } },
+  {
+    id: 'final-cut',
+    label: 'Final Cut',
+    layer: 'media',
+    uses: { lacasaestudio: 3, prev: 3 },
+  },
   {
     id: 'davinci',
     label: 'DaVinci Resolve',
@@ -203,12 +214,17 @@ export const techs: Tech[] = [
     layer: 'media',
     uses: { prev: 1 },
   },
-  { id: 'neve', label: 'Neve', layer: 'media', uses: { prev: 2 } },
+  {
+    id: 'neve',
+    label: 'Neve',
+    layer: 'media',
+    uses: { lacasaestudio: 2, prev: 2 },
+  },
   {
     id: 'dslr',
     label: { en: 'DSLR cameras', es: 'Cámaras DSLR' },
     layer: 'media',
-    uses: { prev: 2 },
+    uses: { lacasaestudio: 2, prev: 2 },
   },
 
   // Frontend
@@ -282,7 +298,7 @@ export const techs: Tech[] = [
     id: 'jquery',
     label: 'jQuery',
     layer: 'frontend',
-    uses: { aulacm: 1, tau: 3 },
+    uses: { lacasaestudio: 2, aulacm: 1, tau: 3 },
   },
   {
     id: 'css',
@@ -339,13 +355,20 @@ export const techs: Tech[] = [
     id: 'php',
     label: 'PHP',
     layer: 'backend',
-    uses: { aulacm: 2, tau: 3, indra_po: 2, docline: 1, indra_consultant: 2 },
+    uses: {
+      lacasaestudio: 2,
+      aulacm: 2,
+      tau: 3,
+      indra_po: 2,
+      docline: 1,
+      indra_consultant: 2,
+    },
   },
   {
     id: 'wordpress',
     label: 'WordPress',
     layer: 'backend',
-    uses: { aulacm: 3, tau: 3, indra_consultant: 2 },
+    uses: { lacasaestudio: 2, aulacm: 3, tau: 3, indra_consultant: 2 },
   },
   {
     id: 'node',
@@ -393,7 +416,14 @@ export const techs: Tech[] = [
     id: 'sql',
     label: 'SQL · MySQL',
     layer: 'backend',
-    uses: { aulacm: 2, tau: 3, indra_consultant: 2, indra_po: 2, docline: 1 },
+    uses: {
+      lacasaestudio: 2,
+      aulacm: 2,
+      tau: 3,
+      indra_consultant: 2,
+      indra_po: 2,
+      docline: 1,
+    },
   },
   {
     id: 'postgres',
