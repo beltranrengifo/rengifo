@@ -246,7 +246,7 @@ const caseStudyHref = (slug: string) =>
             {t('ui_board_highlight', locale)} · {workYears(span)}
           </p>
           <h2>{work.label}</h2>
-          <p>{work.note[locale]}</p>
+          {work.note && <p>{work.note[locale]}</p>}
           <dl class="board-facts">
             {work.facts.map(({ label, value }) => (
               <>

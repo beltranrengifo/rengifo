@@ -43,7 +43,8 @@ export interface BoardWork {
   id: string;
   label: string;
   span: Span;
-  note: Text;
+  /** A line about the work, when the facts alone do not say enough. */
+  note?: Text;
   facts: { label: Text; value: Text | string }[];
   /** Where to watch it, if anywhere. */
   watch?: string;
@@ -121,10 +122,6 @@ export const boardWorks: BoardWork[] = [
     id: 'mtv',
     label: 'MTV',
     span: ['2008', '2012'],
-    note: {
-      en: 'Sound for the channel.',
-      es: 'Sonido para el canal.',
-    },
     facts: [
       {
         label: { en: 'My role', es: 'Mi papel' },
