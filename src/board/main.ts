@@ -425,8 +425,13 @@ function boot(root: HTMLElement): void {
     }
   });
 
+  // Where the pointer is on screen, so Poncho can follow it with his eyes.
+  let pointerAt: { x: number; y: number } | null = null;
+  stage.addEventListener('pointerleave', () => (pointerAt = null));
+
   stage.addEventListener('pointermove', (event) => {
     const p = local(event);
+    pointerAt = p;
     const last = pointers.get(event.pointerId);
     if (!last) {
       if (!panelOpen) focus(nodeAt(event.target));
@@ -567,7 +572,14 @@ function boot(root: HTMLElement): void {
     poncho.tick(now);
     // Poncho walks the floor, keeping to the left of the view, and looks at
     // whatever has the focus.
-    cat?.lookAt(focused >= 0 ? nodes[focused]! : null);
+    // He watches the focused node; otherwise, the pointer.
+    let look: { x: number; y: number } | null = null;
+    if (focused >= 0) look = nodes[focused]!;
+    else if (pointerAt) {
+      const [wx, wy] = toWorld(pointerAt.x, pointerAt.y);
+      look = { x: wx, y: wy };
+    }
+    cat?.lookAt(look);
     cat?.update(now, dt, cx - (viewW() / 2 / zoom) * 0.62);
     requestAnimationFrame(frame);
   };
