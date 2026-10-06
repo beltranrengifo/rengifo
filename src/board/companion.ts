@@ -56,6 +56,9 @@ export class Companion {
   private hopUntil = 0;
   private blinkAt = 0;
   private look: { x: number; y: number } | null = null;
+  /** 0 awake … 1 fast asleep, eased, so he drifts off and comes round. */
+  private drowse = 0;
+  private lastDraw = 0;
 
   private readonly flip: SVGGElement;
   private readonly stand: SVGGElement;
@@ -376,8 +379,17 @@ export class Companion {
   private draw(now: number): void {
     const t = now / 1000;
     const walking = this.state === 'walk';
-    const sitting = this.state === 'sit';
-    const sleeping = this.state === 'sleep';
+    const dt = this.lastDraw ? Math.min((now - this.lastDraw) / 1000, 0.1) : 0;
+    this.lastDraw = now;
+    // Drifting off takes a couple of seconds; waking up is quick.
+    const target = this.state === 'sleep' ? 1 : 0;
+    const rate = target > this.drowse ? 0.55 : 2.5;
+    this.drowse +=
+      Math.sign(target - this.drowse) *
+      Math.min(Math.abs(target - this.drowse), rate * dt);
+    const d = this.drowse * this.drowse * (3 - 2 * this.drowse);
+    const sitting = !walking;
+    const sleeping = !walking && d > 0.98;
 
     let lift = 0;
     if (now < this.hopUntil) {
@@ -392,8 +404,11 @@ export class Companion {
     this.bubble.setAttribute('opacity', now < this.hopUntil + 450 ? '1' : '0');
 
     this.stand.setAttribute('display', walking ? 'inline' : 'none');
-    this.sit.setAttribute('display', sitting ? 'inline' : 'none');
-    this.sleep.setAttribute('display', sleeping ? 'inline' : 'none');
+    // Sitting and lying down cross-fade as he settles.
+    this.sit.setAttribute('display', sitting && d < 1 ? 'inline' : 'none');
+    this.sleep.setAttribute('display', sitting && d > 0 ? 'inline' : 'none');
+    this.sit.setAttribute('opacity', String(1 - d));
+    this.sleep.setAttribute('opacity', String(d));
 
     const breathe = Math.sin(t * (sleeping ? 1.3 : 2)) * (sleeping ? 1 : 0.5);
     const bob = walking ? Math.abs(Math.sin(this.gait)) * 1.8 : 0;
@@ -424,7 +439,7 @@ export class Companion {
         `translate(0 ${(breathe * 0.3).toFixed(2)})`,
       );
     }
-    if (sleeping) {
+    if (sitting) {
       this.sleep.setAttribute(
         'transform',
         `scale(1 ${(1 + breathe * 0.02).toFixed(3)})`,
@@ -437,16 +452,13 @@ export class Companion {
     let hy = -40 - bob;
     let tilt = Math.sin(this.gait) * 2;
     if (sitting) {
-      hx = 2;
-      hy = -56 + breathe * 0.4;
-      tilt = this.look
+      // From upright to resting on his paws, as drowsiness takes over.
+      const look = this.look
         ? Math.max(-10, Math.min(10, (this.look.x - this.x) * 0.01))
         : 0;
-    }
-    if (sleeping) {
-      hx = 20;
-      hy = -14;
-      tilt = 12;
+      hx = 2 + (20 - 2) * d;
+      hy = -56 + breathe * 0.4 + (-14 + 56) * d;
+      tilt = look * (1 - d) + 12 * d;
     }
     this.head.setAttribute(
       'transform',
@@ -475,7 +487,9 @@ export class Companion {
     if (now > this.blinkAt + 170) {
       this.blinkAt = now + 2400 + Math.random() * 3600;
     }
-    const close = now > this.blinkAt && now < this.blinkAt + 170 ? 1 : 0;
+    const blink = now > this.blinkAt && now < this.blinkAt + 170 ? 1 : 0;
+    // Heavy lids first, then the eyes shut.
+    const close = Math.max(blink, Math.min(1, d / 0.6));
     this.lids.forEach((lid, i) => {
       const cx = i === 0 ? -7.5 : 7.5;
       const y = -6.6 + close * 5.8;
@@ -488,11 +502,16 @@ export class Companion {
     for (const p of [...this.pupils, ...this.shines]) {
       p.setAttribute('display', sleeping ? 'none' : 'inline');
     }
-    this.sleepFace.setAttribute('opacity', sleeping ? '1' : '0');
+    this.sleepFace.setAttribute(
+      'opacity',
+      String(Math.max(0, Math.min(1, (d - 0.6) / 0.4))),
+    );
 
     this.zzz.setAttribute(
       'opacity',
-      sleeping ? String(0.35 + Math.sin(t * 1.4) * 0.25) : '0',
+      String(
+        Math.max(0, (d - 0.85) / 0.15) * (0.35 + Math.sin(t * 1.4) * 0.25),
+      ),
     );
     this.zzz.setAttribute(
       'transform',
