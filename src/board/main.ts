@@ -222,10 +222,25 @@ function boot(root: HTMLElement): void {
       1.1,
       Math.max(MIN_ZOOM, stage.clientHeight / (BOTTOM - TOP + 240)),
     );
+  // The view may travel as far as the nodes reach — labels included — not
+  // just the years: technologies drift past the last year, and a dragged
+  // node can land anywhere.
+  const extent = () => {
+    let lo = timeX(START_YEAR);
+    let hi = timeX(END_YEAR);
+    for (const node of nodes) {
+      const label =
+        node.kind === 'tech' ? node.r + 12 + node.labelLength * 7 : node.r + 90;
+      lo = Math.min(lo, node.x - node.r - 90);
+      hi = Math.max(hi, node.x + label);
+    }
+    return [lo - 80, hi + 80] as const;
+  };
   const clampX = (x: number, z: number) => {
     const half = viewW() / 2 / z;
-    const lo = timeX(START_YEAR) - 120 + half;
-    const hi = timeX(END_YEAR) + 120 - half;
+    const [left, right] = extent();
+    const lo = left + half;
+    const hi = right - half;
     return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, x));
   };
 
