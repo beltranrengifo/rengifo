@@ -22,7 +22,7 @@ const INK = '#2a2420';
 
 const WALK_SPEED = 240; // world px per second
 const TROT_SPEED = 600;
-const SLEEP_AFTER = 28_000;
+const SLEEP_AFTER = 15_000;
 
 type State = 'walk' | 'sit' | 'sleep';
 
