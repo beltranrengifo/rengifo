@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { t, localisedPath, type Locale } from '../lib/i18n';
+import { t, localisedPath, contact, type Locale } from '../lib/i18n';
 
 interface Props {
   title?: string;
@@ -34,6 +34,23 @@ const ogImageAlt =
   lang === 'es'
     ? 'Beltrán Rengifo — Product Engineer, Madrid'
     : 'Beltrán Rengifo — Product Engineer, Madrid';
+
+// Who the site is about, for search engines (schema.org Person).
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Beltrán Rengifo',
+  jobTitle: 'Product Engineer',
+  url: Astro.site?.href,
+  email: `mailto:${contact.email}`,
+  sameAs: [contact.linkedin, contact.github],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Madrid',
+    addressCountry: 'ES',
+  },
+  knowsLanguage: ['es', 'en', 'it'],
+};
 ---
 
 <!doctype html>
@@ -94,6 +111,11 @@ const ogImageAlt =
     {ogImage && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
     <title>{title}</title>
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(person)}
+    />
   </head>
   <body>
     <slot />
