@@ -1,5 +1,5 @@
 import type { ForceX, ForceY } from 'd3-force';
-import { createLayout, settle, timeX, type Node } from './layout';
+import { createLayout, isMinor, settle, timeX, type Node } from './layout';
 import { berryFor, drawFruit, KINDS, PROJECT_KINDS } from './fruit';
 import { END_YEAR, START_YEAR, type BoardModel } from './model';
 import { Companion } from './companion';
@@ -20,8 +20,8 @@ const NARROW = '(max-width: 720px)';
 const PANEL_WIDTH = 420;
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 1.8;
-const TOP = -440;
-const BOTTOM = 420;
+const TOP = -540;
+const BOTTOM = 460;
 
 interface Labels {
   labels: Record<string, { title: string; sub?: string; years?: string }>;
@@ -131,8 +131,15 @@ function boot(root: HTMLElement): void {
     label.textContent = era.label;
   }
 
+  // Lightly used technologies wait for a closer look; so do their links.
+  const minor = (node: Node) =>
+    node.kind === 'tech' && isMinor(node.weight ?? 0);
   const linkEls = links.map((link) => {
-    const path = el('path', { class: 'board-link' }, linkLayer);
+    const path = el(
+      'path',
+      { class: minor(link.source) ? 'board-link is-minor' : 'board-link' },
+      linkLayer,
+    );
     path.style.setProperty('--w', String(link.weight));
     return path;
   });
@@ -172,7 +179,7 @@ function boot(root: HTMLElement): void {
     const g = el(
       'g',
       {
-        class: `board-node is-${node.kind} layer-${node.layer}`,
+        class: `board-node is-${node.kind} layer-${node.layer}${minor(node) ? ' is-minor' : ''}`,
         tabindex: 0,
         role: 'button',
         'aria-label': [label.title, label.sub, label.years]
@@ -602,7 +609,10 @@ function boot(root: HTMLElement): void {
     return `M${f(sx)} ${f(sy)} C${f(sx)} ${f(my)} ${f(tx)} ${f(my)} ${f(tx)} ${f(ty)}`;
   };
 
+  // Zoomed in past this, the minor technologies show.
+  const CLOSE_ZOOM = 1.15;
   const draw = () => {
+    svg.classList.toggle('is-close', zoom >= Math.max(CLOSE_ZOOM, fit() * 1.4));
     world.setAttribute(
       'transform',
       `translate(${f(viewW() / 2 - cx * zoom)} ${f(stage.clientHeight / 2 - cy * zoom)}) scale(${zoom.toFixed(4)})`,

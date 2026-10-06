@@ -369,10 +369,11 @@ const caseStudyHref = (slug: string) =>
     fill-opacity: 0.55;
   }
 
+  /* At rest the links are a whisper; a focused node lights its own. */
   .board-link {
     fill: none;
     stroke: var(--board-ink);
-    stroke-opacity: calc(0.05 + var(--w, 1) * 0.045);
+    stroke-opacity: calc(0.015 + var(--w, 1) * 0.012);
     stroke-width: calc(0.4px + var(--w, 1) * 0.3px);
     vector-effect: non-scaling-stroke;
     transition:
@@ -437,6 +438,16 @@ const caseStudyHref = (slug: string) =>
     font: 500 11.5px var(--font-sans, system-ui, sans-serif);
     fill: var(--board-ink);
     fill-opacity: 0.75;
+  }
+
+  /* Minor technologies and their links wait for a closer look, or for a
+     focused node that uses them. */
+  .board-svg:not(.is-close) .board-node.is-minor:not(.is-active, .is-related) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .board-svg:not(.is-close) .board-link.is-minor:not(.is-active) {
+    stroke-opacity: 0;
   }
 
   /* Focus: the node and its neighbours stay, everything else steps back. */

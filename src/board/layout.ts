@@ -19,9 +19,21 @@ import { START_YEAR, type BoardModel } from './model';
 
 export const YEAR_PX = 260;
 /** Vertical step between rows of roles that share years. */
-const ROLE_ROW = 150;
+const ROLE_ROW = 170;
 
-export const LANE = { role: -250, tech: 40, project: 280 } as const;
+/**
+ * Three bands, top to bottom: roles, technologies, projects. Roles that
+ * share years stack upwards from their lane; technologies may wander only
+ * inside their band, so they never reach a role's or a project's label.
+ */
+export const LANE = { role: -160, tech: 60, project: 300 } as const;
+export const TECH_BAND = [-40, 180] as const;
+
+/**
+ * Technologies used lightly — one or two light uses in all — stay out of
+ * the first view and appear on a closer look (see main.ts).
+ */
+export const isMinor = (weight: number): boolean => weight <= 2;
 
 export const timeX = (year: number): number => (year - START_YEAR) * YEAR_PX;
 
@@ -37,6 +49,8 @@ export interface Node extends SimulationNodeDatum {
   labelLength: number;
   homeX: number;
   homeY: number;
+  /** A technology's total use, summed over the work that used it. */
+  weight?: number;
   x: number;
   y: number;
 }
@@ -51,6 +65,61 @@ export interface Layout {
   sim: Simulation<Node, Link>;
   nodes: Node[];
   links: Link[];
+}
+
+/** Keeps technologies inside their band: a wall, not a pull. */
+function band(top: number, bottom: number) {
+  let nodes: Node[] = [];
+  const force = () => {
+    for (const node of nodes) {
+      if (node.kind !== 'tech') continue;
+      const next = node.y + (node.vy ?? 0);
+      if (next < top) node.vy = top - node.y;
+      else if (next > bottom) node.vy = bottom - node.y;
+    }
+  };
+  force.initialize = (all: Node[]) => (nodes = all);
+  return force;
+}
+
+/**
+ * Technology labels are wide and short, which a circle fits badly: two can
+ * sit far enough apart as circles and still print over each other. This
+ * treats each as its dot plus label, and nudges overlapping pairs apart,
+ * mostly up and down, where the band has room.
+ */
+function labels(strength: number) {
+  let techs: Node[] = [];
+  const box = (node: Node) => ({
+    left: node.x - node.r - 4,
+    right: node.x + node.r * 1.5 + 10 + node.labelLength * 6.6,
+  });
+  const force = (alpha: number) => {
+    for (let i = 0; i < techs.length; i++) {
+      const a = techs[i]!;
+      const boxA = box(a);
+      for (let j = i + 1; j < techs.length; j++) {
+        const b = techs[j]!;
+        const boxB = box(b);
+        const overlapX =
+          Math.min(boxA.right, boxB.right) - Math.max(boxA.left, boxB.left);
+        const dy = b.y - a.y;
+        const overlapY = 22 - Math.abs(dy);
+        if (overlapX <= 0 || overlapY <= 0) continue;
+        const push = overlapY * strength * alpha * 10;
+        const dir = dy === 0 ? (i % 2 ? 1 : -1) : Math.sign(dy);
+        a.vy = (a.vy ?? 0) - push * dir;
+        b.vy = (b.vy ?? 0) + push * dir;
+        // A little sideways too, so a full column can still resolve.
+        const side = Math.sign(b.x - a.x) || 1;
+        a.vx = (a.vx ?? 0) - push * 0.2 * side;
+        b.vx = (b.vx ?? 0) + push * 0.2 * side;
+      }
+    }
+  };
+  force.initialize = (all: Node[]) =>
+    (techs = all.filter((node) => node.kind === 'tech'));
+  return force;
 }
 
 /** A faint random push, so the field breathes without wandering off. */
@@ -92,7 +161,7 @@ export function createLayout(
 
   // Roles that overlap in time would write their names over each other.
   // Give each one the first row where its label clears the previous one;
-  // extra rows step down, below the year numbers at the top.
+  // extra rows step up, away from the technologies.
   const rowEnds: number[] = [];
   clipNodes
     .filter((node) => node.kind === 'role')
@@ -102,7 +171,7 @@ export function createLayout(
       let row = rowEnds.findIndex((end) => node.homeX - half > end);
       if (row < 0) row = rowEnds.length;
       rowEnds[row] = node.homeX + half;
-      node.homeY = LANE.role + row * ROLE_ROW;
+      node.homeY = LANE.role - row * ROLE_ROW;
       node.y = node.homeY;
     });
 
@@ -135,6 +204,7 @@ export function createLayout(
     const homeX = spread.get(index) ?? sum / total;
     const weight = track.uses.reduce((s, use) => s + use.weight, 0);
     return {
+      weight,
       id: `tech:${track.id}`,
       kind: 'tech',
       layer: track.layer,
@@ -144,7 +214,7 @@ export function createLayout(
       homeX,
       homeY: LANE.tech,
       x: homeX + (random() - 0.5) * 60,
-      y: LANE.tech + (random() - 0.5) * 160,
+      y: LANE.tech + (random() - 0.5) * (TECH_BAND[1] - TECH_BAND[0]),
     };
   });
 
@@ -167,7 +237,9 @@ export function createLayout(
     .force(
       'lane',
       forceY<Node>((node) => node.homeY).strength((node) =>
-        node.kind === 'tech' ? 0.02 : node.kind === 'role' ? 0.8 : 0.12,
+        // Projects hold their line too, so neighbours spread sideways
+        // instead of stacking under the floor.
+        node.kind === 'tech' ? 0.02 : 0.8,
       ),
     )
     .force(
@@ -187,7 +259,9 @@ export function createLayout(
             : node.r + 62,
       ).strength(0.9),
     )
-    .force('drift', drift(0.12, random))
+    .force('labels', labels(0.5))
+    .force('band', band(TECH_BAND[0], TECH_BAND[1]))
+    .force('drift', drift(0.06, random))
     .alphaTarget(0.015)
     .velocityDecay(0.5)
     .stop();
