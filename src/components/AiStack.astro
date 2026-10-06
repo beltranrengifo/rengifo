@@ -1,0 +1,65 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { t, resolveLocale } from '../lib/i18n';
+import { aiStack, reviewedOn } from '../data/ai';
+
+const locale = resolveLocale(Astro.currentLocale);
+
+// "October 2026" / "octubre de 2026": when this snapshot was taken.
+const reviewed = new Intl.DateTimeFormat(locale, {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+}).format(new Date(`${reviewedOn}-01T00:00:00Z`));
+---
+
+<section class="mx-auto max-w-[1080px] px-6 pb-10 sm:px-10">
+  <SectionHeader number="04" titleKey="ui_section_ai" class="mb-12" />
+
+  <p
+    data-reveal
+    class="text-body mt-[-24px] mb-3 max-w-[620px] font-serif text-[19px] italic"
+  >
+    {t('ui_ai_intro', locale)}
+  </p>
+  <p
+    data-reveal
+    class="text-faint mt-0 mb-12 text-[13px] tracking-[0.1em] uppercase"
+  >
+    {t('ui_ai_reviewed', locale, { date: reviewed })}
+  </p>
+
+  <div
+    data-reveal
+    class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-12 pb-16"
+  >
+    {
+      aiStack.map((group) => (
+        <div>
+          <h3 class="text-muted m-0 mb-[18px] text-[13px] font-medium tracking-[0.16em] uppercase">
+            {t(group.headingKey, locale)}
+          </h3>
+          <ul class="text-body m-0 grid list-none gap-[10px] p-0 text-[15px]">
+            {group.items.map((item) => (
+              <li>
+                {item.href ? (
+                  <a href={item.href} target="_blank" rel="noopener">
+                    {t(item.key, locale)}
+                    <span
+                      class="text-muted ml-1 text-[0.8em]"
+                      aria-hidden="true"
+                    >
+                      ↗
+                    </span>
+                  </a>
+                ) : (
+                  t(item.key, locale)
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
