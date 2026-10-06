@@ -143,6 +143,7 @@
   "ui_board_description": "La carrera como una línea temporal interactiva: puestos, proyectos y tecnologías hechos de gelatina que puedes apretar, estirar y seguir en el tiempo.",
   "ui_board_label": "Tablero de la carrera",
   "ui_board_close": "Cerrar",
+  "ui_board_techs": "Tecnologías",
   "ui_board_used_in": "Usado en",
   "ui_board_kind_project": "Proyecto",
   "ui_board_era_sound": "Ingeniería de sonido",
