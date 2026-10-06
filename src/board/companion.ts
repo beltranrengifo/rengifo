@@ -25,6 +25,8 @@ const INK = '#2a2420';
 const WALK_SPEED = 240; // world px per second
 const TROT_SPEED = 600;
 const SLEEP_AFTER = 15_000;
+const HOP_MS = 520;
+const HOP_HEIGHT = 9;
 
 type State = 'walk' | 'sit' | 'sleep';
 
@@ -353,15 +355,15 @@ export class Companion {
     });
   }
 
-  /** Something happened: wake up, and maybe say so. */
+  /**
+   * Something happened: wake up (gently — the eyes open, no jump), and hop
+   * only when asked. A hop already in the air is never restarted, so quick
+   * repeated events cannot make him twitch.
+   */
   poke(now: number, hop = false): void {
     this.lastActivity = now;
-    if (this.state === 'sleep') {
-      this.state = 'sit';
-      this.hopUntil = now + 650;
-    } else if (hop) {
-      this.hopUntil = now + 650;
-    }
+    if (this.state === 'sleep') this.state = 'sit';
+    if (hop && now > this.hopUntil) this.hopUntil = now + HOP_MS;
   }
 
   /** Purr (eyes half shut, a little rumble) while the pointer is on him. */
@@ -421,15 +423,16 @@ export class Companion {
 
     let lift = 0;
     if (now < this.hopUntil) {
-      const p = 1 - (this.hopUntil - now) / 650;
-      lift = Math.sin(p * Math.PI) * 24;
+      // A small, eased hop.
+      const p = 1 - (this.hopUntil - now) / HOP_MS;
+      lift = Math.sin(p * Math.PI) ** 1.5 * HOP_HEIGHT;
     }
     this.root.setAttribute(
       'transform',
       `translate(${this.x.toFixed(1)} ${(this.floor - lift).toFixed(1)})`,
     );
     this.flip.setAttribute('transform', `scale(${this.facing} 1)`);
-    this.bubble.setAttribute('opacity', now < this.hopUntil + 450 ? '1' : '0');
+    this.bubble.setAttribute('opacity', now < this.hopUntil + 600 ? '1' : '0');
 
     this.stand.setAttribute('display', walking ? 'inline' : 'none');
     // Sitting and lying down cross-fade as he settles.

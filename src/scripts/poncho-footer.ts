@@ -2,8 +2,8 @@ import { Companion } from '../board/companion';
 
 /**
  * Poncho in the classic footer: the same cat as on the board, sitting by
- * the door to it. He follows the pointer with his eyes, hops with a "miau"
- * when the pointer comes to him, and falls asleep if left alone. Animated
+ * the door to it. He follows the pointer with his eyes, purrs when the
+ * pointer rests on him, and falls asleep if left alone. Animated
  * only while the footer is on screen.
  */
 
@@ -23,9 +23,6 @@ if (svg) {
     );
     cat.lookAt({ x: point.x, y: point.y });
   });
-  svg
-    .closest('a')
-    ?.addEventListener('pointerenter', () => cat.poke(performance.now(), true));
 
   let visible = false;
   let last = performance.now();
