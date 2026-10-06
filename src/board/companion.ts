@@ -62,6 +62,8 @@ export class Companion {
   private look: { x: number; y: number } | null = null;
   /** 0 awake … 1 fast asleep, eased, so he drifts off and comes round. */
   private drowse = 0;
+  /** Where the pupils point, eased so the eyes glide instead of jump. */
+  private gaze = { x: 0, y: 0 };
   private lastDraw = 0;
   private purring = false;
   private readonly purr = new Purr();
@@ -79,7 +81,7 @@ export class Companion {
   private readonly pupils: SVGCircleElement[] = [];
   private readonly shines: SVGCircleElement[] = [];
   private readonly sleepFace: SVGGElement;
-  private readonly bubble: SVGGElement;
+  private readonly meow: SVGTextElement;
   private readonly zzz: SVGTextElement;
 
   constructor(parent: SVGGElement, x: number, floor: number, label: string) {
@@ -309,27 +311,13 @@ export class Companion {
       );
     }
 
-    this.bubble = el('g', { opacity: 0 }, this.root);
-    el(
-      'rect',
-      {
-        x: -2,
-        y: -96,
-        width: 48,
-        height: 22,
-        rx: 11,
-        fill: '#fbfaf8',
-        stroke: INK,
-        'stroke-opacity': 0.2,
-      },
-      this.bubble,
-    );
-    const meow = el(
+    // "miau" floats up from him and fades, like the z's when he sleeps.
+    this.meow = el(
       'text',
-      { x: 22, y: -81, 'text-anchor': 'middle', class: 'poncho-meow' },
-      this.bubble,
+      { x: 18, y: -66, class: 'poncho-meow', opacity: 0 },
+      this.root,
     );
-    meow.textContent = 'miau';
+    this.meow.textContent = 'miau';
 
     this.zzz = el(
       'text',
@@ -432,7 +420,18 @@ export class Companion {
       `translate(${this.x.toFixed(1)} ${(this.floor - lift).toFixed(1)})`,
     );
     this.flip.setAttribute('transform', `scale(${this.facing} 1)`);
-    this.bubble.setAttribute('opacity', now < this.hopUntil + 600 ? '1' : '0');
+    // The meow rises a little and fades over about a second.
+    const since = now - (this.hopUntil - HOP_MS);
+    const meowing = this.hopUntil > 0 && since >= 0 && since < 1100;
+    const m = meowing ? since / 1100 : 1;
+    this.meow.setAttribute(
+      'opacity',
+      meowing ? (Math.sin(m * Math.PI) * 0.75).toFixed(3) : '0',
+    );
+    this.meow.setAttribute(
+      'transform',
+      `translate(${(m * 4).toFixed(1)} ${(-m * 14).toFixed(1)})`,
+    );
 
     this.stand.setAttribute('display', walking ? 'inline' : 'none');
     // Sitting and lying down cross-fade as he settles.
@@ -491,10 +490,9 @@ export class Companion {
       hy = -56 + breathe * 0.4 + (-14 + 56) * d;
       tilt = look * (1 - d) + 12 * d;
     }
-    // Purring: a fine rumble through the head.
+    // Purring: a slow, barely-there sway of the head.
     if (this.purring && !walking) {
-      hx += Math.sin(t * 160) * 0.35;
-      hy += Math.cos(t * 140) * 0.3;
+      hy += Math.sin(t * 9) * 0.25;
     }
     this.head.setAttribute(
       'transform',
@@ -515,6 +513,11 @@ export class Companion {
       ox = (dx / d) * 1.6;
       oy = (dy / d) * 1.4;
     }
+    const ease = 1 - Math.pow(0.002, dt);
+    this.gaze.x += (ox - this.gaze.x) * ease;
+    this.gaze.y += (oy - this.gaze.y) * ease;
+    ox = this.gaze.x;
+    oy = this.gaze.y;
     this.pupils.forEach((p, i) => {
       const cx = (i === 0 ? -7.5 : 7.5) + ox;
       p.setAttribute('cx', cx.toFixed(2));
