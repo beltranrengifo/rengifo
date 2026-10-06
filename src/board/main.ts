@@ -530,7 +530,9 @@ function boot(root: HTMLElement): void {
       const clip = model.clips[node.index]!;
       const x1 = timeX(clip.start);
       const x2 = timeX(clip.end);
-      const y = node.y;
+      // Roles share one straight track, whatever their circles do; a
+      // project's short span stays with its circle.
+      const y = node.kind === 'role' ? node.homeY : node.y;
       span.setAttribute(
         'd',
         `M${f(x1)} ${f(y - 4)} V${f(y + 4)} M${f(x1)} ${f(y)} H${f(x2)} M${f(x2)} ${f(y - 4)} V${f(y + 4)}`,
