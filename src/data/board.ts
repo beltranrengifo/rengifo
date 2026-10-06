@@ -65,6 +65,13 @@ export const boardWorks: BoardWork[] = [
     },
     facts: [
       {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: {
+          en: 'Sound post-production, music recording and mixing',
+          es: 'Postproducción de sonido, grabación musical y mezclas',
+        },
+      },
+      {
         label: AWARDS,
         value: {
           en: 'Goya for Best Documentary Short Film, 2006',
@@ -108,6 +115,13 @@ export const boardWorks: BoardWork[] = [
       es: 'Un corto rodado en Kenia con los niños de un orfanato: Ndugu se propone encontrarle una nueva esposa a su padre de acogida en Estados Unidos, que acaba de enviudar.',
     },
     facts: [
+      {
+        label: { en: 'My role', es: 'Mi papel' },
+        value: {
+          en: 'Location sound, post-production and mixing',
+          es: 'Sonido directo, postproducción y mezclas',
+        },
+      },
       { label: DIRECTION, value: 'David Muñoz' },
       { label: PRODUCTION, value: 'Híbrida' },
       { label: RUNTIME, value: '15 min' },
