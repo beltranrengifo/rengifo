@@ -1,6 +1,6 @@
 /**
  * How Beltrán works with AI — a dated snapshot. The stack moves fast, so
- * the page shows when this was last reviewed, and a monthly reminder asks
+ * the page shows when this was last reviewed, and a reminder every four weeks asks
  * for a fresh look (see .github/workflows/ai-stack-review.yml).
  */
 
