@@ -70,7 +70,7 @@ const allProjects: Project[] = [
       'Tone.js · wavesurfer',
       'Python — Demucs, Basic Pitch, Omnizart',
       'TensorFlow · PyTorch',
-      'Docker on Railway',
+      'Docker on Coolify (self-hosted)',
     ],
     notes: [
       { headingKey: 'cs_ensayadero_n1_h', bodyKey: 'cs_ensayadero_n1_b' },
