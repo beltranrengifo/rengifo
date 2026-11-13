@@ -59,6 +59,32 @@ export type Project = CaseStudy | LinkedProject;
  */
 const allProjects: Project[] = [
   {
+    slug: 'tablux',
+    name: 'Tablux',
+    rowKey: 'proj_tablux_desc',
+    taglineKey: 'cs_tablux_tagline',
+    introKey: 'cs_tablux_intro',
+    stack: [
+      'Linux 6.18 · U-Boot · device tree',
+      'Armbian · Phosh',
+      'Next.js 16 · React 19 (PWA)',
+      'Supabase (self-hosted)',
+      'Node · Hono',
+      'Claude Haiku · Whisper on Groq',
+      'MCP server',
+      'Tailscale · Coolify',
+    ],
+    notes: [
+      { headingKey: 'cs_tablux_n1_h', bodyKey: 'cs_tablux_n1_b' },
+      { headingKey: 'cs_tablux_n2_h', bodyKey: 'cs_tablux_n2_b' },
+      { headingKey: 'cs_tablux_n3_h', bodyKey: 'cs_tablux_n3_b' },
+      { headingKey: 'cs_tablux_n4_h', bodyKey: 'cs_tablux_n4_b' },
+      { headingKey: 'cs_tablux_n5_h', bodyKey: 'cs_tablux_n5_b' },
+    ],
+    screenshots: [],
+    code: 'private',
+  },
+  {
     slug: 'ensayadero',
     name: 'Ensayadero.studio',
     rowKey: 'proj_ensayadero_desc',
