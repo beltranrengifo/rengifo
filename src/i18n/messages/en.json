@@ -120,7 +120,7 @@
   "cs_paellalab_n2_b": "Only authentication and navigation load eagerly; every landing section waits until it is visible. The gated content exists twice on purpose — enforced on the server, softened on the client with a fade — because the first is the rule and the second is the manners.",
   "cs_paellalab_n3_h": "One formula, measured per pan",
   "cs_paellalab_n3_b": "Every pan loses water at its own pace, so each one gets a quick evaporation test. The app turns that measurement into how much broth a given amount of rice needs for the time it will cook, and works out the rest of the quantities from there.",
-  "cs_tablux_tagline": "From the bin to every screen at home.",
+  "cs_tablux_tagline": "From the bin to running the house.",
   "cs_tablux_intro": "A HiPOS point-of-sale terminal was about to be thrown away. I took it apart, brought it back to life on Linux and hung it on the wall. From there it grew into one app for every screen at home: the wall, old tablets and our phones. Lights, blinds, plugs and routines, music, the family agenda, the week's menu and the shopping list, by touch or by voice.",
   "cs_tablux_n1_h": "My own Linux on an undocumented board",
   "cs_tablux_n1_b": "It ran a locked, outdated Android 10 on a Rockchip RK3288 board with no public documentation. After a full backup of the factory system, I wrote the device tree from the vendor's own, built U-Boot with the memory init this board needs, and compiled Linux 6.18 on Armbian with the display drivers it lacked. Screen, touch, Wi-Fi, Bluetooth and sound came back one by one — the touch only once I found the GPIO that powers it. Phosh on top turns it into a system made for fingers.",
