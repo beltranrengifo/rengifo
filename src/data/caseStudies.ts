@@ -6,9 +6,14 @@ import ensayaderoChart from '../assets/work/ensayadero-chart.png';
 import billingAdvance from '../assets/work/billing-advance.png';
 import tabluxHome from '../assets/work/tablux-home.png';
 import tabluxCasa from '../assets/work/tablux-casa.png';
-import tabluxChat from '../assets/work/tablux-chat.png';
+import tabluxLight from '../assets/work/tablux-light.png';
 import tabluxBlind from '../assets/work/tablux-blind.png';
 import tabluxRoutine from '../assets/work/tablux-routine.png';
+import tabluxMenu from '../assets/work/tablux-menu.png';
+import tabluxLists from '../assets/work/tablux-lists.png';
+import tabluxAgenda from '../assets/work/tablux-agenda.png';
+import tabluxChat from '../assets/work/tablux-chat.png';
+import tabluxNight from '../assets/work/tablux-night.png';
 
 export interface Screenshot {
   src: ImageMetadata;
@@ -99,7 +104,7 @@ const allProjects: Project[] = [
         captionKey: 'cs_tablux_shot2_cap',
       },
       {
-        src: tabluxChat,
+        src: tabluxLight,
         altKey: 'cs_tablux_shot3_alt',
         captionKey: 'cs_tablux_shot3_cap',
       },
@@ -112,6 +117,31 @@ const allProjects: Project[] = [
         src: tabluxRoutine,
         altKey: 'cs_tablux_shot5_alt',
         captionKey: 'cs_tablux_shot5_cap',
+      },
+      {
+        src: tabluxMenu,
+        altKey: 'cs_tablux_shot6_alt',
+        captionKey: 'cs_tablux_shot6_cap',
+      },
+      {
+        src: tabluxLists,
+        altKey: 'cs_tablux_shot7_alt',
+        captionKey: 'cs_tablux_shot7_cap',
+      },
+      {
+        src: tabluxAgenda,
+        altKey: 'cs_tablux_shot8_alt',
+        captionKey: 'cs_tablux_shot8_cap',
+      },
+      {
+        src: tabluxChat,
+        altKey: 'cs_tablux_shot9_alt',
+        captionKey: 'cs_tablux_shot9_cap',
+      },
+      {
+        src: tabluxNight,
+        altKey: 'cs_tablux_shot10_alt',
+        captionKey: 'cs_tablux_shot10_cap',
       },
     ],
     code: 'private',
