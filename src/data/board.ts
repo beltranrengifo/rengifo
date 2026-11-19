@@ -27,6 +27,7 @@ export interface Tech {
 /** Project date spans, by slug — from each repository's history. */
 export const projectSpans: Record<string, Span> = {
   tablux: ['2026-10', '2026-11'],
+  infrastructure: ['2026-10', '2026-11'],
   ensayadero: ['2026-03', '2026-07'],
   'radio-perico': ['2026-09', '2026-10'],
   paellalab: ['2026-01', '2026-03'],
@@ -469,7 +470,7 @@ export const techs: Tech[] = [
     id: 'python',
     label: 'Python',
     layer: 'backend',
-    uses: { ensayadero: 1, 'radio-perico': 1 },
+    uses: { ensayadero: 1, 'radio-perico': 1, infrastructure: 1 },
   },
   {
     id: 'sql',
@@ -488,7 +489,13 @@ export const techs: Tech[] = [
     id: 'postgres',
     label: 'Postgres · Supabase',
     layer: 'backend',
-    uses: { paellalab: 1, ensayadero: 1, 'radio-perico': 1, tablux: 1 },
+    uses: {
+      paellalab: 1,
+      ensayadero: 1,
+      'radio-perico': 1,
+      tablux: 1,
+      infrastructure: 1,
+    },
   },
   {
     id: 'llm',
@@ -552,13 +559,25 @@ export const techs: Tech[] = [
     id: 'docker',
     label: 'Docker',
     layer: 'tools',
-    uses: { ensayadero: 1, tablux: 1 },
+    uses: { ensayadero: 1, tablux: 1, infrastructure: 1 },
+  },
+  {
+    id: 'self-hosting',
+    label: { en: 'Self-hosting · ops', es: 'Servidor propio · sistemas' },
+    layer: 'tools',
+    uses: { infrastructure: 1, ensayadero: 1, tablux: 1 },
   },
   {
     id: 'cicd',
     label: 'CI/CD',
     layer: 'tools',
-    uses: { mews_senior: 1, mews_techlead: 1, ensayadero: 1, tablux: 1 },
+    uses: {
+      mews_senior: 1,
+      mews_techlead: 1,
+      ensayadero: 1,
+      tablux: 1,
+      infrastructure: 1,
+    },
   },
   {
     id: 'vitest',

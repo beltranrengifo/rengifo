@@ -28,7 +28,13 @@ export const capabilities: CapabilityColumn[] = [
   },
   {
     headingKey: 'cap_h_infra',
-    itemKeys: ['cap_infra_1', 'cap_infra_2', 'cap_infra_3', 'cap_infra_4'],
+    itemKeys: [
+      'cap_infra_1',
+      'cap_infra_2',
+      'cap_infra_5',
+      'cap_infra_3',
+      'cap_infra_4',
+    ],
   },
   {
     headingKey: 'cap_h_practice',
