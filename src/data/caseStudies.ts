@@ -13,6 +13,9 @@ import tabluxMenu from '../assets/work/tablux-menu.png';
 import tabluxLists from '../assets/work/tablux-lists.png';
 import tabluxAgenda from '../assets/work/tablux-agenda.png';
 import tabluxChat from '../assets/work/tablux-chat.png';
+import gorraStation from '../assets/work/gorraplanistas-station.png';
+import gorraCharts from '../assets/work/gorraplanistas-charts.png';
+import gorraForecast from '../assets/work/gorraplanistas-forecast.png';
 import tabluxNight from '../assets/work/tablux-night.png';
 
 export interface Screenshot {
@@ -277,6 +280,47 @@ const allProjects: Project[] = [
     screenshots: [],
     code: 'private',
     href: 'https://carabanchelcreativa.com/',
+  },
+  {
+    slug: 'gorraplanistas',
+    name: 'Gorraplanistas',
+    rowKey: 'proj_meteo_desc',
+    taglineKey: 'cs_meteo_tagline',
+    introKey: 'cs_meteo_intro',
+    stack: [
+      'C++ on an ESP32 · PlatformIO',
+      'Supabase (self-hosted) · pg_cron',
+      'Deno',
+      'React 19 · Vite · ECharts',
+      'Vercel Functions',
+      'PWA · Web Push',
+      'Open-Meteo',
+    ],
+    notes: [
+      { headingKey: 'cs_meteo_n1_h', bodyKey: 'cs_meteo_n1_b' },
+      { headingKey: 'cs_meteo_n2_h', bodyKey: 'cs_meteo_n2_b' },
+      { headingKey: 'cs_meteo_n3_h', bodyKey: 'cs_meteo_n3_b' },
+      { headingKey: 'cs_meteo_n4_h', bodyKey: 'cs_meteo_n4_b' },
+    ],
+    screenshots: [
+      {
+        src: gorraStation,
+        altKey: 'cs_meteo_shot1_alt',
+        captionKey: 'cs_meteo_shot1_cap',
+      },
+      {
+        src: gorraCharts,
+        altKey: 'cs_meteo_shot2_alt',
+        captionKey: 'cs_meteo_shot2_cap',
+      },
+      {
+        src: gorraForecast,
+        altKey: 'cs_meteo_shot3_alt',
+        captionKey: 'cs_meteo_shot3_cap',
+      },
+    ],
+    code: { href: 'https://github.com/beltranrengifo/meteo-station' },
+    href: 'https://gorraplanistas.vercel.app/',
   },
   {
     slug: 'paellalab',
