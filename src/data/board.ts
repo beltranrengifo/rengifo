@@ -29,6 +29,7 @@ export const projectSpans: Record<string, Span> = {
   tablux: ['2026-10', '2026-11'],
   ensayadero: ['2026-03', '2026-07'],
   'radio-perico': ['2026-09', '2026-10'],
+  'ca-na-llum': ['2026-11', '2026-11'],
   paellalab: ['2026-01', '2026-03'],
   'carabanchel-creativa': ['2021-01', '2021-05'],
 };
@@ -313,6 +314,7 @@ export const techs: Tech[] = [
       paellalab: 1,
       ensayadero: 1,
       tablux: 1,
+      'ca-na-llum': 1,
     },
   },
   {
@@ -380,6 +382,12 @@ export const techs: Tech[] = [
     label: 'Next.js · Astro',
     layer: 'frontend',
     uses: { paellalab: 1, ensayadero: 1, tablux: 1 },
+  },
+  {
+    id: 'webgl',
+    label: 'three.js · WebGL',
+    layer: 'frontend',
+    uses: { 'ca-na-llum': 1 },
   },
   {
     id: 'mapbox',
@@ -469,7 +477,7 @@ export const techs: Tech[] = [
     id: 'python',
     label: 'Python',
     layer: 'backend',
-    uses: { ensayadero: 1, 'radio-perico': 1 },
+    uses: { ensayadero: 1, 'radio-perico': 1, 'ca-na-llum': 1 },
   },
   {
     id: 'sql',
@@ -564,7 +572,13 @@ export const techs: Tech[] = [
     id: 'vitest',
     label: 'Vitest',
     layer: 'tools',
-    uses: { mews_senior: 2, mews_techlead: 2, mews_squad: 2, tablux: 1 },
+    uses: {
+      mews_senior: 2,
+      mews_techlead: 2,
+      mews_squad: 2,
+      tablux: 1,
+      'ca-na-llum': 1,
+    },
   },
   {
     id: 'testing-library',
