@@ -53,8 +53,7 @@ export interface CaseStudy extends ProjectBase {
   href?: string; // somewhere live to look, when there is one
   /**
    * Only for work that cannot simply be visited: how someone gets in. A
-   * public site needs no such line — the link is the proof, which is also
-   * why only the gated projects carry screenshots.
+   * public site needs no such line — the link is the proof.
    */
   accessKey?: string;
 }

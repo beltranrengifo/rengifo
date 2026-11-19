@@ -24,7 +24,13 @@ A project touches five places. Do them all in one branch and one PR.
 
 ### Screenshots
 
-- Only for work that cannot be visited, and only with images the user provides — never mockups.
+- Every project page carries screenshots (3–4), public sites too. Never mockups: real screens only.
+- Take them yourself with Playwright, using Google Chrome via `require('playwright')` from a repo that has it (e.g. `~/Development/tablux/web`). Use one browser, one shot at a time, closed after.
+  - Sites: 1440×900 at deviceScaleFactor 2, `locale: 'es-ES'`, scrolled or clicked to each section.
+  - Apps with a fixtures or demo mode (Tablux's layout matrix): their iPad landscape size, 1180×820 @2x.
+  - Every shot of one project at the same size.
+- Gated apps whose screens hold real people's data (students, clients): don't log in and shoot; ask the user for shots from a demo account.
+- RAM: never run several builds, embeds or browsers at once (the Mac ran out of memory once). Check `memory_pressure` before heavy steps.
 - Look at every image before using it. Remove what is private or reads badly out of context: third parties' names, addresses, appointments, odd voice transcriptions. Blur a region or crop; never retouch text into something it did not say. Pillow is not installed; use `sharp` from the repo's `node_modules` (`extract` + `blur` + `composite`, or `extract` to crop). Tell the user what was blurred or cropped.
 - Save as `src/assets/work/<slug>-<what>.png`, import them at the top of `caseStudies.ts`, keys `cs_<slug>_shotN_alt` (what is on screen) and `cs_<slug>_shotN_cap` (one line on what it shows about the work).
 
