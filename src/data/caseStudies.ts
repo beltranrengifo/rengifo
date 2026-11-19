@@ -13,6 +13,9 @@ import tabluxMenu from '../assets/work/tablux-menu.png';
 import tabluxLists from '../assets/work/tablux-lists.png';
 import tabluxAgenda from '../assets/work/tablux-agenda.png';
 import tabluxChat from '../assets/work/tablux-chat.png';
+import canallumExterior from '../assets/work/canallum-exterior.png';
+import canallumPlan from '../assets/work/canallum-plan.png';
+import canallumNight from '../assets/work/canallum-night.png';
 import tabluxNight from '../assets/work/tablux-night.png';
 
 export interface Screenshot {
@@ -300,7 +303,23 @@ const allProjects: Project[] = [
       { headingKey: 'cs_canallum_n3_h', bodyKey: 'cs_canallum_n3_b' },
       { headingKey: 'cs_canallum_n4_h', bodyKey: 'cs_canallum_n4_b' },
     ],
-    screenshots: [],
+    screenshots: [
+      {
+        src: canallumExterior,
+        altKey: 'cs_canallum_shot1_alt',
+        captionKey: 'cs_canallum_shot1_cap',
+      },
+      {
+        src: canallumPlan,
+        altKey: 'cs_canallum_shot2_alt',
+        captionKey: 'cs_canallum_shot2_cap',
+      },
+      {
+        src: canallumNight,
+        altKey: 'cs_canallum_shot3_alt',
+        captionKey: 'cs_canallum_shot3_cap',
+      },
+    ],
     code: 'private',
     href: 'https://ca-na-llum.vercel.app/',
   },
