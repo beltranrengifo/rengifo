@@ -170,6 +170,8 @@
   "cs_infrastructure_n5_b": "Administration only over Tailscale; only the apps face the internet. Backups in three places: nightly database dumps and files to Backblaze B2, Hetzner's backups of the whole server, and a Raspberry Pi at home that pulls everything with a read-only key into an encrypted copy on a NAS, out of reach of anyone who gets into the server. The Pi also keeps a mirror of every GitHub repo. Restores tested. Uptime monitoring alerts my phone.",
   "cs_infrastructure_n6_h": "Written down as it was built",
   "cs_infrastructure_n6_b": "Every decision, keeping the frontends on Vercel among them, is recorded with its date, its reason and the alternatives ruled out, alongside runbooks for migrating an app or restoring a backup.",
+  "cs_infrastructure_shot1_cap": "One server, eight apps, three copies.",
+  "cs_infrastructure_shot1_alt": "Diagram of the infrastructure: browsers, the Vercel frontends and the weather stations reach one Hetzner server running Coolify, with a Supabase instance per app, the Ensayadero container, the embeddings service and Uptime Kuma. Backups go to Backblaze B2, to Hetzner and to a Raspberry Pi at home, and alerts go to a phone. Admin access is only over Tailscale.",
   "cs_carabanchel_tagline": "A neighbourhood, mapped by the people living in it.",
   "cs_carabanchel_intro": "An interactive map of the cultural and commercial fabric of Carabanchel, in Madrid, built with the IED: editors publish collections through a CMS and the public app draws them as layers over Mapbox — local commerce, the people who sustain it, and the places at risk of disappearing. Built by two, not solo.",
   "cs_carabanchel_n1_h": "GeoJSON native inside the CMS",

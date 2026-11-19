@@ -14,6 +14,7 @@ import tabluxLists from '../assets/work/tablux-lists.png';
 import tabluxAgenda from '../assets/work/tablux-agenda.png';
 import tabluxChat from '../assets/work/tablux-chat.png';
 import tabluxNight from '../assets/work/tablux-night.png';
+import infrastructureDiagram from '../assets/work/infrastructure-diagram.png';
 
 export interface Screenshot {
   src: ImageMetadata;
@@ -186,7 +187,13 @@ const allProjects: Project[] = [
         bodyKey: 'cs_infrastructure_n6_b',
       },
     ],
-    screenshots: [],
+    screenshots: [
+      {
+        src: infrastructureDiagram,
+        altKey: 'cs_infrastructure_shot1_alt',
+        captionKey: 'cs_infrastructure_shot1_cap',
+      },
+    ],
     code: 'private',
   },
   {
