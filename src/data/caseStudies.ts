@@ -4,6 +4,11 @@ import ensayaderoLibrary from '../assets/work/ensayadero-library.png';
 import ensayaderoSession from '../assets/work/ensayadero-session.png';
 import ensayaderoChart from '../assets/work/ensayadero-chart.png';
 import billingAdvance from '../assets/work/billing-advance.png';
+import tabluxHome from '../assets/work/tablux-home.png';
+import tabluxCasa from '../assets/work/tablux-casa.png';
+import tabluxChat from '../assets/work/tablux-chat.png';
+import tabluxBlind from '../assets/work/tablux-blind.png';
+import tabluxRoutine from '../assets/work/tablux-routine.png';
 
 export interface Screenshot {
   src: ImageMetadata;
@@ -58,6 +63,59 @@ export type Project = CaseStudy | LinkedProject;
  * Ordered by how much of the stack each one proves, not by date.
  */
 const allProjects: Project[] = [
+  {
+    slug: 'tablux',
+    name: 'Tablux',
+    rowKey: 'proj_tablux_desc',
+    taglineKey: 'cs_tablux_tagline',
+    introKey: 'cs_tablux_intro',
+    stack: [
+      'Linux 6.18 · U-Boot · device tree',
+      'Armbian · Phosh',
+      'Next.js 16 · React 19 (PWA)',
+      'Supabase (self-hosted)',
+      'Node · Hono',
+      'Claude Haiku · Whisper on Groq',
+      'MCP server',
+      'Tailscale · Coolify',
+    ],
+    notes: [
+      { headingKey: 'cs_tablux_n1_h', bodyKey: 'cs_tablux_n1_b' },
+      { headingKey: 'cs_tablux_n2_h', bodyKey: 'cs_tablux_n2_b' },
+      { headingKey: 'cs_tablux_n3_h', bodyKey: 'cs_tablux_n3_b' },
+      { headingKey: 'cs_tablux_n4_h', bodyKey: 'cs_tablux_n4_b' },
+      { headingKey: 'cs_tablux_n5_h', bodyKey: 'cs_tablux_n5_b' },
+      { headingKey: 'cs_tablux_n6_h', bodyKey: 'cs_tablux_n6_b' },
+    ],
+    screenshots: [
+      {
+        src: tabluxHome,
+        altKey: 'cs_tablux_shot1_alt',
+        captionKey: 'cs_tablux_shot1_cap',
+      },
+      {
+        src: tabluxCasa,
+        altKey: 'cs_tablux_shot2_alt',
+        captionKey: 'cs_tablux_shot2_cap',
+      },
+      {
+        src: tabluxChat,
+        altKey: 'cs_tablux_shot3_alt',
+        captionKey: 'cs_tablux_shot3_cap',
+      },
+      {
+        src: tabluxBlind,
+        altKey: 'cs_tablux_shot4_alt',
+        captionKey: 'cs_tablux_shot4_cap',
+      },
+      {
+        src: tabluxRoutine,
+        altKey: 'cs_tablux_shot5_alt',
+        captionKey: 'cs_tablux_shot5_cap',
+      },
+    ],
+    code: 'private',
+  },
   {
     slug: 'ensayadero',
     name: 'Ensayadero.studio',
