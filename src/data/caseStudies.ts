@@ -14,6 +14,10 @@ import tabluxLists from '../assets/work/tablux-lists.png';
 import tabluxAgenda from '../assets/work/tablux-agenda.png';
 import tabluxChat from '../assets/work/tablux-chat.png';
 import tabluxNight from '../assets/work/tablux-night.png';
+import assistedReviewHome from '../assets/work/assisted-review-home.png';
+import assistedReviewNew from '../assets/work/assisted-review-new.png';
+import assistedReviewActivity from '../assets/work/assisted-review-activity.png';
+import assistedReviewReview from '../assets/work/assisted-review-review.png';
 
 export interface Screenshot {
   src: ImageMetadata;
@@ -206,7 +210,28 @@ const allProjects: Project[] = [
       { headingKey: 'cs_review_n4_h', bodyKey: 'cs_review_n4_b' },
       { headingKey: 'cs_review_n5_h', bodyKey: 'cs_review_n5_b' },
     ],
-    screenshots: [],
+    screenshots: [
+      {
+        src: assistedReviewHome,
+        altKey: 'cs_review_shot1_alt',
+        captionKey: 'cs_review_shot1_cap',
+      },
+      {
+        src: assistedReviewNew,
+        altKey: 'cs_review_shot2_alt',
+        captionKey: 'cs_review_shot2_cap',
+      },
+      {
+        src: assistedReviewActivity,
+        altKey: 'cs_review_shot3_alt',
+        captionKey: 'cs_review_shot3_cap',
+      },
+      {
+        src: assistedReviewReview,
+        altKey: 'cs_review_shot4_alt',
+        captionKey: 'cs_review_shot4_cap',
+      },
+    ],
     code: 'private',
     href: 'https://assisted-review.vercel.app/',
     accessKey: 'cs_review_access',
