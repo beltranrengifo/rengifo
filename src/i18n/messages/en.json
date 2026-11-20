@@ -157,7 +157,7 @@
   "cs_tablux_shot10_alt": "The night screen: a large clock, the temperature outside, tomorrow's events and lunch, and the music playing.",
   "cs_tablux_shot10_cap": "At night, shared screens rest: a dark clock and what's coming tomorrow.",
   "cs_infrastructure_tagline": "Every backend on a server of my own.",
-  "cs_infrastructure_intro": "Where the backends of my apps live: one ARM server at Hetzner running Coolify, with a self-hosted Supabase for each app, an embeddings service, backups in three places and uptime monitoring. Set up in October 2026 to replace a Supabase Cloud bill that grew with every new app.",
+  "cs_infrastructure_intro": "Where the backends of my apps live: one ARM server at Hetzner running Coolify, with a self-hosted Supabase for each app, an embeddings service, backups in three places and uptime monitoring. Set up in October 2026 to replace a Supabase Cloud bill that grew with every new app. This is how it stands in November 2026.",
   "cs_infrastructure_n1_h": "A fixed price, not a bill per app",
   "cs_infrastructure_n1_b": "Each app had its own paid Supabase Cloud project: about €70 a month in all, and more with every new one. Now a single server costs about €30 a month, backups included. Supabase stayed because every app already spoke supabase-js; Appwrite, PocketBase or a stack of my own would have meant rewriting them.",
   "cs_infrastructure_n2_h": "One Supabase per app",
