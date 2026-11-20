@@ -16,6 +16,7 @@ function seeded(seed = 1): () => number {
 }
 
 const roleId = (key: string) => key.replace(/^exp_|_title$/g, '');
+const workIds = new Set(boardWorks.map((work) => work.id));
 
 function realModel() {
   return buildModel({
@@ -28,12 +29,14 @@ function realModel() {
           span: role.dates ?? entry.period,
         })),
       ),
-      ...projects.map((project) => ({
-        id: project.slug,
-        kind: 'project' as const,
-        label: project.name,
-        span: projectSpans[project.slug]!,
-      })),
+      ...projects
+        .filter((project) => !workIds.has(project.slug))
+        .map((project) => ({
+          id: project.slug,
+          kind: 'project' as const,
+          label: project.name,
+          span: projectSpans[project.slug]!,
+        })),
       ...boardWorks.map((work) => ({
         id: work.id,
         kind: 'project' as const,
@@ -53,6 +56,11 @@ describe('board data', () => {
     for (const project of projects) {
       expect(projectSpans[project.slug], project.slug).toBeDefined();
     }
+  });
+
+  it('draws each clip once, even when a project is also a work', () => {
+    const ids = realModel().clips.map((clip) => clip.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('only uses technologies in roles and projects that exist', () => {

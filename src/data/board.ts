@@ -29,6 +29,7 @@ export const projectSpans: Record<string, Span> = {
   tablux: ['2026-10', '2026-11'],
   ensayadero: ['2026-03', '2026-07'],
   'radio-perico': ['2026-09', '2026-10'],
+  lacasaestudio: ['2026-07', '2026-11'],
   paellalab: ['2026-01', '2026-03'],
   'carabanchel-creativa': ['2021-01', '2021-05'],
 };
