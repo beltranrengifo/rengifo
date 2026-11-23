@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { systemMaps } from './index';
 import { drawings, glyphs } from '../../components/systemMap/art';
 import type { SystemMap, Text } from './types';
+import { projects } from '../caseStudies';
 
 const filled = (text: Text | undefined) =>
   !!text && text.en.trim() !== '' && text.es.trim() !== '';
@@ -104,6 +105,23 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
             }
         }
       }
+    });
+
+    it('names only real parts, zones and pages in its extras', () => {
+      if (map.offline) {
+        expect(filled(map.offline.note)).toBe(true);
+        for (const id of map.offline.keep) expect(nodeIds, id).toContain(id);
+        for (const id of map.offline.lose) expect(zoneIds, id).toContain(id);
+      }
+      for (const bundle of map.bundles ?? []) {
+        expect(nodeIds).toContain(bundle.from);
+        expect(zoneIds).toContain(bundle.zone);
+      }
+      const pages = new Set(
+        projects.filter((p) => p.page !== false).map((p) => p.slug),
+      );
+      for (const node of map.nodes)
+        if (node.caseStudy) expect(pages, node.id).toContain(node.caseStudy);
     });
 
     it('keeps the house private', () => {

@@ -1,7 +1,8 @@
 /**
  * The system map's behaviour (see SystemMap.astro): wires drawn from where
- * the parts really sit, a part's panel, and walkthroughs that light a path
- * one step at a time. Without it, the parts and their texts still read.
+ * the parts really sit, a part's panel, a hover preview, walkthroughs that
+ * light a path one step at a time, and the «no internet» view. Without it,
+ * the parts and their texts still read.
  */
 
 interface WireData {
@@ -13,7 +14,10 @@ interface WireData {
 interface MapData {
   edges: WireData[];
   hosts: Record<string, { zones: string[]; nodes: string[] }>;
+  zoneOf: Record<string, string>;
   walks: Record<string, { nodes: string[]; caption: string }[]>;
+  offline: { keep: string[]; lose: string[] } | null;
+  bundles: { from: string; zone: string }[];
   stepOf: string;
 }
 interface Box {
@@ -21,14 +25,6 @@ interface Box {
   r: number;
   t: number;
   b: number;
-}
-interface Wire extends WireData {
-  g: SVGGElement;
-  base: SVGPathElement;
-  pulse: SVGPathElement;
-  text: SVGTextElement;
-  /** Where its label sits: halfway, or just clear of either end. */
-  spots: { mid: Spot; nearFrom: Spot; nearTo: Spot };
 }
 interface Point {
   x: number;
@@ -38,10 +34,24 @@ interface Point {
 interface Spot extends Point {
   anchor: 'start' | 'middle' | 'end';
 }
+interface Wire extends WireData {
+  g: SVGGElement;
+  base: SVGPathElement;
+  pulse: SVGPathElement;
+  text: SVGTextElement;
+  /** Where its label may sit: halfway, or just clear of either end. */
+  spots: { mid: Spot; nearFrom: Spot; nearTo: Spot };
+}
 
 const SVG = 'http://www.w3.org/2000/svg';
 const STEP_MS = 3600;
+const WIDE = 1280; // side panel beside the map
+const STACKED = 840; // zones stacked, parts two by two
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+const smooth = (): ScrollBehavior =>
+  reducedMotion.matches ? 'auto' : 'smooth';
 
 document
   .querySelectorAll<HTMLElement>('[data-smap]')
@@ -51,30 +61,34 @@ function init(root: HTMLElement) {
   const data = JSON.parse(
     root.querySelector('[data-smap-data]')!.textContent ?? '{}',
   ) as MapData;
-  const canvas = root.querySelector<HTMLElement>('[data-smap-canvas]')!;
-  const svg = root.querySelector<SVGSVGElement>('[data-smap-wires]')!;
-  const labels = root.querySelector<SVGSVGElement>('[data-smap-labels]')!;
-  const panel = root.querySelector<HTMLElement>('[data-smap-panel]')!;
-  const player = root.querySelector<HTMLElement>('[data-smap-player]')!;
-  const dots = root.querySelector<HTMLElement>('[data-smap-dots]')!;
-  const stepN = root.querySelector<HTMLElement>('[data-smap-step-n]')!;
-  const caption = root.querySelector<HTMLElement>('[data-smap-caption]')!;
-  const prev = root.querySelector<HTMLButtonElement>('[data-smap-prev]')!;
-  const next = root.querySelector<HTMLButtonElement>('[data-smap-next]')!;
-  const play = root.querySelector<HTMLButtonElement>('[data-smap-play]')!;
-  const intro = root.querySelector<HTMLElement>('[data-smap-intro]');
+  const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel);
+  const $$ = <T extends Element>(sel: string) => [
+    ...root.querySelectorAll<T>(sel),
+  ];
+
+  const canvas = $<HTMLElement>('[data-smap-canvas]')!;
+  const svg = $<SVGSVGElement>('[data-smap-wires]')!;
+  const labels = $<SVGSVGElement>('[data-smap-labels]')!;
+  const panel = $<HTMLElement>('[data-smap-panel]')!;
+  const handle = $<HTMLButtonElement>('[data-smap-handle]')!;
+  const more = $<HTMLButtonElement>('[data-smap-more]')!;
+  const player = $<HTMLElement>('[data-smap-player]')!;
+  const dots = $<HTMLElement>('[data-smap-dots]')!;
+  const stepN = $<HTMLElement>('[data-smap-step-n]')!;
+  const caption = $<HTMLElement>('[data-smap-caption]')!;
+  const intro = $<HTMLElement>('[data-smap-intro]');
+  const offlineButton = $<HTMLButtonElement>('[data-smap-offline]');
+  const offlineNote = $<HTMLElement>('[data-smap-offline-note]');
+  const prevs = $$<HTMLButtonElement>('[data-smap-prev]');
+  const nexts = $$<HTMLButtonElement>('[data-smap-next]');
+  const plays = $$<HTMLButtonElement>('[data-smap-play]');
+  const ends = $$<HTMLButtonElement>('[data-smap-end]');
 
   const nodes = new Map(
-    [...root.querySelectorAll<HTMLButtonElement>('[data-node]')].map((el) => [
-      el.dataset.node!,
-      el,
-    ]),
+    $$<HTMLButtonElement>('[data-node]').map((el) => [el.dataset.node!, el]),
   );
   const zones = new Map(
-    [...root.querySelectorAll<HTMLElement>('[data-zone]')].map((el) => [
-      el.dataset.zone!,
-      el,
-    ]),
+    $$<HTMLElement>('[data-zone]').map((el) => [el.dataset.zone!, el]),
   );
   const sections = new Map(
     [...panel.querySelectorAll<HTMLElement>('[data-panel]')].map((el) => [
@@ -82,15 +96,15 @@ function init(root: HTMLElement) {
       el,
     ]),
   );
-  const walkButtons = [
-    ...root.querySelectorAll<HTMLButtonElement>('[data-walk]'),
-  ];
+  const walkButtons = $$<HTMLButtonElement>('[data-walk]');
   const stepLists = new Map(
-    [...root.querySelectorAll<HTMLElement>('[data-smap-steps]')].map((el) => [
+    $$<HTMLElement>('[data-smap-steps]').map((el) => [
       el.dataset.smapSteps!,
       el,
     ]),
   );
+  const isWide = () => window.innerWidth >= WIDE;
+  const isStacked = () => window.innerWidth < STACKED;
 
   // ── Wires ──────────────────────────────────────────────────
   const wires: Wire[] = data.edges.map((edge) => {
@@ -110,11 +124,40 @@ function init(root: HTMLElement) {
     return { ...edge, g, base, pulse, text, spots };
   });
 
-  const centre = (el: HTMLElement, origin: DOMRect): Point => {
+  const boxOf = (el: Element, origin: DOMRect): Box => {
     const r = el.getBoundingClientRect();
     return {
-      x: r.left - origin.left + r.width / 2,
-      y: r.top - origin.top + r.height / 2,
+      l: r.left - origin.left,
+      r: r.right - origin.left,
+      t: r.top - origin.top,
+      b: r.bottom - origin.top,
+    };
+  };
+  const centreOf = (b: Box): Point => ({
+    x: (b.l + b.r) / 2,
+    y: (b.t + b.b) / 2,
+  });
+  const f = (n: number) => n.toFixed(1);
+
+  /** A point along a polyline, by the share of its length. */
+  const along = (points: Point[]) => {
+    const lengths = points
+      .slice(1)
+      .map((p, i) => Math.hypot(p.x - points[i]!.x, p.y - points[i]!.y));
+    const total = lengths.reduce((a, b) => a + b, 0) || 1;
+    return (t: number): Point => {
+      let left = t * total;
+      for (let i = 0; i < lengths.length; i++) {
+        const len = lengths[i]!;
+        if (left <= len || i === lengths.length - 1) {
+          const k = len ? Math.min(1, left / len) : 0;
+          const a = points[i]!;
+          const b = points[i + 1]!;
+          return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k };
+        }
+        left -= len;
+      }
+      return points[points.length - 1]!;
     };
   };
 
@@ -142,47 +185,46 @@ function init(root: HTMLElement) {
     }
     const at = (t: number): Point => {
       const u = 1 - t;
+      const k = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
       return {
-        x:
-          u * u * u * a.x +
-          3 * u * u * t * c1.x +
-          3 * u * t * t * c2.x +
-          t * t * t * b.x,
-        y:
-          u * u * u * a.y +
-          3 * u * u * t * c1.y +
-          3 * u * t * t * c2.y +
-          t * t * t * b.y,
+        x: k[0]! * a.x + k[1]! * c1.x + k[2]! * c2.x + k[3]! * b.x,
+        y: k[0]! * a.y + k[1]! * c1.y + k[2]! * c2.y + k[3]! * b.y,
       };
     };
-    const f = (n: number) => n.toFixed(1);
     return {
       d: `M${f(a.x)} ${f(a.y)}C${f(c1.x)} ${f(c1.y)} ${f(c2.x)} ${f(c2.y)} ${f(b.x)} ${f(b.y)}`,
       at,
     };
   };
 
+  // A bundled wire: straight out to a trunk just before the zone, along the
+  // trunk, then into its part. The bundle's wires share every pixel up to
+  // where they fan out, so they read as one.
+  const trunk = (a: Point, b: Point, x: number) => {
+    const r = Math.min(8, Math.abs(b.y - a.y) / 2);
+    const s = Math.sign(b.y - a.y) || 1;
+    const d = r
+      ? `M${f(a.x)} ${f(a.y)}H${f(x - r)}Q${f(x)} ${f(a.y)} ${f(x)} ${f(a.y + s * r)}V${f(b.y - s * r)}Q${f(x)} ${f(b.y)} ${f(x + r)} ${f(b.y)}H${f(b.x)}`
+      : `M${f(a.x)} ${f(a.y)}H${f(b.x)}`;
+    return { d, at: along([a, { x, y: a.y }, { x, y: b.y }, b]) };
+  };
+
   // The first point along the wire that is clear of a part's card, with
   // its text running away from the card, so the card never hides it.
-  const clearOf = (
-    at: (t: number) => Point,
-    rect: DOMRect,
-    origin: DOMRect,
-    fromEnd: boolean,
-  ): Spot => {
+  const clearOf = (at: (t: number) => Point, card: Box, fromEnd: boolean) => {
     const box = {
-      l: rect.left - origin.left - 8,
-      r: rect.right - origin.left + 8,
-      t: rect.top - origin.top - 12,
-      b: rect.bottom - origin.top + 12,
+      l: card.l - 8,
+      r: card.r + 8,
+      t: card.t - 12,
+      b: card.b + 12,
     };
     for (let i = 0; i <= 25; i++) {
       const p = at(fromEnd ? i / 50 : 1 - i / 50);
-      if (p.x < box.l) return { ...p, anchor: 'end' };
-      if (p.x > box.r) return { ...p, anchor: 'start' };
-      if (p.y < box.t || p.y > box.b) return { ...p, anchor: 'middle' };
+      if (p.x < box.l) return { ...p, anchor: 'end' } as Spot;
+      if (p.x > box.r) return { ...p, anchor: 'start' } as Spot;
+      if (p.y < box.t || p.y > box.b) return { ...p, anchor: 'middle' } as Spot;
     }
-    return { ...at(0.5), anchor: 'middle' };
+    return { ...at(0.5), anchor: 'middle' } as Spot;
   };
 
   /** Every card's box on the canvas, for labels to keep clear of. */
@@ -190,95 +232,113 @@ function init(root: HTMLElement) {
 
   const layout = () => {
     const origin = canvas.getBoundingClientRect();
-    cards = [...nodes.values()].map((el) => {
-      const r = el.getBoundingClientRect();
-      return {
-        l: r.left - origin.left,
-        r: r.right - origin.left,
-        t: r.top - origin.top,
-        b: r.bottom - origin.top,
-      };
-    });
-    svg.setAttribute('viewBox', `0 0 ${origin.width} ${origin.height}`);
-    labels.setAttribute('viewBox', `0 0 ${origin.width} ${origin.height}`);
+    for (const layer of [svg, labels])
+      layer.setAttribute('viewBox', `0 0 ${origin.width} ${origin.height}`);
+    const boxes = new Map(
+      [...nodes].map(([id, el]) => [id, boxOf(el, origin)]),
+    );
+    cards = [...boxes.values()];
+    const bundled = (w: Wire) =>
+      isStacked()
+        ? undefined
+        : data.bundles.find(
+            (b) =>
+              (b.from === w.from && data.zoneOf[w.to] === b.zone) ||
+              (b.from === w.to && data.zoneOf[w.from] === b.zone),
+          );
+
     wires.forEach((wire) => {
-      const a = nodes.get(wire.from);
-      const b = nodes.get(wire.to);
+      const a = boxes.get(wire.from);
+      const b = boxes.get(wire.to);
       if (!a || !b) return;
-      const { d, at } = curve(
-        centre(a, origin),
-        centre(b, origin),
-        origin.width,
-      );
-      wire.base.setAttribute('d', d);
-      wire.pulse.setAttribute('d', d);
+      const bundle = bundled(wire);
+      const zone = bundle ? zones.get(bundle.zone) : undefined;
+      let path: { d: string; at: (t: number) => Point };
+      if (bundle && zone) {
+        const x = boxOf(zone, origin).l - 9;
+        const fromHub = bundle.from === wire.from;
+        const hub = centreOf(fromHub ? a : b);
+        const leaf = centreOf(fromHub ? b : a);
+        const p = trunk(hub, leaf, x);
+        path = fromHub ? p : { d: p.d, at: (t) => p.at(1 - t) };
+      } else {
+        path = curve(centreOf(a), centreOf(b), origin.width);
+      }
+      wire.base.setAttribute('d', path.d);
+      wire.pulse.setAttribute('d', path.d);
       wire.spots = {
-        mid: { ...at(0.5), anchor: 'middle' },
-        nearFrom: clearOf(at, a.getBoundingClientRect(), origin, true),
-        nearTo: clearOf(at, b.getBoundingClientRect(), origin, false),
+        mid: { ...path.at(0.5), anchor: 'middle' },
+        nearFrom: clearOf(path.at, a, true),
+        nearTo: clearOf(path.at, b, false),
       };
     });
     placeLabels();
   };
 
-  // A chosen part's labels sit by its neighbours, where they fan out. Each
-  // tries a few spots and takes the first that covers no card and no other
-  // label; one that finds none stays hidden (the panel lists every wire).
+  // ── State ──────────────────────────────────────────────────
+  let selected: string | null = null;
+  let preview: string | null = null;
+  let walk: { id: string; step: number; playing: boolean } | null = null;
+  let offline = false;
+  let timer = 0;
+  let returnFocus: HTMLElement | null = null;
+
+  // A chosen (or hovered) part's labels sit by its neighbours, where they
+  // fan out. Each tries a few spots and takes the first that covers no card
+  // and no other label; one that finds none stays hidden: the panel lists
+  // every wire.
   const placeLabels = () => {
     wires.forEach((w) => w.text.classList.remove('is-shown'));
-    if (!selected || getComputedStyle(labels).display === 'none') return;
+    const focus = selected ?? preview;
+    if (!focus || getComputedStyle(labels).display === 'none') return;
     const taken: Box[] = [];
     const hits = (b: Box) =>
       [...cards, ...taken].some(
         (o) => b.l < o.r && b.r > o.l && b.t < o.b && b.b > o.t,
       );
-    wires
-      .filter((w) => w.from === selected || w.to === selected)
-      .forEach((w) => {
-        const near = selected === w.from ? w.spots.nearTo : w.spots.nearFrom;
-        const far = selected === w.from ? w.spots.nearFrom : w.spots.nearTo;
-        const mid = w.spots.mid;
-        const tries: Spot[] = [
-          near,
-          { ...near, y: near.y - 13 },
-          { ...near, y: near.y + 13 },
-          mid,
-          { ...mid, y: mid.y - 13 },
-          { ...mid, y: mid.y + 13 },
-          far,
-        ];
-        for (const spot of tries) {
-          w.text.setAttribute('x', spot.x.toFixed(1));
-          w.text.setAttribute('y', spot.y.toFixed(1));
-          w.text.setAttribute('text-anchor', spot.anchor);
-          let box: DOMRect;
-          try {
-            box = w.text.getBBox();
-          } catch {
-            return;
-          }
-          const b = {
-            l: box.x - 3,
-            r: box.x + box.width + 3,
-            t: box.y - 2,
-            b: box.y + box.height + 2,
-          };
-          if (!hits(b)) {
-            taken.push(b);
-            w.text.classList.add('is-shown');
-            return;
-          }
+    for (const w of wires) {
+      if (w.from !== focus && w.to !== focus) continue;
+      const near = focus === w.from ? w.spots.nearTo : w.spots.nearFrom;
+      const far = focus === w.from ? w.spots.nearFrom : w.spots.nearTo;
+      const mid = w.spots.mid;
+      const tries: Spot[] = [
+        near,
+        { ...near, y: near.y - 13 },
+        { ...near, y: near.y + 13 },
+        mid,
+        { ...mid, y: mid.y - 13 },
+        { ...mid, y: mid.y + 13 },
+        far,
+      ];
+      for (const spot of tries) {
+        w.text.setAttribute('x', f(spot.x));
+        w.text.setAttribute('y', f(spot.y));
+        w.text.setAttribute('text-anchor', spot.anchor);
+        let box: DOMRect;
+        try {
+          box = w.text.getBBox();
+        } catch {
+          return;
         }
-      });
+        const b = {
+          l: box.x - 3,
+          r: box.x + box.width + 3,
+          t: box.y - 2,
+          b: box.y + box.height + 2,
+        };
+        if (!hits(b)) {
+          taken.push(b);
+          w.text.classList.add('is-shown');
+          break;
+        }
+      }
+    }
   };
 
-  // ── State ──────────────────────────────────────────────────
-  let selected: string | null = null;
-  let walk: { id: string; step: number; playing: boolean } | null = null;
-  let timer = 0;
-  let returnFocus: HTMLElement | null = null;
-
-  new ResizeObserver(layout).observe(canvas);
+  new ResizeObserver(() => {
+    layout();
+    measureSheet();
+  }).observe(canvas);
   document.fonts?.ready.then(layout);
   layout();
 
@@ -289,23 +349,29 @@ function init(root: HTMLElement) {
       ),
     );
 
-  /** Paint the map for whatever is chosen: a part, a step, or nothing. */
+  /**
+   * Paint the map for whatever is in front: a chosen part, a hovered one,
+   * a walkthrough's step, the «no internet» view, or nothing.
+   */
   const paint = () => {
     const active = new Set<string>();
     const related = new Set<string>();
     const visited = new Set<string>();
+    const down = new Set<string>();
     const lit = new Map<Wire, boolean>(); // wire → flows backwards
     const trail = new Set<Wire>();
     const litZones = new Set<string>();
+    const downZones = new Set<string>();
+    const focus = selected ?? preview;
 
-    if (selected) {
-      active.add(selected);
-      neighbours(selected).forEach((n) => related.add(n));
-      const host = data.hosts[selected];
+    if (focus) {
+      active.add(focus);
+      neighbours(focus).forEach((n) => related.add(n));
+      const host = data.hosts[focus];
       host?.nodes.forEach((n) => related.add(n));
       host?.zones.forEach((z) => litZones.add(z));
       wires.forEach((w) => {
-        if (w.from === selected || w.to === selected) lit.set(w, false);
+        if (w.from === focus || w.to === focus) lit.set(w, false);
       });
     } else if (walk) {
       const steps = data.walks[walk.id]!;
@@ -323,18 +389,34 @@ function init(root: HTMLElement) {
             trail.add(w);
         });
       });
+    } else if (offline && data.offline) {
+      const keep = new Set(data.offline.keep);
+      keep.forEach((n) => related.add(n));
+      data.offline.lose.forEach((z) => downZones.add(z));
+      nodes.forEach((_, id) => {
+        if (downZones.has(data.zoneOf[id]!)) down.add(id);
+      });
+      wires.forEach((w) => {
+        if (keep.has(w.from) && keep.has(w.to)) lit.set(w, false);
+      });
     }
 
-    root.toggleAttribute('data-focus', active.size > 0);
+    root.toggleAttribute(
+      'data-focus',
+      active.size + related.size + down.size > 0,
+    );
+    root.toggleAttribute('data-preview', !selected && !!preview);
     nodes.forEach((el, id) => {
       el.classList.toggle('is-active', active.has(id));
       el.classList.toggle('is-related', related.has(id) && !active.has(id));
       el.classList.toggle('is-visited', visited.has(id));
+      el.classList.toggle('is-down', down.has(id));
       el.setAttribute('aria-expanded', String(id === selected));
     });
-    zones.forEach((el, id) =>
-      el.classList.toggle('is-active', litZones.has(id)),
-    );
+    zones.forEach((el, id) => {
+      el.classList.toggle('is-active', litZones.has(id));
+      el.classList.toggle('is-down', downZones.has(id));
+    });
     wires.forEach((w) => {
       w.g.classList.toggle('is-lit', lit.has(w));
       w.g.classList.toggle('is-rev', lit.get(w) === true);
@@ -342,37 +424,78 @@ function init(root: HTMLElement) {
       // Lit wires on top of the faded ones.
       if (lit.has(w)) svg.append(w.g);
     });
-    // Labels only for a chosen part: a step has its caption instead.
     placeLabels();
   };
 
+  // ── Hover: a preview of a part, on screens with a mouse ─────
+  nodes.forEach((el, id) => {
+    el.addEventListener('pointerenter', (event) => {
+      if (event.pointerType !== 'mouse' || !canHover.matches) return;
+      if (selected || walk) return;
+      preview = id;
+      paint();
+    });
+    el.addEventListener('pointerleave', () => {
+      if (preview !== id) return;
+      preview = null;
+      paint();
+    });
+  });
+
   // ── The panel ──────────────────────────────────────────────
+  const measureSheet = () => {
+    if (!panel.hasAttribute('data-open') || isWide()) {
+      panel.removeAttribute('data-more');
+      return;
+    }
+    const section = sections.get(selected ?? '');
+    const content = section ? section.offsetTop + section.offsetHeight : 0;
+    panel.toggleAttribute('data-more', content > panel.clientHeight + 4);
+  };
+
+  const expand = (on: boolean) => {
+    panel.toggleAttribute('data-expanded', on);
+    handle.setAttribute(
+      'aria-label',
+      on ? handle.dataset.less! : handle.dataset.more!,
+    );
+    if (!on) panel.scrollTop = 0;
+  };
+
   const select = (id: string, from?: HTMLElement) => {
     if (!sections.has(id)) return;
     if (walk) endWalk(false);
+    preview = null;
     if (!selected) returnFocus = from ?? nodes.get(id) ?? null;
     selected = id;
     sections.forEach((el, key) => (el.hidden = key !== id));
     panel.inert = false;
     panel.toggleAttribute('data-open', true);
-    panel.scrollTop = 0;
+    expand(false);
     paint();
+    measureSheet();
     sections.get(id)!.querySelector<HTMLElement>('h3')?.focus({
       preventScroll: true,
     });
-    keepInSight(nodes.get(id));
+    if (isWide()) {
+      // The panel flows with the page: bring its top back if it is above.
+      const top = panel.getBoundingClientRect().top;
+      if (top < 0) window.scrollBy({ top: top - 96, behavior: smooth() });
+    } else {
+      keepInSight(nodes.get(id));
+    }
   };
 
   // As a sheet the panel covers the lower part of the screen: lift the
   // chosen part above it, so its wires stay in sight.
   const keepInSight = (node?: HTMLElement) => {
-    if (!node || window.innerWidth >= 1280) return;
+    if (!node) return;
     const r = node.getBoundingClientRect();
     const room = window.innerHeight - panel.getBoundingClientRect().height;
     if (r.top > 72 && r.bottom < room - 12) return;
     window.scrollBy({
       top: r.top - Math.max(84, (room - r.height) / 2),
-      behavior: reducedMotion.matches ? 'auto' : 'smooth',
+      behavior: smooth(),
     });
   };
 
@@ -381,6 +504,8 @@ function init(root: HTMLElement) {
     const back = nodes.get(selected) ?? returnFocus;
     selected = null;
     panel.removeAttribute('data-open');
+    panel.removeAttribute('data-more');
+    expand(false);
     panel.inert = true;
     paint();
     back?.focus({ preventScroll: true });
@@ -398,9 +523,40 @@ function init(root: HTMLElement) {
     );
     if (target) select(target.dataset.smapGoto!);
   });
-  root
-    .querySelector('[data-smap-close]')!
-    .addEventListener('click', () => close());
+  $('[data-smap-close]')!.addEventListener('click', () => close());
+  more.addEventListener('click', () => expand(true));
+
+  // The sheet's handle: a tap grows or shrinks it, a drag up grows it, a
+  // drag down shrinks it, or closes it once small.
+  let dragFrom: number | null = null;
+  let dragged = false;
+  handle.addEventListener('pointerdown', (event) => {
+    dragFrom = event.clientY;
+    dragged = false;
+    handle.setPointerCapture(event.pointerId);
+  });
+  handle.addEventListener('pointermove', (event) => {
+    if (dragFrom !== null && Math.abs(event.clientY - dragFrom) > 8)
+      dragged = true;
+  });
+  handle.addEventListener('pointerup', (event) => {
+    if (dragFrom === null) return;
+    const dy = event.clientY - dragFrom;
+    dragFrom = null;
+    const expanded = panel.hasAttribute('data-expanded');
+    if (!dragged) expand(!expanded);
+    else if (dy < -30) expand(true);
+    else if (dy > 40) {
+      if (expanded) expand(false);
+      else close();
+    }
+  });
+  handle.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      expand(!panel.hasAttribute('data-expanded'));
+    }
+  });
 
   // A click on the empty map lets go of whatever was chosen.
   canvas.addEventListener('click', (event) => {
@@ -416,7 +572,31 @@ function init(root: HTMLElement) {
     } else if (walk) {
       event.preventDefault();
       endWalk(true);
+    } else if (offline) {
+      event.preventDefault();
+      setOffline(false);
+      offlineButton?.focus({ preventScroll: true });
     }
+  });
+
+  // ── «No internet» ──────────────────────────────────────────
+  const setOffline = (on: boolean) => {
+    offline = on;
+    offlineButton?.setAttribute('aria-pressed', String(on));
+    if (offlineNote) offlineNote.hidden = !on;
+    paint();
+    // Bring the note and as much of the map as fits into view.
+    if (on && offlineNote) {
+      const top = offlineNote.getBoundingClientRect().top;
+      const bottom = canvas.getBoundingClientRect().bottom;
+      if (top < 72 || bottom > window.innerHeight)
+        window.scrollBy({ top: top - 80, behavior: smooth() });
+    }
+  };
+  offlineButton?.addEventListener('click', () => {
+    if (selected) close();
+    if (walk) endWalk(false);
+    setOffline(!offline);
   });
 
   // ── Walkthroughs ───────────────────────────────────────────
@@ -452,14 +632,16 @@ function init(root: HTMLElement) {
         return li;
       }),
     );
-    prev.disabled = walk.step === 0;
-    next.disabled = walk.step === steps.length - 1;
+    prevs.forEach((b) => (b.disabled = walk!.step === 0));
+    nexts.forEach((b) => (b.disabled = walk!.step === steps.length - 1));
     const paused = !walk.playing;
-    play.toggleAttribute('data-paused', paused);
-    play.hidden = reducedMotion.matches;
-    const label = paused ? play.dataset.play! : play.dataset.pause!;
-    play.setAttribute('aria-label', label);
-    play.title = label;
+    plays.forEach((b) => {
+      b.toggleAttribute('data-paused', paused);
+      b.hidden = reducedMotion.matches;
+      const label = paused ? b.dataset.play! : b.dataset.pause!;
+      b.setAttribute('aria-label', label);
+      b.title = label;
+    });
     walkButtons.forEach((b) =>
       b.setAttribute('aria-pressed', String(b.dataset.walk === walk!.id)),
     );
@@ -484,29 +666,54 @@ function init(root: HTMLElement) {
     const steps = data.walks[walk.id]!;
     walk.step = Math.max(0, Math.min(steps.length - 1, step));
     showWalk();
-    bringIntoView();
+    if (isStacked()) followStep();
+    else frameMap();
   };
 
-  // On a phone the path can lead off screen: bring its first part back.
-  const bringIntoView = () => {
-    if (!walk || window.innerWidth >= 760) return;
-    const first = nodes.get(data.walks[walk.id]![walk.step]!.nodes[0]!);
-    if (!first) return;
-    const r = first.getBoundingClientRect();
-    const playerTop = player.getBoundingClientRect().top;
-    if (r.top < 70 || r.bottom > playerTop - 10) {
-      first.scrollIntoView({
-        block: 'center',
-        behavior: reducedMotion.matches ? 'auto' : 'smooth',
-      });
-    }
+  // A path must stay in sight. On wider screens the whole map (and the
+  // player below it, when there is one) comes into view; stacked on a
+  // phone, the step's parts are brought above the player.
+  const frameMap = () => {
+    if (isStacked()) return;
+    // Wide: the header is all that sits on top. In between, the slim header
+    // and the player held at the bottom.
+    const top = isWide() ? 84 : 46;
+    const floor =
+      window.innerHeight -
+      (isWide() ? 8 : player.getBoundingClientRect().height + 16);
+    const r = canvas.getBoundingClientRect();
+    if (r.top >= top - 4 && r.bottom <= floor + 4) return;
+    const room = floor - top;
+    const offset = r.height < room ? (room - r.height) / 2 : 0;
+    window.scrollBy({ top: r.top - top - offset, behavior: smooth() });
+  };
+
+  const followStep = () => {
+    if (!walk || !isStacked()) return;
+    const parts = data.walks[walk.id]![walk.step]!.nodes.map((id) =>
+      nodes.get(id),
+    ).filter((el): el is HTMLButtonElement => !!el);
+    if (!parts.length) return;
+    const rects = parts.map((el) => el.getBoundingClientRect());
+    const top = Math.min(...rects.map((r) => r.top));
+    const bottom = Math.max(...rects.map((r) => r.bottom));
+    const floor = player.getBoundingClientRect().top - 12;
+    if (top >= 72 && bottom <= floor) return;
+    // As many of the step's parts as fit between the header and the player.
+    const room = floor - 72;
+    const span = bottom - top;
+    const shift = span <= room ? top - 72 - (room - span) / 2 : top - 80;
+    window.scrollBy({ top: shift, behavior: smooth() });
   };
 
   const startWalk = (id: string) => {
     if (selected) close();
+    if (offline) setOffline(false);
+    preview = null;
     walk = { id, step: 0, playing: !reducedMotion.matches };
     showWalk();
-    bringIntoView();
+    if (isStacked()) followStep();
+    else frameMap();
   };
 
   const endWalk = (restoreFocus: boolean) => {
@@ -534,27 +741,31 @@ function init(root: HTMLElement) {
         : startWalk(button.dataset.walk!),
     ),
   );
-  prev.addEventListener('click', () => {
-    if (!walk) return;
-    walk.playing = false;
-    go(walk.step - 1);
-  });
-  next.addEventListener('click', () => {
-    if (!walk) return;
-    walk.playing = false;
-    go(walk.step + 1);
-  });
-  play.addEventListener('click', () => {
-    if (!walk) return;
-    const steps = data.walks[walk.id]!;
-    walk.playing = !walk.playing;
-    // Playing from the last step starts the path again.
-    if (walk.playing && walk.step === steps.length - 1) walk.step = 0;
-    showWalk();
-  });
-  root
-    .querySelector('[data-smap-end]')!
-    .addEventListener('click', () => endWalk(true));
+  prevs.forEach((b) =>
+    b.addEventListener('click', () => {
+      if (!walk) return;
+      walk.playing = false;
+      go(walk.step - 1);
+    }),
+  );
+  nexts.forEach((b) =>
+    b.addEventListener('click', () => {
+      if (!walk) return;
+      walk.playing = false;
+      go(walk.step + 1);
+    }),
+  );
+  plays.forEach((b) =>
+    b.addEventListener('click', () => {
+      if (!walk) return;
+      const steps = data.walks[walk.id]!;
+      walk.playing = !walk.playing;
+      // Playing from the last step starts the path again.
+      if (walk.playing && walk.step === steps.length - 1) walk.step = 0;
+      showWalk();
+    }),
+  );
+  ends.forEach((b) => b.addEventListener('click', () => endWalk(true)));
   stepLists.forEach((el) =>
     el.addEventListener('click', (event) => {
       const b = (event.target as HTMLElement).closest<HTMLElement>(

@@ -1,0 +1,37 @@
+---
+/* One part of a system map: a card that opens its panel. */
+import type { MapNode } from '../../data/systemMaps/types';
+import type { Locale } from '../../lib/i18n';
+import { glyphs } from './art';
+
+interface Props {
+  node: MapNode;
+  locale: Locale;
+  panelId: string;
+  /** Drawn as its zone's title rather than inside it. */
+  host?: boolean;
+  style?: string;
+}
+
+const { node, locale, panelId, host = false, style } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['smap-node', { 'smap-host': host, 'smap-layer': node.layer }]}
+  data-node={node.id}
+  style={style}
+  aria-expanded="false"
+  aria-controls={panelId}
+>
+  <svg
+    class="smap-glyph"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    set:html={glyphs[node.glyph]}
+  />
+  <span class="smap-text">
+    <span class="smap-name">{node.label[locale]}</span>
+    {node.sub && <span class="smap-sub">{node.sub[locale]}</span>}
+  </span>
+</button>

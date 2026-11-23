@@ -24,7 +24,7 @@ export const tablux: SystemMap = {
     {
       id: 'wall',
       label: { en: 'On the wall', es: 'En la pared' },
-      box: { x: 206, y: 62, w: 300, h: 352 },
+      box: { x: 206, y: 62, w: 294, h: 352 },
       parent: 'home',
       host: 'wall',
     },
@@ -34,7 +34,7 @@ export const tablux: SystemMap = {
         en: 'Between home and the VPS',
         es: 'Entre casa y el VPS',
       },
-      box: { x: 521, y: 296, w: 48, h: 52 },
+      box: { x: 506, y: 296, w: 48, h: 52 },
       tunnel: true,
     },
     {
@@ -82,7 +82,7 @@ export const tablux: SystemMap = {
         es: 'Un Linux propio para una placa sin documentación pública. Primero, una copia completa del Android de fábrica. Después, un device tree escrito a partir del original del fabricante, un U-Boot compilado con la inicialización de memoria que pide esta placa y Linux 6.18 compilado con los drivers de pantalla que le faltaban, sobre Armbian. Encima, Phosh lo convierte en un sistema pensado para los dedos. Todo lo que hay en la pared corre sobre él.',
       },
       tags: ['Linux 6.18', 'Armbian', 'Phosh', 'U-Boot', 'Device tree'],
-      at: { x: 356, y: 388 },
+      at: { x: 353, y: 388 },
     },
     {
       id: 'kiosk',
@@ -95,7 +95,7 @@ export const tablux: SystemMap = {
         es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
       },
       tags: ['Chromium', 'PWA', 'Phosh'],
-      at: { x: 356, y: 135 },
+      at: { x: 354, y: 135 },
     },
     {
       id: 'listener',
@@ -114,7 +114,7 @@ export const tablux: SystemMap = {
         'WASM',
         { en: 'USB microphone', es: 'Micrófono USB' },
       ],
-      at: { x: 284, y: 228 },
+      at: { x: 278, y: 228 },
     },
     {
       id: 'speaker',
@@ -150,7 +150,7 @@ export const tablux: SystemMap = {
         { en: 'Routines', es: 'Rutinas' },
         { en: 'Works offline', es: 'Funciona sin red' },
       ],
-      at: { x: 356, y: 322 },
+      at: { x: 354, y: 322 },
     },
 
     // ── Around the house ────────────────────────────────────────
@@ -244,7 +244,7 @@ export const tablux: SystemMap = {
         es: 'Tablets viejas repartidas por casa con la misma PWA. Como son de todos, de noche descansan con el reloj y los temporizadores en marcha, preguntan quién las usa y pueden estar atentas a la palabra de activación desde el navegador.',
       },
       tags: ['PWA', { en: 'Night rest', es: 'Descanso nocturno' }, 'WASM'],
-      at: { x: 284, y: 470 },
+      at: { x: 304, y: 470 },
     },
     {
       id: 'phones',
@@ -278,7 +278,7 @@ export const tablux: SystemMap = {
         { en: 'No open ports', es: 'Sin puertos abiertos' },
         'SSH',
       ],
-      at: { x: 545, y: 322 },
+      at: { x: 530, y: 322 },
     },
 
     // ── On my VPS ───────────────────────────────────────────────
@@ -448,6 +448,7 @@ export const tablux: SystemMap = {
     {
       id: 'weather',
       zone: 'services',
+      caseStudy: 'gorraplanistas',
       label: { en: 'Weather station', es: 'Mi estación' },
       sub: { en: 'My own', es: 'Meteorológica' },
       glyph: 'weather',
@@ -724,6 +725,40 @@ export const tablux: SystemMap = {
 
   walkthroughs: [
     {
+      id: 'tap',
+      title: { en: 'Switch on a light', es: 'Enciende una luz' },
+      steps: [
+        {
+          nodes: ['phones', 'app'],
+          caption: {
+            en: 'A tap on a light, on a phone, goes to the app on my VPS.',
+            es: 'Un toque en una luz, desde el móvil, llega a la aplicación en mi VPS.',
+          },
+        },
+        {
+          nodes: ['app', 'tailscale', 'bridge'],
+          caption: {
+            en: 'The VPS cannot reach into the house on its own: Tailscale carries the order to the wall’s bridge.',
+            es: 'El VPS no puede entrar en casa por su cuenta: Tailscale lleva la orden al puente de la pared.',
+          },
+        },
+        {
+          nodes: ['bridge', 'bulbs'],
+          caption: {
+            en: 'Only the bridge, at home, speaks to the bulb, over the local network.',
+            es: 'Solo el puente, que está en casa, habla con la bombilla, por la red local.',
+          },
+        },
+        {
+          nodes: ['kiosk', 'tablets', 'phones', 'app'],
+          caption: {
+            en: 'Every other screen asks every two seconds, so they all catch up.',
+            es: 'Las demás pantallas preguntan cada dos segundos, así que todas se ponen al día.',
+          },
+        },
+      ],
+    },
+    {
       id: 'wake',
       title: { en: 'Say the wake word', es: 'Di la palabra de activación' },
       steps: [
@@ -846,4 +881,27 @@ export const tablux: SystemMap = {
       ],
     },
   ],
+
+  offline: {
+    note: {
+      en: 'Without internet the VPS and every outside service are out of reach, and the wall keeps the house going: the bridge runs the routines at their time, by the sun or with claps; plugs, bulbs, blinds and the projector answer over the local network; the screen keeps the app’s last copy and speaks with its own Piper voice.',
+      es: 'Sin internet, el VPS y los servicios externos quedan fuera de alcance, y la pared sigue llevando la casa: el puente lanza las rutinas a su hora, con el sol o con palmadas; enchufes, bombillas, persianas y proyector responden por la red local; la pantalla conserva la última copia de la aplicación y habla con su propia voz de Piper.',
+    },
+    keep: [
+      'wall',
+      'linux',
+      'kiosk',
+      'listener',
+      'speaker',
+      'bridge',
+      'plugs',
+      'bulbs',
+      'blinds',
+      'projector',
+    ],
+    lose: ['tunnel', 'cloud', 'training', 'services'],
+  },
+
+  // The app's wires to the outside services run as one trunk.
+  bundles: [{ from: 'app', zone: 'services' }],
 };

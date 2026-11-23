@@ -99,6 +99,8 @@ export interface MapNode {
   /** What it is, what it does, why it is there. */
   body: Text;
   tags: (string | Text)[];
+  /** A project of its own on this site: its panel links to its page. */
+  caseStudy?: string;
   /**
    * A layer the rest of its zone runs on (an operating system): drawn as a
    * band across the bottom of the zone, or its first row on a phone.
@@ -130,6 +132,24 @@ export interface Walkthrough {
   steps: WalkStep[];
 }
 
+/** What still works when the internet goes: the map's «no internet» view. */
+export interface OfflineView {
+  note: Text;
+  /** The parts that keep working, lit. */
+  keep: string[];
+  /** The zones out of reach, marked as such. */
+  lose: string[];
+}
+
+/**
+ * Wires from one part to every part of a zone, drawn as one trunk that fans
+ * out by the zone, instead of a sheaf of separate curves.
+ */
+export interface Bundle {
+  from: string;
+  zone: string;
+}
+
 export interface SystemMap {
   id: string;
   /** What a screen reader hears for the whole map. */
@@ -140,4 +160,6 @@ export interface SystemMap {
   nodes: MapNode[];
   edges: MapEdge[];
   walkthroughs: Walkthrough[];
+  offline?: OfflineView;
+  bundles?: Bundle[];
 }
