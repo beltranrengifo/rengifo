@@ -6,8 +6,8 @@ import type { SystemMap } from './types';
  * home. Positions are in a 1000 × 760 map; on a phone the zones stack and
  * the nodes flow in this order instead.
  *
- * Generic by design: the apps are never named or counted (the instances and
- * the frontends are drawn as blank squares), there is no money, no provider
+ * Generic by design: the apps are never named or counted (whatever there is
+ * one of per app is drawn as a stack of cards), there is no money, no provider
  * by name, and no addresses, hosts, ports or ids.
  */
 export const infrastructure: SystemMap = {
@@ -26,12 +26,17 @@ export const infrastructure: SystemMap = {
     {
       id: 'internet',
       label: { en: 'On the internet', es: 'En internet' },
-      box: { x: 10, y: 20, w: 228, h: 720 },
+      box: { x: 10, y: 20, w: 228, h: 520 },
+    },
+    {
+      id: 'mine',
+      label: { en: 'Where I work', es: 'Donde trabajo' },
+      box: { x: 10, y: 580, w: 228, h: 160 },
     },
     {
       id: 'tunnel',
       label: { en: 'A private network', es: 'Una red privada' },
-      box: { x: 232, y: 610, w: 48, h: 60 },
+      box: { x: 232, y: 630, w: 48, h: 60 },
       tunnel: true,
     },
     {
@@ -50,6 +55,8 @@ export const infrastructure: SystemMap = {
       id: 'home',
       label: { en: 'At home', es: 'En casa' },
       box: { x: 764, y: 490, w: 226, h: 250 },
+      // The wires down from the copies cross its top edge on the left.
+      titleEnd: true,
     },
   ],
 
@@ -100,9 +107,11 @@ export const infrastructure: SystemMap = {
       tags: ['ESP32', 'OTA', 'HTTPS'],
       at: { x: 124, y: 400 },
     },
+
+    // ── Where I work ────────────────────────────────────────────
     {
       id: 'laptop',
-      zone: 'internet',
+      zone: 'mine',
       label: { en: 'My laptop', es: 'Mi portátil' },
       sub: { en: 'On Tailscale', es: 'En Tailscale' },
       glyph: 'laptop',
@@ -112,7 +121,7 @@ export const infrastructure: SystemMap = {
         es: 'Desde aquí lo administro todo. Al servidor solo llega por Tailscale: el SSH y los paneles, y nada más.',
       },
       tags: ['Tailscale', 'SSH'],
-      at: { x: 116, y: 640 },
+      at: { x: 124, y: 660 },
     },
 
     // ── A private network ───────────────────────────────────────
@@ -134,7 +143,7 @@ export const infrastructure: SystemMap = {
           es: 'Administración cerrada a internet',
         },
       ],
-      at: { x: 256, y: 640 },
+      at: { x: 256, y: 660 },
     },
 
     // ── On my VPS ───────────────────────────────────────────────
@@ -189,9 +198,10 @@ export const infrastructure: SystemMap = {
       label: { en: 'App container', es: 'Contenedor' },
       sub: { en: 'Built from its repo', es: 'Desde su repositorio' },
       glyph: 'box',
+      many: true,
       body: {
-        en: 'One app’s own backend, moved here from its old host. Coolify builds it from its GitHub repo on every push and runs it as a container, next to its Supabase.',
-        es: 'El backend de una de las aplicaciones, que se mudó aquí desde su antiguo alojamiento. Coolify lo construye desde su repositorio de GitHub con cada push y lo levanta como contenedor, junto a su Supabase.',
+        en: 'When an app needs a backend of its own beyond Supabase, it runs here as a container. Coolify builds it from its GitHub repo on every push and keeps it next to its Supabase.',
+        es: 'Cuando una aplicación necesita un backend propio además de Supabase, corre aquí como contenedor. Coolify lo construye desde su repositorio de GitHub con cada push y lo deja junto a su Supabase.',
       },
       tags: [
         'Docker',
@@ -563,42 +573,6 @@ export const infrastructure: SystemMap = {
           caption: {
             en: 'From the internet, only the apps answer. Nothing else is open.',
             es: 'Desde internet solo responden las aplicaciones. No hay nada más abierto.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'newapp',
-      title: { en: 'A new app', es: 'Una aplicación nueva' },
-      steps: [
-        {
-          nodes: ['coolify', 'supabase'],
-          grows: ['supabase'],
-          caption: {
-            en: 'A new app is one more Supabase, from the trimmed template, on the same machine.',
-            es: 'Una aplicación nueva es un Supabase más, a partir de la plantilla recortada, en la misma máquina.',
-          },
-        },
-        {
-          nodes: ['traefik', 'supabase'],
-          caption: {
-            en: 'Traefik gives it an address of its own, with HTTPS from the first day.',
-            es: 'Traefik le da su propia dirección, con HTTPS desde el primer día.',
-          },
-        },
-        {
-          nodes: ['supabase', 'b2'],
-          caption: {
-            en: 'Its nightly copies are set up along with it.',
-            es: 'Sus copias de cada noche quedan programadas desde el principio.',
-          },
-        },
-        {
-          nodes: ['frontends', 'traefik', 'supabase'],
-          grows: ['frontends'],
-          caption: {
-            en: 'Its frontend goes on Vercel and points here. Nothing else changes.',
-            es: 'Su frontend va a Vercel y apunta aquí. No cambia nada más.',
           },
         },
       ],

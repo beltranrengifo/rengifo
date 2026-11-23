@@ -1,7 +1,7 @@
 /**
  * An explorable map of how a system fits together: zones (where things
  * run), nodes (the parts), edges (how they talk) and walkthroughs (a path
- * lit step by step). One data file per map; SystemMap.astro draws any of
+ * lit all at once, strongest where it starts). One data file per map; SystemMap.astro draws any of
  * them.
  */
 
@@ -105,6 +105,8 @@ export interface MapZone {
   tunnel?: true;
   /** Someone else's machines rather than mine: drawn dashed. */
   outside?: true;
+  /** Its title at the right end of its top edge, clear of wires on the left. */
+  titleEnd?: true;
 }
 
 export interface MapNode {
@@ -127,8 +129,8 @@ export interface MapNode {
    */
   layer?: true;
   /**
-   * One of many alike (an instance per app): drawn with a row of small
-   * blank squares, never named or counted, the last one still to come.
+   * One of many alike (an instance per app): drawn as a stack, two more
+   * cards peeking out behind it, never named or counted.
    */
   many?: true;
   /** Its centre, in the map's units. A zone's host needs none. */
@@ -149,11 +151,6 @@ export interface WalkStep {
    */
   nodes: string[];
   caption: Text;
-  /**
-   * Parts drawn as many (see MapNode.many) that gain their next square at
-   * this step, and keep it for the rest of the walk.
-   */
-  grows?: string[];
 }
 
 export interface Walkthrough {

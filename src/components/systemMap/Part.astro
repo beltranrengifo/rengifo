@@ -1,5 +1,8 @@
 ---
-/* One part of a system map: a card that opens its panel. */
+/*
+ * One part of a system map: a card that opens its panel. One of many alike
+ * is drawn as a stack; the badge carries its step number on a lit path.
+ */
 import type { MapNode } from '../../data/systemMaps/types';
 import type { Locale } from '../../lib/i18n';
 import { glyphs } from './art';
@@ -18,7 +21,14 @@ const { node, locale, panelId, host = false, style } = Astro.props;
 
 <button
   type="button"
-  class:list={['smap-node', { 'smap-host': host, 'smap-layer': node.layer }]}
+  class:list={[
+    'smap-node',
+    {
+      'smap-host': host,
+      'smap-layer': node.layer,
+      'smap-stacked': node.many,
+    },
+  ]}
   data-node={node.id}
   style={style}
   aria-expanded="false"
@@ -33,17 +43,6 @@ const { node, locale, panelId, host = false, style } = Astro.props;
   <span class="smap-text">
     <span class="smap-name">{node.label[locale]}</span>
     {node.sub && <span class="smap-sub">{node.sub[locale]}</span>}
-    {
-      node.many && (
-        <span class="smap-many" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-          <i class="smap-many-new" />
-        </span>
-      )
-    }
   </span>
+  <span class="smap-badge" aria-hidden="true"></span>
 </button>

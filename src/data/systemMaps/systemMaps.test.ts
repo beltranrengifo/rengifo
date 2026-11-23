@@ -163,16 +163,6 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
       ])
         expect(text, secret).not.toContain(secret);
     });
-
-    it('grows only parts drawn as many', () => {
-      const many = new Set(map.nodes.filter((n) => n.many).map((n) => n.id));
-      for (const walk of map.walkthroughs)
-        for (const step of walk.steps)
-          for (const id of step.grows ?? []) {
-            expect(many, `${walk.id}: ${id}`).toContain(id);
-            expect(step.nodes, `${walk.id}: ${id}`).toContain(id);
-          }
-    });
   },
 );
 
@@ -198,8 +188,19 @@ describe('the infrastructure map', () => {
     expect(text).not.toContain(name.toLowerCase());
   });
 
-  it('shows the instances and the frontends as many, unnamed', () => {
+  it('stacks whatever there is one of per app, unnamed', () => {
     const many = systemMaps.infrastructure.nodes.filter((n) => n.many);
-    expect(many.map((n) => n.id).sort()).toEqual(['frontends', 'supabase']);
+    expect(many.map((n) => n.id).sort()).toEqual([
+      'app',
+      'frontends',
+      'supabase',
+    ]);
+  });
+
+  it('keeps my laptop out of the internet zone', () => {
+    const laptop = systemMaps.infrastructure.nodes.find(
+      (n) => n.id === 'laptop',
+    );
+    expect(laptop?.zone).not.toBe('internet');
   });
 });
