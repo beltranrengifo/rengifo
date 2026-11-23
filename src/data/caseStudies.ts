@@ -168,7 +168,7 @@ const allProjects: Project[] = [
     taglineKey: 'cs_infrastructure_tagline',
     introKey: 'cs_infrastructure_intro',
     stack: [
-      'Hetzner (ARM) · Coolify · Docker',
+      'VPS (ARM) · Coolify · Docker',
       'Supabase (self-hosted) · Postgres 17',
       'Python · ONNX Runtime',
       'Tailscale',
