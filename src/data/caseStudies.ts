@@ -13,11 +13,22 @@ import tabluxMenu from '../assets/work/tablux-menu.png';
 import tabluxLists from '../assets/work/tablux-lists.png';
 import tabluxAgenda from '../assets/work/tablux-agenda.png';
 import tabluxChat from '../assets/work/tablux-chat.png';
+import gorraStation from '../assets/work/gorraplanistas-station.png';
+import gorraCharts from '../assets/work/gorraplanistas-charts.png';
+import gorraForecast from '../assets/work/gorraplanistas-forecast.png';
+import canallumExterior from '../assets/work/canallum-exterior.png';
+import canallumPlan from '../assets/work/canallum-plan.png';
+import canallumTour from '../assets/work/canallum-tour.png';
+import canallumNight from '../assets/work/canallum-night.png';
 import lceHome from '../assets/work/lacasaestudio-home.png';
 import lceStudio from '../assets/work/lacasaestudio-studio.png';
 import lceBackline from '../assets/work/lacasaestudio-backline.png';
 import lceRecords from '../assets/work/lacasaestudio-records.png';
 import tabluxNight from '../assets/work/tablux-night.png';
+import assistedReviewHome from '../assets/work/assisted-review-home.png';
+import assistedReviewNew from '../assets/work/assisted-review-new.png';
+import assistedReviewActivity from '../assets/work/assisted-review-activity.png';
+import assistedReviewReview from '../assets/work/assisted-review-review.png';
 
 export interface Screenshot {
   src: ImageMetadata;
@@ -57,8 +68,7 @@ export interface CaseStudy extends ProjectBase {
   href?: string; // somewhere live to look, when there is one
   /**
    * Only for work that cannot simply be visited: how someone gets in. A
-   * public site needs no such line — the link is the proof, which is also
-   * why only the gated projects carry screenshots.
+   * public site needs no such line — the link is the proof.
    */
   accessKey?: string;
 }
@@ -188,6 +198,53 @@ const allProjects: Project[] = [
     code: 'private',
     href: 'https://ensayadero.studio/',
     accessKey: 'cs_ensayadero_access',
+  },
+  {
+    slug: 'assisted-review',
+    name: 'Assisted Review',
+    rowKey: 'proj_review_desc',
+    taglineKey: 'cs_review_tagline',
+    introKey: 'cs_review_intro',
+    stack: [
+      'Next.js 16 · React 19',
+      'Claude API — Opus, structured output',
+      'Vercel Workflow · Vercel Services',
+      'Python — LibreOffice, PyMuPDF (container)',
+      'Supabase (self-hosted) — Postgres, Storage, RLS',
+      'Vitest · pytest · pgTAP',
+    ],
+    notes: [
+      { headingKey: 'cs_review_n1_h', bodyKey: 'cs_review_n1_b' },
+      { headingKey: 'cs_review_n2_h', bodyKey: 'cs_review_n2_b' },
+      { headingKey: 'cs_review_n3_h', bodyKey: 'cs_review_n3_b' },
+      { headingKey: 'cs_review_n4_h', bodyKey: 'cs_review_n4_b' },
+      { headingKey: 'cs_review_n5_h', bodyKey: 'cs_review_n5_b' },
+    ],
+    screenshots: [
+      {
+        src: assistedReviewHome,
+        altKey: 'cs_review_shot1_alt',
+        captionKey: 'cs_review_shot1_cap',
+      },
+      {
+        src: assistedReviewNew,
+        altKey: 'cs_review_shot2_alt',
+        captionKey: 'cs_review_shot2_cap',
+      },
+      {
+        src: assistedReviewActivity,
+        altKey: 'cs_review_shot3_alt',
+        captionKey: 'cs_review_shot3_cap',
+      },
+      {
+        src: assistedReviewReview,
+        altKey: 'cs_review_shot4_alt',
+        captionKey: 'cs_review_shot4_cap',
+      },
+    ],
+    code: 'private',
+    href: 'https://assisted-review.vercel.app/',
+    accessKey: 'cs_review_access',
   },
   {
     slug: 'radio-perico',
@@ -326,6 +383,96 @@ const allProjects: Project[] = [
     screenshots: [],
     code: 'private',
     href: 'https://carabanchelcreativa.com/',
+  },
+  {
+    slug: 'gorraplanistas',
+    name: 'Gorraplanistas',
+    rowKey: 'proj_meteo_desc',
+    taglineKey: 'cs_meteo_tagline',
+    introKey: 'cs_meteo_intro',
+    stack: [
+      'C++ on an ESP32 · PlatformIO',
+      'Supabase (self-hosted) · pg_cron',
+      'Deno',
+      'React 19 · Vite · ECharts',
+      'Vercel Functions',
+      'PWA · Web Push',
+      'Open-Meteo',
+    ],
+    notes: [
+      { headingKey: 'cs_meteo_n1_h', bodyKey: 'cs_meteo_n1_b' },
+      { headingKey: 'cs_meteo_n2_h', bodyKey: 'cs_meteo_n2_b' },
+      { headingKey: 'cs_meteo_n3_h', bodyKey: 'cs_meteo_n3_b' },
+      { headingKey: 'cs_meteo_n4_h', bodyKey: 'cs_meteo_n4_b' },
+    ],
+    screenshots: [
+      {
+        src: gorraStation,
+        altKey: 'cs_meteo_shot1_alt',
+        captionKey: 'cs_meteo_shot1_cap',
+      },
+      {
+        src: gorraCharts,
+        altKey: 'cs_meteo_shot2_alt',
+        captionKey: 'cs_meteo_shot2_cap',
+      },
+      {
+        src: gorraForecast,
+        altKey: 'cs_meteo_shot3_alt',
+        captionKey: 'cs_meteo_shot3_cap',
+      },
+    ],
+    code: { href: 'https://github.com/beltranrengifo/meteo-station' },
+    href: 'https://gorraplanistas.vercel.app/',
+  },
+  {
+    slug: 'ca-na-llum',
+    name: 'Ca Na Llum, Mallorca',
+    rowKey: 'proj_canallum_desc',
+    taglineKey: 'cs_canallum_tagline',
+    introKey: 'cs_canallum_intro',
+    stack: [
+      'three.js · WebGL',
+      'TypeScript (strict) · Vite',
+      'postprocessing · N8AO',
+      'Web Audio API',
+      'Python · Catastro · IGN',
+      'Blender · Cycles',
+      'Vitest',
+      'Vercel',
+    ],
+    notes: [
+      { headingKey: 'cs_canallum_n1_h', bodyKey: 'cs_canallum_n1_b' },
+      { headingKey: 'cs_canallum_n4_h', bodyKey: 'cs_canallum_n4_b' },
+      { headingKey: 'cs_canallum_n5_h', bodyKey: 'cs_canallum_n5_b' },
+      { headingKey: 'cs_canallum_n2_h', bodyKey: 'cs_canallum_n2_b' },
+      { headingKey: 'cs_canallum_n6_h', bodyKey: 'cs_canallum_n6_b' },
+      { headingKey: 'cs_canallum_n3_h', bodyKey: 'cs_canallum_n3_b' },
+    ],
+    screenshots: [
+      {
+        src: canallumExterior,
+        altKey: 'cs_canallum_shot1_alt',
+        captionKey: 'cs_canallum_shot1_cap',
+      },
+      {
+        src: canallumPlan,
+        altKey: 'cs_canallum_shot2_alt',
+        captionKey: 'cs_canallum_shot2_cap',
+      },
+      {
+        src: canallumTour,
+        altKey: 'cs_canallum_shot4_alt',
+        captionKey: 'cs_canallum_shot4_cap',
+      },
+      {
+        src: canallumNight,
+        altKey: 'cs_canallum_shot3_alt',
+        captionKey: 'cs_canallum_shot3_cap',
+      },
+    ],
+    code: 'private',
+    href: 'https://ca-na-llum.vercel.app/',
   },
   {
     slug: 'paellalab',

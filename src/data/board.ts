@@ -28,10 +28,13 @@ export interface Tech {
 export const projectSpans: Record<string, Span> = {
   tablux: ['2026-10', '2026-11'],
   ensayadero: ['2026-03', '2026-07'],
+  'assisted-review': ['2026-10', '2026-11'],
   'radio-perico': ['2026-09', '2026-10'],
+  'ca-na-llum': ['2026-11', '2026-11'],
   lacasaestudio: ['2026-07', '2026-11'],
   paellalab: ['2026-01', '2026-03'],
   'carabanchel-creativa': ['2021-01', '2021-05'],
+  gorraplanistas: ['2026-10', '2026-11'],
 };
 
 type Text = { en: string; es: string };
@@ -231,6 +234,12 @@ export const techs: Tech[] = [
     uses: { prev: 1 },
   },
   {
+    id: 'blender',
+    label: 'Blender',
+    layer: 'media',
+    uses: { 'ca-na-llum': 1 },
+  },
+  {
     id: 'neve',
     label: 'Neve',
     layer: 'media',
@@ -314,6 +323,9 @@ export const techs: Tech[] = [
       paellalab: 1,
       ensayadero: 1,
       tablux: 1,
+      gorraplanistas: 1,
+      'ca-na-llum': 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -332,6 +344,8 @@ export const techs: Tech[] = [
       'radio-perico': 1,
       indra_consultant: 2,
       tablux: 1,
+      gorraplanistas: 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -380,7 +394,13 @@ export const techs: Tech[] = [
     id: 'meta-frameworks',
     label: 'Next.js · Astro',
     layer: 'frontend',
-    uses: { paellalab: 1, ensayadero: 1, tablux: 1 },
+    uses: { paellalab: 1, ensayadero: 1, tablux: 1, 'assisted-review': 1 },
+  },
+  {
+    id: 'webgl',
+    label: 'three.js · WebGL',
+    layer: 'frontend',
+    uses: { 'ca-na-llum': 1 },
   },
   {
     id: 'mapbox',
@@ -439,6 +459,7 @@ export const techs: Tech[] = [
       indra_consultant: 2,
       'carabanchel-creativa': 1,
       tablux: 1,
+      gorraplanistas: 1,
     },
   },
   {
@@ -470,7 +491,7 @@ export const techs: Tech[] = [
     id: 'python',
     label: 'Python',
     layer: 'backend',
-    uses: { ensayadero: 1, 'radio-perico': 1 },
+    uses: { ensayadero: 1, 'radio-perico': 1, 'ca-na-llum': 1, 'assisted-review': 1 },
   },
   {
     id: 'sql',
@@ -489,7 +510,14 @@ export const techs: Tech[] = [
     id: 'postgres',
     label: 'Postgres · Supabase',
     layer: 'backend',
-    uses: { paellalab: 1, ensayadero: 1, 'radio-perico': 1, tablux: 1 },
+    uses: {
+      paellalab: 1,
+      ensayadero: 1,
+      'radio-perico': 1,
+      tablux: 1,
+      gorraplanistas: 1,
+      'assisted-review': 1,
+    },
   },
   {
     id: 'llm',
@@ -502,6 +530,7 @@ export const techs: Tech[] = [
       'radio-perico': 1,
       mews_senior: 3,
       tablux: 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -521,6 +550,12 @@ export const techs: Tech[] = [
     label: { en: 'Embedded Linux', es: 'Linux embebido' },
     layer: 'backend',
     uses: { tablux: 1 },
+  },
+  {
+    id: 'embedded-cpp',
+    label: { en: 'Embedded C++', es: 'C++ embebido' },
+    layer: 'backend',
+    uses: { gorraplanistas: 1 },
   },
   { id: 'apollo', label: 'Apollo', layer: 'backend', uses: { indra_po: 2 } },
   { id: 'ruby', label: 'Ruby', layer: 'backend', uses: { ironhack: 2 } },
@@ -553,7 +588,7 @@ export const techs: Tech[] = [
     id: 'docker',
     label: 'Docker',
     layer: 'tools',
-    uses: { ensayadero: 1, tablux: 1 },
+    uses: { ensayadero: 1, tablux: 1, 'assisted-review': 1 },
   },
   {
     id: 'cicd',
@@ -565,7 +600,15 @@ export const techs: Tech[] = [
     id: 'vitest',
     label: 'Vitest',
     layer: 'tools',
-    uses: { mews_senior: 2, mews_techlead: 2, mews_squad: 2, tablux: 1 },
+    uses: {
+      mews_senior: 2,
+      mews_techlead: 2,
+      mews_squad: 2,
+      tablux: 1,
+      gorraplanistas: 1,
+      'ca-na-llum': 1,
+      'assisted-review': 1,
+    },
   },
   {
     id: 'testing-library',
