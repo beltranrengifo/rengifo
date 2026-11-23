@@ -33,7 +33,6 @@ export const projectSpans: Record<string, Span> = {
   'radio-perico': ['2026-09', '2026-10'],
   'ca-na-llum': ['2026-11', '2026-11'],
   lacasaestudio: ['2026-07', '2026-11'],
-  paellalab: ['2026-01', '2026-03'],
   'carabanchel-creativa': ['2021-01', '2021-05'],
   gorraplanistas: ['2026-10', '2026-11'],
 };
@@ -321,7 +320,6 @@ export const techs: Tech[] = [
       mews_senior: 3,
       mews_techlead: 3,
       mews_squad: 3,
-      paellalab: 1,
       ensayadero: 1,
       tablux: 1,
       gorraplanistas: 1,
@@ -340,7 +338,6 @@ export const techs: Tech[] = [
       mews_senior: 3,
       mews_techlead: 3,
       mews_squad: 3,
-      paellalab: 1,
       ensayadero: 1,
       'radio-perico': 1,
       indra_consultant: 2,
@@ -395,7 +392,7 @@ export const techs: Tech[] = [
     id: 'meta-frameworks',
     label: 'Next.js · Astro',
     layer: 'frontend',
-    uses: { paellalab: 1, ensayadero: 1, tablux: 1, 'assisted-review': 1 },
+    uses: { ensayadero: 1, tablux: 1, 'assisted-review': 1 },
   },
   {
     id: 'webgl',
@@ -518,7 +515,6 @@ export const techs: Tech[] = [
     label: 'Postgres · Supabase',
     layer: 'backend',
     uses: {
-      paellalab: 1,
       ensayadero: 1,
       'radio-perico': 1,
       tablux: 1,
@@ -534,7 +530,6 @@ export const techs: Tech[] = [
     uses: {
       mews_techlead: 1,
       mews_squad: 3,
-      paellalab: 1,
       'radio-perico': 1,
       mews_senior: 3,
       tablux: 1,

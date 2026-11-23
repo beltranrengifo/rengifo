@@ -527,6 +527,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'paellalab',
+    hidden: true,
     name: 'PaellaLab',
     rowKey: 'proj_paellalab_desc',
     taglineKey: 'cs_paellalab_tagline',

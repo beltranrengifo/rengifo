@@ -63,7 +63,6 @@ export const aiColumns: AiGroup[][] = [
         { key: 'ai_built_review', caseStudy: 'assisted-review' },
         { key: 'ai_built_perico', caseStudy: 'radio-perico' },
         { key: 'ai_built_ensayadero', caseStudy: 'ensayadero' },
-        { key: 'ai_built_paella', caseStudy: 'paellalab' },
         { key: 'ai_built_canallum', caseStudy: 'ca-na-llum' },
         {
           key: 'ai_built_voice',
