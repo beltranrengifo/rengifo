@@ -4,6 +4,7 @@ import ensayaderoLibrary from '../assets/work/ensayadero-library.png';
 import ensayaderoSession from '../assets/work/ensayadero-session.png';
 import ensayaderoChart from '../assets/work/ensayadero-chart.png';
 import billingAdvance from '../assets/work/billing-advance.png';
+import tabluxDiagram from '../assets/work/tablux-diagram.png';
 import tabluxHome from '../assets/work/tablux-home.png';
 import tabluxCasa from '../assets/work/tablux-casa.png';
 import tabluxLight from '../assets/work/tablux-light.png';
@@ -91,6 +92,7 @@ const allProjects: Project[] = [
       'Supabase (self-hosted)',
       'Node · Hono',
       'Claude Haiku · Whisper on Groq',
+      'Piper · wake word in WASM',
       'MCP server',
       'Tailscale · Coolify',
     ],
@@ -101,8 +103,14 @@ const allProjects: Project[] = [
       { headingKey: 'cs_tablux_n4_h', bodyKey: 'cs_tablux_n4_b' },
       { headingKey: 'cs_tablux_n5_h', bodyKey: 'cs_tablux_n5_b' },
       { headingKey: 'cs_tablux_n6_h', bodyKey: 'cs_tablux_n6_b' },
+      { headingKey: 'cs_tablux_n7_h', bodyKey: 'cs_tablux_n7_b' },
     ],
     screenshots: [
+      {
+        src: tabluxDiagram,
+        altKey: 'cs_tablux_diagram_alt',
+        captionKey: 'cs_tablux_diagram_cap',
+      },
       {
         src: tabluxHome,
         altKey: 'cs_tablux_shot1_alt',
