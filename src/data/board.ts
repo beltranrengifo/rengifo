@@ -28,6 +28,7 @@ export interface Tech {
 export const projectSpans: Record<string, Span> = {
   tablux: ['2026-10', '2026-11'],
   ensayadero: ['2026-03', '2026-07'],
+  'assisted-review': ['2026-10', '2026-11'],
   'radio-perico': ['2026-09', '2026-10'],
   'ca-na-llum': ['2026-11', '2026-11'],
   paellalab: ['2026-01', '2026-03'],
@@ -323,6 +324,7 @@ export const techs: Tech[] = [
       tablux: 1,
       gorraplanistas: 1,
       'ca-na-llum': 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -342,6 +344,7 @@ export const techs: Tech[] = [
       indra_consultant: 2,
       tablux: 1,
       gorraplanistas: 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -390,7 +393,7 @@ export const techs: Tech[] = [
     id: 'meta-frameworks',
     label: 'Next.js · Astro',
     layer: 'frontend',
-    uses: { paellalab: 1, ensayadero: 1, tablux: 1 },
+    uses: { paellalab: 1, ensayadero: 1, tablux: 1, 'assisted-review': 1 },
   },
   {
     id: 'webgl',
@@ -487,7 +490,7 @@ export const techs: Tech[] = [
     id: 'python',
     label: 'Python',
     layer: 'backend',
-    uses: { ensayadero: 1, 'radio-perico': 1, 'ca-na-llum': 1 },
+    uses: { ensayadero: 1, 'radio-perico': 1, 'ca-na-llum': 1, 'assisted-review': 1 },
   },
   {
     id: 'sql',
@@ -512,6 +515,7 @@ export const techs: Tech[] = [
       'radio-perico': 1,
       tablux: 1,
       gorraplanistas: 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -525,6 +529,7 @@ export const techs: Tech[] = [
       'radio-perico': 1,
       mews_senior: 3,
       tablux: 1,
+      'assisted-review': 1,
     },
   },
   {
@@ -582,7 +587,7 @@ export const techs: Tech[] = [
     id: 'docker',
     label: 'Docker',
     layer: 'tools',
-    uses: { ensayadero: 1, tablux: 1 },
+    uses: { ensayadero: 1, tablux: 1, 'assisted-review': 1 },
   },
   {
     id: 'cicd',
@@ -601,6 +606,7 @@ export const techs: Tech[] = [
       tablux: 1,
       gorraplanistas: 1,
       'ca-na-llum': 1,
+      'assisted-review': 1,
     },
   },
   {
