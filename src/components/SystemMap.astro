@@ -475,10 +475,15 @@ const clientData = {
     min-width: 0;
   }
 
+  /* On the article's text column, like every other section heading. */
   .smap-head {
-    max-width: 1000px;
+    max-width: min(1000px, 100vw - 80px);
     margin: 0 auto;
-    padding-inline: max(0px, calc((var(--smap-width) - 1000px) / 2));
+  }
+  @media (max-width: 639.98px) {
+    .smap-head {
+      max-width: calc(100vw - 48px);
+    }
   }
   .smap-head h2 {
     margin: 0;
