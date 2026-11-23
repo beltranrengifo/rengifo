@@ -20,11 +20,21 @@ import { START_YEAR, type BoardModel } from './model';
 export const YEAR_PX = 260;
 /** Vertical step between rows of roles that share years. */
 const ROLE_ROW = 170;
+/** Vertical step between rows of projects that share months. */
+const PROJECT_ROW = 120;
+/**
+ * How far a project may sit from its date and still share a row; past
+ * that it takes the next row down.
+ */
+const PROJECT_SLACK = YEAR_PX * 0.5;
+/** Room between the deepest row of projects and the floor. */
+const FLOOR_GAP = 160;
 
 /**
  * Three bands, top to bottom: roles, technologies, projects. Roles that
- * share years stack upwards from their lane; technologies may wander only
- * inside their band, so they never reach a role's or a project's label.
+ * share years stack upwards from their lane and projects that share months
+ * stack downwards from theirs; technologies may wander only inside their
+ * band, so they never reach a role's or a project's label.
  */
 export const LANE = { role: -160, tech: 60, project: 300 } as const;
 export const TECH_BAND = [-40, 180] as const;
@@ -65,6 +75,71 @@ export interface Layout {
   sim: Simulation<Node, Link>;
   nodes: Node[];
   links: Link[];
+  /** Where the floor runs: below the deepest row of projects. */
+  floor: number;
+}
+
+/** Half the room a project takes in its row: its fruit, or its name. */
+const projectHalf = (node: Node): number =>
+  Math.max(node.r + 34, node.labelLength * 3.6 + 14);
+
+/**
+ * Where a row of projects comes to rest when each is pulled to its date
+ * and none may crowd the next: the closest fit, in date order (pool
+ * adjacent violators, a least-squares fit that keeps the order).
+ */
+function settleRow(row: Node[]): number[] {
+  const offsets: number[] = [];
+  row.forEach((node, i) =>
+    offsets.push(
+      i === 0
+        ? 0
+        : offsets[i - 1]! + projectHalf(row[i - 1]!) + projectHalf(node),
+    ),
+  );
+  const blocks: { sum: number; size: number }[] = [];
+  row.forEach((node, i) => {
+    blocks.push({ sum: node.homeX - offsets[i]!, size: 1 });
+    while (blocks.length > 1) {
+      const last = blocks.at(-1)!;
+      const prev = blocks.at(-2)!;
+      if (prev.sum / prev.size <= last.sum / last.size) break;
+      prev.sum += last.sum;
+      prev.size += last.size;
+      blocks.pop();
+    }
+  });
+  return blocks
+    .flatMap(({ sum, size }) => Array.from({ length: size }, () => sum / size))
+    .map((at, i) => at + offsets[i]!);
+}
+
+/**
+ * Projects in a row keep their names apart. The rows hold them up and
+ * down, so this pushes only sideways, and only between projects at about
+ * the same height — a dragged one makes room wherever it lands.
+ */
+function rows(strength: number) {
+  let projects: Node[] = [];
+  const force = () => {
+    for (let i = 0; i < projects.length; i++) {
+      const a = projects[i]!;
+      for (let j = i + 1; j < projects.length; j++) {
+        const b = projects[j]!;
+        if (Math.abs(b.y - a.y) > PROJECT_ROW * 0.75) continue;
+        const dx = b.x + (b.vx ?? 0) - (a.x + (a.vx ?? 0));
+        const overlap = projectHalf(a) + projectHalf(b) - Math.abs(dx);
+        if (overlap <= 0) continue;
+        const dir = Math.sign(dx) || (a.homeX <= b.homeX ? 1 : -1);
+        const push = (overlap * strength) / 2;
+        a.vx = (a.vx ?? 0) - push * dir;
+        b.vx = (b.vx ?? 0) + push * dir;
+      }
+    }
+  };
+  force.initialize = (all: Node[]) =>
+    (projects = all.filter((node) => node.kind === 'project'));
+  return force;
 }
 
 /** Keeps technologies inside their band: a wall, not a pull. */
@@ -175,6 +250,38 @@ export function createLayout(
       node.y = node.homeY;
     });
 
+  // Projects that share months would crowd one spot, and push each other
+  // ever further from their dates. Give each the first row, counting
+  // down, where it still rests near its date beside the others there.
+  const projectRows: Node[][] = [];
+  clipNodes
+    .filter((node) => node.kind === 'project')
+    .sort((a, b) => a.homeX - b.homeX)
+    .forEach((node) => {
+      const fits = (row: Node[]) => {
+        const next = [...row, node];
+        return settleRow(next).every(
+          (x, i) => Math.abs(x - next[i]!.homeX) <= PROJECT_SLACK,
+        );
+      };
+      let row = projectRows.findIndex(fits);
+      if (row < 0) row = projectRows.push([]) - 1;
+      projectRows[row]!.push(node);
+    });
+  // Each starts where its row would put it, so the field opens settled.
+  projectRows.forEach((row, r) => {
+    const xs = settleRow(row);
+    row.forEach((node, i) => {
+      node.homeY = LANE.project + r * PROJECT_ROW;
+      node.x = xs[i]!;
+      node.y = node.homeY;
+    });
+  });
+  const floor =
+    LANE.project +
+    Math.max(0, projectRows.length - 1) * PROJECT_ROW +
+    FLOOR_GAP;
+
   // Technologies used by a single long role would all land on its middle;
   // spread them along its years instead, in the order they are listed.
   const soloOf = model.tracks.map((track) =>
@@ -237,8 +344,8 @@ export function createLayout(
     .force(
       'lane',
       forceY<Node>((node) => node.homeY).strength((node) =>
-        // Projects hold their line too, so neighbours spread sideways
-        // instead of stacking under the floor.
+        // Projects hold their row too, so neighbours spread sideways
+        // instead of drifting into the next one.
         node.kind === 'tech' ? 0.02 : 0.8,
       ),
     )
@@ -250,15 +357,17 @@ export function createLayout(
     )
     .force(
       'collide',
-      // Roles and projects keep room for the labels written under them.
+      // Roles keep room for the labels written above them. Projects keep
+      // less, so the rows do not touch; their names have the rows force.
       forceCollide<Node>((node) =>
         node.kind === 'tech'
           ? node.r + 18 + node.labelLength * 3.4
           : node.kind === 'role'
             ? node.r + 58
-            : node.r + 62,
+            : node.r + 30,
       ).strength(0.9),
     )
+    .force('rows', rows(0.9))
     .force('labels', labels(0.5))
     .force('band', band(TECH_BAND[0], TECH_BAND[1]))
     .force('drift', drift(0.06, random))
@@ -266,7 +375,7 @@ export function createLayout(
     .velocityDecay(0.5)
     .stop();
 
-  return { sim, nodes, links };
+  return { sim, nodes, links, floor };
 }
 
 /** Run the simulation forward without a clock — for first paint and tests. */
