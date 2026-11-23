@@ -165,16 +165,40 @@ function init(root: HTMLElement) {
   };
 
   // A soft S between two parts, leaving and arriving sideways; parts
-  // stacked in one column bow out to the side instead, so the wire does not
-  // run behind the parts between them.
-  const curve = (a: Point, b: Point, width: number) => {
+  // stacked in one column bow out to the side instead, wide enough to clear
+  // the parts between them, so the wire never runs behind one.
+  const curve = (a: Point, b: Point, width: number, between: Box[] = []) => {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     let c1: Point;
     let c2: Point;
     if (Math.abs(dx) < 28) {
       const side = a.x > width / 2 ? -1 : 1;
-      const bow = side * Math.min(150, Math.abs(dy) * 0.42 + 16);
+      let bow = Math.min(150, Math.abs(dy) * 0.42 + 16);
+      // Where the bow passes a card it is 3t(1−t) of its full width out.
+      const yAt = (t: number) => {
+        const u = 1 - t;
+        return (
+          a.y + dy * (3 * u * u * t * 0.2 + 3 * u * t * t * 0.8 + t * t * t)
+        );
+      };
+      for (const card of between) {
+        const need =
+          side > 0
+            ? card.r + 10 - Math.max(a.x, b.x)
+            : Math.min(a.x, b.x) - (card.l - 10);
+        if (need <= 0) continue;
+        // The card's whole height must be cleared: the least reach counts.
+        let reach = Infinity;
+        for (let t = 0.02; t < 1; t += 0.02) {
+          const y = yAt(t);
+          if (y > card.t - 6 && y < card.b + 6)
+            reach = Math.min(reach, 3 * t * (1 - t));
+        }
+        if (reach < Infinity) bow = Math.max(bow, need / reach);
+      }
+      // Never so wide it reaches the next column.
+      bow = side * Math.min(bow, 150);
       c1 = { x: a.x + bow, y: a.y + dy * 0.2 };
       c2 = { x: b.x + bow, y: b.y - dy * 0.2 };
     } else if (Math.abs(dx) >= 60 || Math.abs(dx) >= Math.abs(dy) * 0.6) {
@@ -242,7 +266,11 @@ function init(root: HTMLElement) {
     const boxes = new Map(
       [...nodes].map(([id, el]) => [id, boxOf(el, origin)]),
     );
-    cards = [...boxes.values()];
+    // Zone titles too: a label over one would hide it.
+    const titles = $$<HTMLElement>('.smap-zone-label')
+      .filter((el) => el.offsetParent)
+      .map((el) => boxOf(el, origin));
+    cards = [...boxes.values(), ...titles];
     const bundled = (w: Wire) =>
       isStacked()
         ? undefined
@@ -267,7 +295,25 @@ function init(root: HTMLElement) {
         const p = trunk(hub, leaf, x);
         path = fromHub ? p : { d: p.d, at: (t) => p.at(1 - t) };
       } else {
-        path = curve(centreOf(a), centreOf(b), origin.width);
+        // The cards in the same column, between the two ends.
+        const top = Math.min(a.t, b.t);
+        const bottom = Math.max(a.b, b.b);
+        const left = Math.min(a.l, b.l);
+        const right = Math.max(a.r, b.r);
+        const between = [...boxes]
+          .filter(([id, box]) => {
+            const x = (box.l + box.r) / 2;
+            return (
+              id !== wire.from &&
+              id !== wire.to &&
+              box.t < bottom &&
+              box.b > top &&
+              x > left &&
+              x < right
+            );
+          })
+          .map(([, box]) => box);
+        path = curve(centreOf(a), centreOf(b), origin.width, between);
       }
       wire.base.setAttribute('d', path.d);
       wire.pulse.setAttribute('d', path.d);

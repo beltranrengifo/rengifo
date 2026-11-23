@@ -87,6 +87,18 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
       }
     });
 
+    it('bundles only wires that exist', () => {
+      for (const bundle of map.bundles ?? []) {
+        const zoneOf = new Map(map.nodes.map((n) => [n.id, n.zone]));
+        const some = map.edges.some(
+          (e) =>
+            (e.from === bundle.from && zoneOf.get(e.to) === bundle.zone) ||
+            (e.to === bundle.from && zoneOf.get(e.from) === bundle.zone),
+        );
+        expect(some, `${bundle.from} → ${bundle.zone}`).toBe(true);
+      }
+    });
+
     it('walks only through parts that exist, along real wires', () => {
       for (const walk of map.walkthroughs) {
         expect(walk.steps.length, walk.id).toBeGreaterThan(0);

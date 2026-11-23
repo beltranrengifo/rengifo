@@ -76,6 +76,10 @@ export const glyphs: Record<GlyphId, string> = {
   board:
     '<rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M5.5 5V3.5M7.5 5V3.5M9.5 5V3.5M11.5 5V3.5M13.5 5V3.5" class="f"/><rect x="6" y="9" width="6" height="6" rx=".6" class="a"/><rect x="15" y="8.5" width="6.5" height="3.5"/><rect x="15" y="13.5" width="6.5" height="3.5"/>',
   nas: '<rect x="5" y="2.5" width="14" height="19" rx="2"/><rect x="7.5" y="5.5" width="9" height="4.5" rx=".6"/><rect x="7.5" y="11.5" width="9" height="4.5" rx=".6"/><path d="M10 7.75h4M10 13.75h4" class="f"/><circle cx="9.5" cy="18.5" r=".7" class="a"/><circle cx="12" cy="18.5" r=".7" class="a"/>',
+  cloud:
+    '<path d="M6.5 18.5h11a4 4 0 0 0 .4-7.98 6 6 0 0 0-11.5 1.3A3.4 3.4 0 0 0 6.5 18.5z"/><path d="M10.5 12.5v2.2M13.5 12.5v2.2M9.8 14.7h4.4" class="a"/>',
+  voice:
+    '<path d="M3.5 9.5h3l4.5-3.8v12.6L6.5 14.5h-3z"/><path d="M14.5 9.2a4 4 0 0 1 0 5.6" class="a"/><path d="M17.3 6.6a7.6 7.6 0 0 1 0 10.8"/>',
 };
 
 export interface Drawing {

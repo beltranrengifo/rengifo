@@ -2,8 +2,12 @@ import type { SystemMap } from './types';
 
 /**
  * Tablux, part by part: the wall and the house's devices, the app on my own
- * VPS, and the services around it. Positions are in a 1000 × 760 map; on a
+ * VPS, and the services around it. Positions are in a 1000 × 800 map; on a
  * phone the zones stack and the nodes flow in this order instead.
+ *
+ * The top of the map is left open on purpose: the outside services that
+ * reach into the house without the VPS (Tuya's cloud, Spotify) run their
+ * wires across it, clear of every card.
  *
  * Private by design: no names, hosts, addresses, networks or wake phrase.
  */
@@ -17,18 +21,18 @@ export const tablux: SystemMap = {
     en: 'Below, every part of Tablux, at home and on my own VPS. Choose one to see what it is and what it talks to, or follow a path through it.',
     es: 'Aquí debajo, todas las piezas de Tablux, en casa y en mi propio VPS. Elige una para ver qué es y con qué habla, o sigue alguno de los recorridos.',
   },
-  size: { w: 1000, h: 760 },
+  size: { w: 1000, h: 800 },
 
   zones: [
     {
       id: 'home',
       label: { en: 'At home', es: 'En casa' },
-      box: { x: 10, y: 20, w: 490, h: 732 },
+      box: { x: 10, y: 20, w: 470, h: 772 },
     },
     {
       id: 'wall',
       label: { en: 'On the wall', es: 'En la pared' },
-      box: { x: 222, y: 70, w: 248, h: 500 },
+      box: { x: 220, y: 190, w: 250, h: 462 },
       parent: 'home',
       host: 'wall',
     },
@@ -38,25 +42,25 @@ export const tablux: SystemMap = {
         en: 'Between home and the VPS',
         es: 'Entre casa y el VPS',
       },
-      box: { x: 508, y: 370, w: 44, h: 50 },
+      box: { x: 506, y: 460, w: 44, h: 50 },
       tunnel: true,
     },
     {
       id: 'cloud',
       label: { en: 'On my VPS', es: 'En mi VPS' },
-      box: { x: 598, y: 20, w: 196, h: 548 },
+      box: { x: 588, y: 232, w: 184, h: 352 },
       host: 'server',
     },
     {
       id: 'training',
       label: { en: 'Training', es: 'Entrenamiento' },
-      box: { x: 598, y: 604, w: 196, h: 148 },
+      box: { x: 588, y: 620, w: 184, h: 110 },
       outside: true,
     },
     {
       id: 'services',
       label: { en: 'Outside services', es: 'Servicios externos' },
-      box: { x: 808, y: 20, w: 184, h: 732 },
+      box: { x: 784, y: 20, w: 208, h: 772 },
       outside: true,
     },
   ],
@@ -77,6 +81,74 @@ export const tablux: SystemMap = {
       tags: ['RK3288', '2 GB', 'Linux 6.18', 'U-Boot', 'Armbian', 'Phosh'],
     },
     {
+      id: 'speaker',
+      zone: 'wall',
+      label: { en: 'Speaker', es: 'Altavoz' },
+      sub: { en: 'Music · voice', es: 'Música · voz' },
+      glyph: 'speaker',
+      drawing: 'speaker',
+      body: {
+        en: 'The wall’s own speaker. Spotify’s official receiver for devices without a screen runs on the wall, so it is a Spotify Connect speaker like any other and music reaches it from any phone. It is also where the assistant speaks; if the internet drops, a stock Piper voice on the wall takes over.',
+        es: 'El altavoz de la propia pared. En ella corre el receptor oficial de Spotify para aparatos sin pantalla, así que es un altavoz de Spotify Connect como cualquier otro y se le manda música desde cualquier móvil. También es por donde habla el asistente; si se cae internet, toma el relevo una voz estándar de Piper que vive en la pared.',
+      },
+      tags: [
+        'Spotify Connect',
+        { en: 'Stock Piper offline', es: 'Piper estándar sin red' },
+      ],
+      at: { x: 345, y: 262 },
+    },
+    {
+      id: 'kiosk',
+      zone: 'wall',
+      label: { en: 'Kiosk browser', es: 'Navegador' },
+      sub: { en: 'Chromium', es: 'Chromium' },
+      glyph: 'window',
+      body: {
+        en: 'Chromium opens the app full screen as soon as the wall starts, with nothing around it. It is the same PWA every other screen runs; the wall only adds what needs a body: a speaker, a microphone and the bridge. At night it rests with the clock and any running timer, and «Buenas noches» can send it to rest. Without internet, the app’s own offline cache keeps the clock, the agenda and the menu on screen.',
+        es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
+      },
+      tags: ['Chromium', 'PWA', 'Phosh'],
+      at: { x: 345, y: 348 },
+    },
+    {
+      id: 'bridge',
+      zone: 'wall',
+      label: { en: 'Home bridge', es: 'Puente doméstico' },
+      sub: { en: 'Node · Hono', es: 'Node · Hono' },
+      glyph: 'bridge',
+      body: {
+        en: 'A small Node service on the wall, and the only part of Tablux that has to be at home. It talks to every device over the local network with local keys, never through the makers’ clouds. It runs the routines the app hands it — at a set time, by the sun, which it works out itself, or with two or three claps — so they keep working without internet; only a routine that says the weather or the agenda asks the app for it. When the wake word is heard, it wakes the page and hands it what came next. It also looks after the wall’s backlight.',
+        es: 'Un pequeño servicio en Node que corre en la pared, y la única parte de Tablux que tiene que estar en casa. Habla con cada aparato por la red local, con claves locales y sin pasar por la nube de ningún fabricante. Lanza las rutinas que le pasa la aplicación —a una hora, con el sol, que calcula él mismo, o con dos o tres palmadas—, así que siguen funcionando sin internet; solo las que dicen el tiempo o la agenda se lo piden a la aplicación. Cuando se oye la palabra de activación, despierta la página y le pasa lo que se dijo después. También se ocupa del brillo de la pantalla.',
+      },
+      tags: [
+        'Node',
+        'Hono',
+        { en: 'Local network', es: 'Red local' },
+        { en: 'Routines', es: 'Rutinas' },
+        { en: 'Works offline', es: 'Funciona sin red' },
+      ],
+      at: { x: 345, y: 434 },
+    },
+    {
+      id: 'listener',
+      zone: 'wall',
+      label: { en: 'Listening', es: 'Escucha' },
+      sub: { en: 'On the device', es: 'En el aparato' },
+      glyph: 'mic',
+      drawing: 'mic',
+      body: {
+        en: 'A wake-word model of my own, trained on Runpod. On the wall it listens through a small USB microphone, in a process of its own, and tells the bridge what it heard; on the tablets, through their microphone, in a WASM engine inside the browser. The same detector hears two or three claps. All of it happens on the device itself.',
+        es: 'Un modelo de palabra de activación propio, entrenado en Runpod. En la pared escucha por un pequeño micrófono USB, en un proceso aparte, y le cuenta al puente lo que ha oído; en las tablets, por su micrófono, con un motor en WASM dentro del navegador. El mismo detector reconoce dos o tres palmadas. Todo pasa en el propio aparato.',
+      },
+      tags: [
+        { en: 'Own model', es: 'Modelo propio' },
+        'Runpod',
+        'WASM',
+        { en: 'USB microphone', es: 'Micrófono USB' },
+      ],
+      at: { x: 345, y: 536 },
+    },
+    {
       id: 'linux',
       zone: 'wall',
       label: { en: 'Linux 6.18', es: 'Linux 6.18' },
@@ -88,75 +160,7 @@ export const tablux: SystemMap = {
         es: 'Un Linux propio para una placa sin documentación pública. Primero, una copia completa del Android de fábrica. Después, un device tree escrito a partir del original del fabricante, un U-Boot compilado con la inicialización de memoria que pide esta placa y Linux 6.18 compilado con los drivers de pantalla que le faltaban, sobre Armbian. Encima, Phosh lo convierte en un sistema pensado para los dedos. Todo lo que hay en la pared corre sobre él.',
       },
       tags: ['Linux 6.18', 'Armbian', 'Phosh', 'U-Boot', 'Device tree'],
-      at: { x: 346, y: 500 },
-    },
-    {
-      id: 'kiosk',
-      zone: 'wall',
-      label: { en: 'Kiosk browser', es: 'Navegador' },
-      sub: { en: 'Chromium', es: 'Chromium · quiosco' },
-      glyph: 'window',
-      body: {
-        en: 'Chromium opens the app full screen as soon as the wall starts, with nothing around it. It is the same PWA every other screen runs; the wall only adds what needs a body: a speaker, a microphone and the bridge. At night it rests with the clock and any running timer, and «Buenas noches» can send it to rest. Without internet, the app’s own offline cache keeps the clock, the agenda and the menu on screen.',
-        es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
-      },
-      tags: ['Chromium', 'PWA', 'Phosh'],
-      at: { x: 346, y: 232 },
-    },
-    {
-      id: 'listener',
-      zone: 'wall',
-      label: { en: 'Listening', es: 'Escucha' },
-      sub: { en: 'On the device', es: 'En el aparato' },
-      glyph: 'mic',
-      drawing: 'mic',
-      body: {
-        en: 'A wake-word model of my own, trained on Runpod. On the wall it listens through a small USB microphone, in a process of its own; on the tablets, through their microphone, in a WASM engine inside the browser. The same detector hears two or three claps. All of it happens on the device itself.',
-        es: 'Un modelo de palabra de activación propio, entrenado en Runpod. En la pared escucha por un pequeño micrófono USB, en un proceso aparte; en las tablets, por su micrófono, con un motor en WASM dentro del navegador. El mismo detector reconoce dos o tres palmadas. Todo pasa en el propio aparato.',
-      },
-      tags: [
-        { en: 'Own model', es: 'Modelo propio' },
-        'Runpod',
-        'WASM',
-        { en: 'USB microphone', es: 'Micrófono USB' },
-      ],
-      at: { x: 346, y: 145 },
-    },
-    {
-      id: 'speaker',
-      zone: 'wall',
-      label: { en: 'Speaker', es: 'Altavoz' },
-      sub: { en: 'Music · voice', es: 'Música · voz' },
-      glyph: 'speaker',
-      drawing: 'speaker',
-      body: {
-        en: 'The wall’s own speaker. Spotify’s official receiver for devices without a screen runs on the wall, so it is a Spotify Connect speaker like any other and music reaches it from any phone. It is also where the assistant speaks; if the internet drops, an offline Piper voice on the wall takes over.',
-        es: 'El altavoz de la propia pared. En ella corre el receptor oficial de Spotify para aparatos sin pantalla, así que es un altavoz de Spotify Connect como cualquier otro y se le manda música desde cualquier móvil. También es por donde habla el asistente; si se cae internet, toma el relevo una voz de Piper que vive en la pared.',
-      },
-      tags: [
-        'Spotify Connect',
-        { en: 'Offline Piper', es: 'Piper sin conexión' },
-      ],
-      at: { x: 346, y: 319 },
-    },
-    {
-      id: 'bridge',
-      zone: 'wall',
-      label: { en: 'Home bridge', es: 'Puente doméstico' },
-      sub: { en: 'Node · Hono', es: 'Node · Hono' },
-      glyph: 'bridge',
-      body: {
-        en: 'A small Node service on the wall, and the only part of Tablux that has to be at home. It talks to every device over the local network with local keys, never through the makers’ clouds. It runs the routines the app hands it — at a set time, by the sun, which it works out itself, or with two or three claps — so they keep working without internet, and it keeps their log. It also looks after the wall’s backlight.',
-        es: 'Un pequeño servicio en Node que corre en la pared, y la única parte de Tablux que tiene que estar en casa. Habla con cada aparato por la red local, con claves locales y sin pasar por la nube de ningún fabricante. Lanza las rutinas que le pasa la aplicación —a una hora, con el sol, que calcula él mismo, o con dos o tres palmadas—, así que siguen funcionando sin internet, y guarda su registro. También se ocupa del brillo de la pantalla.',
-      },
-      tags: [
-        'Node',
-        'Hono',
-        { en: 'Local network', es: 'Red local' },
-        { en: 'Routines', es: 'Rutinas' },
-        { en: 'Works offline', es: 'Funciona sin red' },
-      ],
-      at: { x: 346, y: 406 },
+      at: { x: 345, y: 614 },
     },
 
     // ── Around the house ────────────────────────────────────────
@@ -168,11 +172,30 @@ export const tablux: SystemMap = {
       glyph: 'plug',
       drawing: 'plug',
       body: {
-        en: 'Wi-Fi plugs for lamps and appliances. The bridge speaks their protocol on the local network, with each plug’s own key. «Encender durante» leaves one on for a while, and it switches itself off.',
-        es: 'Enchufes wifi para lámparas y aparatos. El puente habla su protocolo por la red local, con la clave de cada uno. «Encender durante» deja uno encendido un rato, y luego se apaga solo.',
+        en: 'Wi-Fi plugs for lamps and appliances. The bridge speaks their protocol on the local network, with each plug’s own key. «Encender durante» leaves one on for a while, and it switches itself off. Tuya’s cloud only switches a plug the bridge can’t reach.',
+        es: 'Enchufes wifi para lámparas y aparatos. El puente habla su protocolo por la red local, con la clave de cada uno. «Encender durante» deja uno encendido un rato, y luego se apaga solo. La nube de Tuya solo enciende o apaga los que el puente no alcanza.',
       },
-      tags: ['Tuya', 'Smart Life', { en: 'Local keys', es: 'Claves locales' }],
-      at: { x: 116, y: 145 },
+      tags: [
+        'Tuya',
+        'Smart Life',
+        { en: 'Local keys', es: 'Claves locales' },
+        { en: 'Cloud fallback', es: 'Nube de reserva' },
+      ],
+      at: { x: 107, y: 72 },
+    },
+    {
+      id: 'cast',
+      zone: 'home',
+      label: { en: 'Cast speakers', es: 'Altavoces Cast' },
+      sub: { en: 'Spotify Connect', es: 'Spotify Connect' },
+      glyph: 'cast',
+      drawing: 'cast',
+      body: {
+        en: 'The house’s Cast speakers. The bridge finds them on the network and wakes them into Spotify Connect itself, so the music can move to any room without opening the Spotify app.',
+        es: 'Los altavoces Cast de casa. El puente los encuentra en la red y los despierta él mismo como dispositivos de Spotify Connect, así que la música pasa a cualquier habitación sin abrir la aplicación de Spotify.',
+      },
+      tags: ['Cast', 'Spotify Connect', 'mDNS'],
+      at: { x: 107, y: 152 },
     },
     {
       id: 'bulbs',
@@ -186,7 +209,7 @@ export const tablux: SystemMap = {
         es: 'Bombillas de color de dos marcas, que se regulan y cambian de color desde cualquier pantalla, con la voz o con una rutina. El puente llega a cada una por la red local, con el protocolo de su fabricante.',
       },
       tags: ['Smart Life', 'Shelly', { en: 'Colour', es: 'Color' }],
-      at: { x: 116, y: 260 },
+      at: { x: 107, y: 296 },
     },
     {
       id: 'blinds',
@@ -204,7 +227,7 @@ export const tablux: SystemMap = {
         { en: 'Local RPC', es: 'RPC local' },
         { en: 'By the sun', es: 'Con el sol' },
       ],
-      at: { x: 116, y: 375 },
+      at: { x: 107, y: 408 },
     },
     {
       id: 'projector',
@@ -222,21 +245,7 @@ export const tablux: SystemMap = {
         'Cast',
         { en: 'Own protocol code', es: 'Protocolo propio' },
       ],
-      at: { x: 116, y: 490 },
-    },
-    {
-      id: 'cast',
-      zone: 'home',
-      label: { en: 'Cast speakers', es: 'Altavoces Cast' },
-      sub: { en: 'Spotify Connect', es: 'Spotify Connect' },
-      glyph: 'cast',
-      drawing: 'cast',
-      body: {
-        en: 'The house’s Cast speakers. The bridge finds them on the network and wakes them into Spotify Connect itself, so the music can move to any room without opening the Spotify app.',
-        es: 'Los altavoces Cast de casa. El puente los encuentra en la red y los despierta él mismo como dispositivos de Spotify Connect, así que la música pasa a cualquier habitación sin abrir la aplicación de Spotify.',
-      },
-      tags: ['Cast', 'Spotify Connect', 'mDNS'],
-      at: { x: 116, y: 605 },
+      at: { x: 107, y: 520 },
     },
     {
       id: 'tablets',
@@ -250,7 +259,7 @@ export const tablux: SystemMap = {
         es: 'Tablets viejas repartidas por casa con la misma PWA. Como son de todos, de noche descansan con el reloj y los temporizadores en marcha, preguntan quién las usa y pueden estar atentas a la palabra de activación desde el navegador.',
       },
       tags: ['PWA', { en: 'Night rest', es: 'Descanso nocturno' }, 'WASM'],
-      at: { x: 318, y: 628 },
+      at: { x: 150, y: 694 },
     },
     {
       id: 'phones',
@@ -264,7 +273,7 @@ export const tablux: SystemMap = {
         es: 'Nuestros móviles llevan la aplicación instalada como PWA. Son personales: no descansan ni preguntan quién los usa, y les llega un aviso cuando acaba un temporizador que pusieron ellos. Los cambios pedidos en voz alta se fusionan desde la tarjeta «Cambios» de un móvil, y solo desde ahí.',
       },
       tags: ['PWA', 'Web Push'],
-      at: { x: 438, y: 708 },
+      at: { x: 384, y: 752 },
     },
 
     // ── Between home and the VPS ────────────────────────────────
@@ -284,7 +293,7 @@ export const tablux: SystemMap = {
         { en: 'No open ports', es: 'Sin puertos abiertos' },
         'SSH',
       ],
-      at: { x: 530, y: 395 },
+      at: { x: 528, y: 485 },
     },
 
     // ── On my VPS ───────────────────────────────────────────────
@@ -292,7 +301,6 @@ export const tablux: SystemMap = {
       id: 'server',
       zone: 'cloud',
       label: { en: 'My VPS', es: 'Mi VPS' },
-      sub: { en: 'Coolify', es: 'Coolify' },
       glyph: 'server',
       drawing: 'server',
       body: {
@@ -308,11 +316,17 @@ export const tablux: SystemMap = {
       sub: { en: 'Next.js · PWA', es: 'Next.js · PWA' },
       glyph: 'window',
       body: {
-        en: 'One Next.js app serves the PWA and its API to every screen: the assistant, lights and blinds, agenda, menus, the shopping list, timers and stopwatches. Recipes come in typed, dictated or from any website. Each screen asks every two seconds whether anything changed — plain polling, so a 2014 tablet keeps up — and every screen is checked at ten sizes, day and night, before a change to the interface ships.',
-        es: 'Una sola aplicación en Next.js sirve la PWA y su API a todas las pantallas: el asistente, luces y persianas, agenda, menús, lista de la compra, temporizadores y cronómetros. Las recetas entran escritas, dictadas o desde cualquier web. Cada pantalla pregunta cada dos segundos si algo ha cambiado —una consulta sencilla, para que una tablet de 2014 no se quede atrás—, y antes de publicar un cambio en la interfaz todas las pantallas se revisan en diez tamaños, de día y de noche.',
+        en: 'One Next.js app serves the PWA and its API to every screen: the assistant, lights and blinds, agenda, menus, the shopping list, timers and stopwatches. Recipes come in typed, dictated or from any website. The same app is an MCP server, and a loop on the server keeps the bridge’s routines current and sends the timer pushes. Each screen asks every two seconds whether anything changed — plain polling, so a 2014 tablet keeps up — and every screen is checked at ten sizes, day and night, before a change to the interface ships.',
+        es: 'Una sola aplicación en Next.js sirve la PWA y su API a todas las pantallas: el asistente, luces y persianas, agenda, menús, lista de la compra, temporizadores y cronómetros. Las recetas entran escritas, dictadas o desde cualquier web. La misma aplicación es un servidor MCP, y un bucle en el servidor mantiene al día las rutinas del puente y manda los avisos de los temporizadores. Cada pantalla pregunta cada dos segundos si algo ha cambiado —una consulta sencilla, para que una tablet de 2014 no se quede atrás—, y antes de publicar un cambio en la interfaz todas las pantallas se revisan en diez tamaños, de día y de noche.',
       },
-      tags: ['Next.js 16', 'React 19', 'PWA', 'Web Push'],
-      at: { x: 696, y: 110 },
+      tags: [
+        'Next.js 16',
+        'React 19',
+        'PWA',
+        'Web Push',
+        { en: 'MCP server', es: 'Servidor MCP' },
+      ],
+      at: { x: 680, y: 304 },
     },
     {
       id: 'supabase',
@@ -329,50 +343,24 @@ export const tablux: SystemMap = {
         { en: 'Google sign-in', es: 'Acceso con Google' },
         { en: 'Allow-list', es: 'Lista de acceso' },
       ],
-      at: { x: 696, y: 200 },
+      at: { x: 680, y: 412 },
     },
     {
       id: 'voice',
       zone: 'cloud',
       label: { en: 'Voice service', es: 'Servicio de voz' },
-      sub: { en: 'Piper', es: 'Piper' },
+      sub: { en: 'Piper voices', es: 'Voces de Piper' },
       glyph: 'wave',
       body: {
-        en: 'Turns the assistant’s answers into speech, with a Piper voice of its own that I trained with Voicebox and Runpod. Every screen speaks with it.',
-        es: 'Convierte en voz las respuestas del asistente, con una voz de Piper propia que entrené con Voicebox y Runpod. Es la voz de todas las pantallas.',
-      },
-      tags: ['Piper', { en: 'Own voice', es: 'Voz propia' }, 'Voicebox'],
-      at: { x: 696, y: 290 },
-    },
-    {
-      id: 'mcp',
-      zone: 'cloud',
-      label: { en: 'MCP server', es: 'Servidor MCP' },
-      sub: { en: 'Tools', es: 'Herramientas' },
-      glyph: 'tools',
-      body: {
-        en: 'The assistant’s tools — lights, blinds, routines, menus, agenda, timers, music — open to any assistant that speaks MCP, behind a personal key.',
-        es: 'Las herramientas del asistente —luces, persianas, rutinas, menús, agenda, temporizadores, música— al alcance de cualquier asistente que hable MCP, con una clave personal.',
-      },
-      tags: ['MCP', { en: 'Personal keys', es: 'Claves personales' }],
-      at: { x: 696, y: 380 },
-    },
-
-    {
-      id: 'monitor',
-      zone: 'cloud',
-      label: { en: 'Monitoring', es: 'Monitorización' },
-      sub: { en: 'Uptime Kuma', es: 'Uptime Kuma' },
-      glyph: 'pulse',
-      body: {
-        en: 'Uptime Kuma and the server’s own metrics, on the same VPS. The app’s server screen reads them: CPU, memory, disk, the last backup and whether each of my sites is up.',
-        es: 'Uptime Kuma y las métricas del propio servidor, en el mismo VPS. La pantalla del servidor de la aplicación las lee: CPU, memoria, disco, la última copia de seguridad y si cada una de mis webs está en pie.',
+        en: 'Turns the assistant’s answers into speech with Piper voices, each screen in the one it chose. The main one is my own: a Piper voice fine-tuned on Runpod from a public Spanish checkpoint. If it fails, Google’s voice answers instead.',
+        es: 'Convierte en voz las respuestas del asistente con voces de Piper, cada pantalla con la que eligió. La principal es propia: una voz de Piper afinada en Runpod a partir de un modelo público en español. Si falla, contesta la voz de Google.',
       },
       tags: [
-        'Uptime Kuma',
-        { en: 'Server metrics', es: 'Métricas del servidor' },
+        'Piper',
+        { en: 'Own voice', es: 'Voz propia' },
+        { en: 'A voice per screen', es: 'Una voz por pantalla' },
       ],
-      at: { x: 696, y: 470 },
+      at: { x: 680, y: 520 },
     },
 
     // ── Training ────────────────────────────────────────────────
@@ -383,19 +371,51 @@ export const tablux: SystemMap = {
       sub: { en: 'Rented GPUs', es: 'GPU alquiladas' },
       glyph: 'chip',
       body: {
-        en: 'Rented GPUs for the training runs: the wake-word model came out of here and, with Voicebox, the assistant’s voice. Nothing in daily use runs here.',
-        es: 'GPU alquiladas para entrenar: de aquí salieron el modelo de la palabra de activación y, con Voicebox, la voz del asistente. Nada del día a día pasa por aquí.',
+        en: 'Rented GPUs for the training runs: the wake-word model came out of here, and so did the assistant’s voice, fine-tuned from a public Spanish Piper checkpoint. Nothing in daily use runs here.',
+        es: 'GPU alquiladas para entrenar: de aquí salieron el modelo de la palabra de activación y la voz del asistente, afinada a partir de un modelo público de Piper en español. Nada del día a día pasa por aquí.',
       },
       tags: [
         'Runpod',
-        'Voicebox',
         { en: 'Wake word', es: 'Palabra de activación' },
         'Piper',
+        { en: 'Fine-tuning', es: 'Ajuste fino' },
       ],
-      at: { x: 696, y: 680 },
+      at: { x: 680, y: 676 },
     },
 
     // ── Outside services ────────────────────────────────────────
+    {
+      id: 'tuya',
+      zone: 'services',
+      label: { en: 'Tuya cloud', es: 'Nube de Tuya' },
+      sub: { en: 'Smart Life', es: 'Smart Life' },
+      glyph: 'cloud',
+      body: {
+        en: 'The Smart Life account behind the plugs and bulbs. The app uses it to find new plugs and their local keys, which it hands to the bridge; to read and change the schedules Smart Life runs in its own cloud; and to copy a new name back. It only switches a plug when the bridge can’t reach it or is down.',
+        es: 'La cuenta de Smart Life de enchufes y bombillas. La aplicación la usa para descubrir enchufes nuevos y sus claves locales, que pasa al puente; para leer y cambiar los horarios que Smart Life ejecuta en su propia nube, y para devolverle un nombre nuevo. Solo enciende o apaga un enchufe cuando el puente no llega a él o está caído.',
+      },
+      tags: [
+        'Tuya',
+        'Smart Life',
+        { en: 'Local keys', es: 'Claves locales' },
+        { en: 'Schedules', es: 'Horarios' },
+        { en: 'Cloud fallback', es: 'Reserva en la nube' },
+      ],
+      at: { x: 888, y: 72 },
+    },
+    {
+      id: 'spotify',
+      zone: 'services',
+      label: { en: 'Spotify', es: 'Spotify' },
+      sub: { en: 'Web API', es: 'Web API' },
+      glyph: 'note',
+      body: {
+        en: 'Search and play from any screen, on the wall’s speaker or on any other speaker in the house. The music itself streams from Spotify straight to them.',
+        es: 'Buscar y poner música desde cualquier pantalla, en el altavoz de la pared o en cualquier otro de casa. La música les llega directamente desde Spotify.',
+      },
+      tags: ['Spotify Web API', 'Spotify Connect'],
+      at: { x: 888, y: 152 },
+    },
     {
       id: 'claude',
       zone: 'services',
@@ -403,27 +423,44 @@ export const tablux: SystemMap = {
       sub: { en: 'Answers and acts', es: 'Responde y actúa' },
       glyph: 'bubble',
       body: {
-        en: 'Reads what was said and answers with the same tools the app has, so one sentence can dim a light, plan the week’s menu or start a timer. Asked how the app works, it reads the app’s own guide instead of making it up.',
-        es: 'Entiende lo que se le dice y responde con las mismas herramientas que tiene la aplicación: con una frase se baja una luz, se planea el menú de la semana o se pone un temporizador. Si le preguntan cómo funciona la aplicación, consulta su propia guía en vez de inventárselo.',
+        en: 'Reads what was said and answers with the same tools the app has, so one sentence can dim a light, plan the week’s menu or start a timer. Asked how the app works, it reads the app’s own guide instead of making it up. If it fails, a backup model answers.',
+        es: 'Entiende lo que se le dice y responde con las mismas herramientas que tiene la aplicación: con una frase se baja una luz, se planea el menú de la semana o se pone un temporizador. Si le preguntan cómo funciona la aplicación, consulta su propia guía en vez de inventárselo. Si falla, responde un modelo de reserva.',
       },
       tags: [
         { en: 'Tool use', es: 'Herramientas' },
         { en: 'Photos in chat', es: 'Fotos en el chat' },
       ],
-      at: { x: 900, y: 95 },
+      at: { x: 888, y: 252 },
     },
     {
-      id: 'whisper',
+      id: 'groq',
       zone: 'services',
-      label: { en: 'Whisper on Groq', es: 'Whisper en Groq' },
-      sub: { en: 'Speech to text', es: 'Voz a texto' },
+      label: { en: 'Groq · Cloudflare', es: 'Groq · Cloudflare' },
+      sub: { en: 'Whisper · backup', es: 'Whisper · reserva' },
       glyph: 'text',
       body: {
-        en: 'Turns what was said into text, fast enough for a conversation.',
-        es: 'Pasa a texto lo que se ha dicho, lo bastante rápido como para conversar.',
+        en: 'Whisper on Groq turns what was said into text, fast enough for a conversation; if it fails, Cloudflare takes over. The two are also the assistant’s backup: if Claude fails, Groq answers with gpt-oss, and then Cloudflare Workers AI.',
+        es: 'Whisper en Groq pasa a texto lo que se dice, lo bastante rápido como para conversar; si falla, toma el relevo Cloudflare. Los dos son además la reserva del asistente: si Claude falla, responde Groq con gpt-oss y, después, Cloudflare Workers AI.',
       },
-      tags: ['Whisper', 'Groq'],
-      at: { x: 900, y: 172 },
+      tags: ['Whisper', 'Groq', 'gpt-oss', 'Cloudflare Workers AI'],
+      at: { x: 888, y: 324 },
+    },
+    {
+      id: 'googletts',
+      zone: 'services',
+      label: { en: 'Google voice', es: 'Voz de Google' },
+      sub: { en: 'Text-to-Speech', es: 'Text-to-Speech' },
+      glyph: 'voice',
+      body: {
+        en: 'Google Cloud Text-to-Speech. It speaks when the Piper voice service fails, and it is also one of the voices each screen can pick in its settings.',
+        es: 'Google Cloud Text-to-Speech. Habla cuando falla el servicio de voces de Piper, y es también una de las voces que cada pantalla puede elegir en sus ajustes.',
+      },
+      tags: [
+        'Cloud Text-to-Speech',
+        { en: 'Backup voice', es: 'Voz de reserva' },
+        { en: 'Picked per screen', es: 'Se elige por pantalla' },
+      ],
+      at: { x: 888, y: 396 },
     },
     {
       id: 'calendar',
@@ -436,20 +473,7 @@ export const tablux: SystemMap = {
         es: 'La agenda familiar: el calendario de cada uno y uno compartido de la casa, que la aplicación lee y escribe.',
       },
       tags: ['Google Calendar'],
-      at: { x: 900, y: 249 },
-    },
-    {
-      id: 'spotify',
-      zone: 'services',
-      label: { en: 'Spotify', es: 'Spotify' },
-      sub: { en: 'Web API', es: 'Web API' },
-      glyph: 'note',
-      body: {
-        en: 'Search and play from any screen, on the wall’s speaker or on any other speaker in the house.',
-        es: 'Buscar y poner música desde cualquier pantalla, en el altavoz de la pared o en cualquier otro de casa.',
-      },
-      tags: ['Spotify Web API', 'Spotify Connect'],
-      at: { x: 900, y: 326 },
+      at: { x: 888, y: 468 },
     },
     {
       id: 'weather',
@@ -466,7 +490,33 @@ export const tablux: SystemMap = {
         { en: 'Own station', es: 'Estación propia' },
         { en: 'Forecast', es: 'Previsión' },
       ],
-      at: { x: 900, y: 403 },
+      at: { x: 888, y: 540 },
+    },
+    {
+      id: 'github',
+      zone: 'services',
+      label: { en: 'GitHub', es: 'GitHub' },
+      sub: { en: 'Claude Code', es: 'Claude Code' },
+      glyph: 'branch',
+      body: {
+        en: 'Where Tablux’s code lives. A change asked for out loud arrives as an issue; Claude Code picks it up in GitHub Actions, writes the change and opens the pull request. Nothing merges without a tap on a phone.',
+        es: 'Donde vive el código de Tablux. Un cambio pedido en voz alta llega como un issue; Claude Code lo recoge en GitHub Actions, escribe el cambio y abre la pull request. Nada se fusiona sin un toque en el móvil.',
+      },
+      tags: ['Issues', 'Claude Code', 'GitHub Actions', 'Pull requests'],
+      at: { x: 888, y: 610 },
+    },
+    {
+      id: 'mcpclient',
+      zone: 'services',
+      label: { en: 'Any MCP client', es: 'Clientes MCP' },
+      sub: { en: 'Personal key', es: 'Clave personal' },
+      glyph: 'key',
+      body: {
+        en: 'Any assistant that speaks MCP can run the house through the app’s MCP server, with a personal key.',
+        es: 'Cualquier asistente que hable MCP puede llevar la casa a través del servidor MCP de la aplicación, con una clave personal.',
+      },
+      tags: ['MCP'],
+      at: { x: 888, y: 681 },
     },
     {
       id: 'push',
@@ -483,46 +533,7 @@ export const tablux: SystemMap = {
         'VAPID',
         { en: 'Installed PWA on iOS', es: 'PWA instalada en iOS' },
       ],
-      at: { x: 900, y: 480 },
-    },
-    {
-      id: 'github',
-      zone: 'services',
-      label: { en: 'GitHub', es: 'GitHub' },
-      sub: { en: 'Issues · PRs', es: 'Issues · PR' },
-      glyph: 'branch',
-      body: {
-        en: 'Where Tablux’s code lives. A change asked for out loud arrives here as an issue, opened by the app’s own GitHub App.',
-        es: 'Donde vive el código de Tablux. Un cambio pedido en voz alta llega aquí como un issue, que abre la propia GitHub App de la aplicación.',
-      },
-      tags: ['GitHub App', 'Issues'],
-      at: { x: 900, y: 557 },
-    },
-    {
-      id: 'claudecode',
-      zone: 'services',
-      label: { en: 'Claude Code', es: 'Claude Code' },
-      sub: { en: 'GitHub Actions', es: 'GitHub Actions' },
-      glyph: 'terminal',
-      body: {
-        en: 'Picks up each issue in GitHub Actions, writes the change and opens the pull request. Nothing merges without a tap on a phone.',
-        es: 'Recoge cada issue en GitHub Actions, escribe el cambio y abre la pull request. Nada se fusiona sin un toque en el móvil.',
-      },
-      tags: ['GitHub Actions', 'Pull requests'],
-      at: { x: 900, y: 634 },
-    },
-    {
-      id: 'mcpclient',
-      zone: 'services',
-      label: { en: 'Any MCP client', es: 'Clientes MCP' },
-      sub: { en: 'Personal key', es: 'Clave personal' },
-      glyph: 'key',
-      body: {
-        en: 'Any assistant that speaks MCP can run the house through Tablux’s tools, with a personal key.',
-        es: 'Cualquier asistente que hable MCP puede llevar la casa con las herramientas de Tablux y una clave personal.',
-      },
-      tags: ['MCP'],
-      at: { x: 900, y: 711 },
+      at: { x: 888, y: 752 },
     },
   ],
 
@@ -537,9 +548,9 @@ export const tablux: SystemMap = {
     // On the wall
     {
       from: 'listener',
-      to: 'kiosk',
+      to: 'bridge',
       kind: 'local',
-      label: { en: 'wakes the app', es: 'despierta la aplicación' },
+      label: { en: 'wake word · claps', es: 'activación · palmadas' },
     },
     {
       from: 'kiosk',
@@ -563,7 +574,7 @@ export const tablux: SystemMap = {
       from: 'bridge',
       to: 'speaker',
       kind: 'audio',
-      label: { en: 'offline voice', es: 'voz sin conexión' },
+      label: { en: 'stock Piper voice', es: 'voz estándar de Piper' },
     },
     // The house's devices
     {
@@ -628,6 +639,16 @@ export const tablux: SystemMap = {
       kind: 'tailscale',
       label: { en: 'no open ports', es: 'sin puertos abiertos' },
     },
+    // …and the bridge's one call out, over the internet with its token
+    {
+      from: 'bridge',
+      to: 'app',
+      kind: 'https',
+      label: {
+        en: 'weather and agenda for routines',
+        es: 'tiempo y agenda para las rutinas',
+      },
+    },
     // On the VPS
     {
       from: 'app',
@@ -641,19 +662,40 @@ export const tablux: SystemMap = {
       kind: 'local',
       label: { en: 'text to speech', es: 'texto a voz' },
     },
+    // Outside services
     {
-      from: 'mcp',
-      to: 'app',
-      kind: 'local',
-      label: { en: 'the app’s tools', es: 'las herramientas de la aplicación' },
+      from: 'app',
+      to: 'tuya',
+      kind: 'https',
+      label: { en: 'keys and schedules', es: 'claves y horarios' },
+    },
+    {
+      from: 'tuya',
+      to: 'plugs',
+      kind: 'https',
+      label: {
+        en: 'when the bridge can’t',
+        es: 'si el puente no llega',
+      },
     },
     {
       from: 'app',
-      to: 'monitor',
-      kind: 'local',
-      label: { en: 'server and sites', es: 'servidor y webs' },
+      to: 'spotify',
+      kind: 'https',
+      label: { en: 'music', es: 'música' },
     },
-    // Outside services
+    {
+      from: 'spotify',
+      to: 'speaker',
+      kind: 'https',
+      label: { en: 'streams the music', es: 'le llega la música' },
+    },
+    {
+      from: 'spotify',
+      to: 'cast',
+      kind: 'https',
+      label: { en: 'streams the music', es: 'les llega la música' },
+    },
     {
       from: 'app',
       to: 'claude',
@@ -662,9 +704,18 @@ export const tablux: SystemMap = {
     },
     {
       from: 'app',
-      to: 'whisper',
+      to: 'groq',
       kind: 'https',
-      label: { en: 'speech to text', es: 'voz a texto' },
+      label: {
+        en: 'speech to text · backup',
+        es: 'voz a texto · reserva',
+      },
+    },
+    {
+      from: 'app',
+      to: 'googletts',
+      kind: 'https',
+      label: { en: 'backup voice', es: 'voz de reserva' },
     },
     {
       from: 'app',
@@ -674,15 +725,21 @@ export const tablux: SystemMap = {
     },
     {
       from: 'app',
-      to: 'spotify',
-      kind: 'https',
-      label: { en: 'music', es: 'música' },
-    },
-    {
-      from: 'app',
       to: 'weather',
       kind: 'https',
       label: { en: 'weather', es: 'el tiempo' },
+    },
+    {
+      from: 'app',
+      to: 'github',
+      kind: 'https',
+      label: { en: 'opens an issue', es: 'abre un issue' },
+    },
+    {
+      from: 'mcpclient',
+      to: 'app',
+      kind: 'https',
+      label: { en: 'personal key', es: 'clave personal' },
     },
     {
       from: 'app',
@@ -696,24 +753,6 @@ export const tablux: SystemMap = {
       kind: 'https',
       label: { en: 'Web Push', es: 'Web Push' },
     },
-    {
-      from: 'app',
-      to: 'github',
-      kind: 'https',
-      label: { en: 'opens an issue', es: 'abre un issue' },
-    },
-    {
-      from: 'github',
-      to: 'claudecode',
-      kind: 'https',
-      label: { en: 'runs in Actions', es: 'corre en Actions' },
-    },
-    {
-      from: 'mcpclient',
-      to: 'mcp',
-      kind: 'https',
-      label: { en: 'personal key', es: 'clave personal' },
-    },
     // Trained once
     {
       from: 'runpod',
@@ -725,7 +764,7 @@ export const tablux: SystemMap = {
       from: 'runpod',
       to: 'voice',
       kind: 'training',
-      label: { en: 'the voice, with Voicebox', es: 'la voz, con Voicebox' },
+      label: { en: 'the fine-tuned voice', es: 'la voz, afinada' },
     },
   ],
 
@@ -771,22 +810,29 @@ export const tablux: SystemMap = {
         {
           nodes: ['listener'],
           caption: {
-            en: 'The screen hears the wake word itself, with a model of my own.',
-            es: 'La pantalla oye ella misma la palabra de activación, con un modelo mío.',
+            en: 'The wall hears the wake word itself, with a model of my own.',
+            es: 'La pared oye ella misma la palabra de activación, con un modelo mío.',
           },
         },
         {
-          nodes: ['listener', 'kiosk', 'app'],
+          nodes: ['listener', 'bridge', 'kiosk'],
           caption: {
-            en: 'It claims the turn on the server, so only one screen answers.',
-            es: 'Pide el turno al servidor, para que conteste una sola pantalla.',
+            en: 'It tells the bridge, which wakes the page and hands it what came next.',
+            es: 'Se lo cuenta al puente, que despierta la página y le pasa lo que se dijo después.',
           },
         },
         {
-          nodes: ['app', 'whisper'],
+          nodes: ['kiosk', 'app'],
           caption: {
-            en: 'Whisper on Groq turns the voice into text.',
-            es: 'Whisper en Groq pasa la voz a texto.',
+            en: 'The page claims the turn on the server, so only one screen answers.',
+            es: 'La página pide el turno al servidor, para que conteste una sola pantalla.',
+          },
+        },
+        {
+          nodes: ['app', 'groq'],
+          caption: {
+            en: 'Whisper on Groq turns the voice into text; Cloudflare steps in if it fails.',
+            es: 'Whisper en Groq pasa la voz a texto; si falla, entra Cloudflare.',
           },
         },
         {
@@ -813,8 +859,8 @@ export const tablux: SystemMap = {
         {
           nodes: ['app', 'voice', 'kiosk', 'speaker'],
           caption: {
-            en: 'And it replies out loud, in a voice of its own.',
-            es: 'Y contesta en voz alta, con una voz propia.',
+            en: 'And it replies out loud, in the voice that screen chose.',
+            es: 'Y contesta en voz alta, con la voz que eligió esa pantalla.',
           },
         },
       ],
@@ -829,15 +875,22 @@ export const tablux: SystemMap = {
         {
           nodes: ['listener'],
           caption: {
-            en: 'Two claps, heard on the device itself.',
-            es: 'Dos palmadas, que oye el propio aparato.',
+            en: 'Two claps, heard on the wall itself.',
+            es: 'Dos palmadas, que oye la propia pared.',
           },
         },
         {
-          nodes: ['listener', 'kiosk', 'app', 'tailscale', 'bridge'],
+          nodes: ['listener', 'bridge', 'kiosk'],
           caption: {
-            en: 'One screen takes the turn and the routine goes to the wall’s bridge — straight from the wall when the internet is down.',
-            es: 'Una pantalla se queda el turno y la rutina pasa al puente de la pared; si no hay internet, directamente desde la propia pared.',
+            en: 'The bridge passes them on to the wall’s page.',
+            es: 'El puente se las pasa a la página de la pared.',
+          },
+        },
+        {
+          nodes: ['kiosk', 'app', 'tailscale', 'bridge'],
+          caption: {
+            en: 'The page takes the turn and the routine goes back to the bridge — straight from the wall when the internet is down.',
+            es: 'La página se queda el turno y la rutina vuelve al puente; si no hay internet, directamente desde la propia pared.',
           },
         },
         {
@@ -866,15 +919,8 @@ export const tablux: SystemMap = {
         {
           nodes: ['app', 'github'],
           caption: {
-            en: 'Tablux turns it into an issue on GitHub.',
-            es: 'Tablux lo convierte en un issue de GitHub.',
-          },
-        },
-        {
-          nodes: ['github', 'claudecode'],
-          caption: {
-            en: 'Claude Code picks it up in GitHub Actions and opens the pull request.',
-            es: 'Claude Code lo recoge en GitHub Actions y abre la pull request.',
+            en: 'Tablux turns it into an issue; Claude Code picks it up in GitHub Actions and opens the pull request.',
+            es: 'Tablux lo convierte en un issue; Claude Code lo recoge en GitHub Actions y abre la pull request.',
           },
         },
         {
@@ -890,8 +936,8 @@ export const tablux: SystemMap = {
 
   offline: {
     note: {
-      en: 'Without internet the VPS and every outside service are out of reach, and the wall keeps the house going: the bridge runs the routines at their time, by the sun or with claps; plugs, bulbs, blinds and the projector answer over the local network; the screen keeps the app’s last copy and speaks with its own Piper voice.',
-      es: 'Sin internet, el VPS y los servicios externos quedan fuera de alcance, y la pared sigue llevando la casa: el puente lanza las rutinas a su hora, con el sol o con palmadas; enchufes, bombillas, persianas y proyector responden por la red local; la pantalla conserva la última copia de la aplicación y habla con su propia voz de Piper.',
+      en: 'Without internet the VPS and every outside service are out of reach, and the wall keeps the house going: the bridge runs the routines at their time, by the sun or with claps; plugs, bulbs, blinds and the projector answer over the local network; the screen keeps the app’s last copy, and the wall speaks with a stock Piper voice.',
+      es: 'Sin internet, el VPS y los servicios externos quedan fuera de alcance, y la pared sigue llevando la casa: el puente lanza las rutinas a su hora, con el sol o con palmadas; enchufes, bombillas, persianas y proyector responden por la red local; la pantalla conserva la última copia de la aplicación, y la pared habla con una voz estándar de Piper.',
     },
     keep: [
       'wall',
@@ -908,9 +954,12 @@ export const tablux: SystemMap = {
     lose: ['tunnel', 'cloud', 'training', 'services'],
   },
 
-  // The app's wires run as trunks: one by the outside services, one down
-  // the VPS's left side to Tailscale and to the screens at home.
+  // The bridge's and the app's wires run as trunks: the bridge's down the
+  // wall's left side; the app's by the outside services, and down the VPS's
+  // left side to Tailscale and to the screens at home.
   bundles: [
+    // The bridge's own, down the wall's left side to every device.
+    { from: 'bridge', zone: 'home', trunk: 'wall' },
     { from: 'app', zone: 'services' },
     { from: 'app', zone: 'tunnel', trunk: 'cloud' },
     { from: 'app', zone: 'wall', trunk: 'cloud' },

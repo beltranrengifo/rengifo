@@ -51,7 +51,9 @@ export type GlyphId =
   | 'bucket'
   | 'snapshot'
   | 'board'
-  | 'nas';
+  | 'nas'
+  | 'cloud'
+  | 'voice';
 
 /** The larger line drawings of physical things, shown in the panel. */
 export type DrawingId =
