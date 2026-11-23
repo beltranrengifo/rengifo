@@ -18,8 +18,8 @@ export const tablux: SystemMap = {
     es: 'Mapa de Tablux, pieza a pieza',
   },
   intro: {
-    en: 'Below, every part of Tablux, at home and on my own VPS. Choose one to see what it is and what it talks to, or follow a path through it.',
-    es: 'Aquí debajo están todas las piezas de Tablux, en casa y en mi propio VPS. Elige una para ver qué es y con qué se comunica, o sigue uno de los recorridos.',
+    en: 'Below, every part of Tablux, at home and on my own server. Choose one to see what it is and what it talks to, or follow a path through it.',
+    es: 'Aquí debajo están todas las piezas de Tablux, en casa y en mi propio servidor. Elige una para ver qué es y con qué se comunica, o sigue uno de los recorridos.',
   },
   size: { w: 1000, h: 800 },
 
@@ -39,15 +39,15 @@ export const tablux: SystemMap = {
     {
       id: 'tunnel',
       label: {
-        en: 'Between home and the VPS',
-        es: 'Entre casa y el VPS',
+        en: 'Between home and the server',
+        es: 'Entre casa y el servidor',
       },
       box: { x: 506, y: 460, w: 44, h: 50 },
       tunnel: true,
     },
     {
       id: 'cloud',
-      label: { en: 'On my VPS', es: 'En mi VPS' },
+      label: { en: 'On my server', es: 'En mi servidor' },
       box: { x: 588, y: 232, w: 184, h: 352 },
       host: 'server',
     },
@@ -284,8 +284,8 @@ export const tablux: SystemMap = {
       sub: { en: 'VPN', es: 'VPN' },
       glyph: 'tunnel',
       body: {
-        en: 'A private network between the wall, the VPS and my laptop. The cloud reaches the wall’s bridge only through it, so nothing at home is open to the internet. The VPS’s own admin — SSH and the Coolify panel — is only reachable through it too.',
-        es: 'Una red privada entre la pared, el VPS y mi portátil. La nube solo llega al puente de la pared a través de ella, así que en casa no hay nada abierto a internet. La administración del propio VPS —el SSH y el panel de Coolify— también queda detrás de ella.',
+        en: 'A private network between the wall, the server and my laptop. The cloud reaches the wall’s bridge only through it, so nothing at home is open to the internet. The server’s own admin — SSH and the Coolify panel — is only reachable through it too.',
+        es: 'Una red privada entre la pared, el servidor y mi portátil. La nube solo llega al puente de la pared a través de ella, así que en casa no hay nada abierto a internet. La administración del propio servidor —el SSH y el panel de Coolify— también queda detrás de ella.',
       },
       tags: [
         'Tailscale',
@@ -300,12 +300,12 @@ export const tablux: SystemMap = {
     {
       id: 'server',
       zone: 'cloud',
-      label: { en: 'My VPS', es: 'Mi VPS' },
+      label: { en: 'My server', es: 'Mi servidor' },
       glyph: 'server',
       drawing: 'server',
       body: {
-        en: 'My own VPS, run with Coolify — the same one that hosts my other apps. Everything Tablux needs in the cloud lives here, apart from the outside services. It reaches the wall only over Tailscale, and its own admin is behind Tailscale too.',
-        es: 'Un VPS propio, gestionado con Coolify, el mismo donde viven mis otras aplicaciones. Aquí está todo lo que Tablux necesita en la nube, salvo los servicios externos. Llega a la pared solo por Tailscale, y su propia administración también queda detrás de Tailscale.',
+        en: 'My own server, a VPS run with Coolify — the same one that hosts my other apps. Everything Tablux needs in the cloud lives here, apart from the outside services. It reaches the wall only over Tailscale, and its own admin is behind Tailscale too.',
+        es: 'Un servidor propio, un VPS gestionado con Coolify, el mismo donde viven mis otras aplicaciones. Aquí está todo lo que Tablux necesita en la nube, salvo los servicios externos. Llega a la pared solo por Tailscale, y su propia administración también queda detrás de Tailscale.',
       },
       tags: ['VPS', 'Coolify', 'Docker', 'Tailscale'],
     },
@@ -335,8 +335,8 @@ export const tablux: SystemMap = {
       sub: { en: 'Self-hosted', es: 'Propio' },
       glyph: 'db',
       body: {
-        en: 'A Supabase of my own on the same VPS: Postgres for the household’s data, and Google sign-in limited to an allow-list.',
-        es: 'Un Supabase propio en el mismo VPS: Postgres para los datos de la casa y acceso con Google solo para una lista cerrada de cuentas.',
+        en: 'A Supabase of my own on the same server: Postgres for the household’s data, and Google sign-in limited to an allow-list.',
+        es: 'Un Supabase propio en el mismo servidor: Postgres para los datos de la casa y acceso con Google solo para una lista cerrada de cuentas.',
       },
       tags: [
         'Postgres',
@@ -776,15 +776,15 @@ export const tablux: SystemMap = {
         {
           nodes: ['phones', 'app'],
           caption: {
-            en: 'A tap on a light, on a phone, goes to the app on my VPS.',
-            es: 'Un toque en una luz, desde el móvil, llega a la aplicación en mi VPS.',
+            en: 'A tap on a light, on a phone, goes to the app on my server.',
+            es: 'Un toque en una luz, desde el móvil, llega a la aplicación en mi servidor.',
           },
         },
         {
           nodes: ['app', 'tailscale', 'bridge'],
           caption: {
-            en: 'The VPS cannot reach into the house on its own: Tailscale carries the order to the wall’s bridge.',
-            es: 'El VPS no puede entrar en casa por su cuenta: Tailscale lleva la orden al puente de la pared.',
+            en: 'The server cannot reach into the house on its own: Tailscale carries the order to the wall’s bridge.',
+            es: 'El servidor no puede entrar en casa por su cuenta: Tailscale lleva la orden al puente de la pared.',
           },
         },
         {
@@ -936,8 +936,8 @@ export const tablux: SystemMap = {
 
   offline: {
     note: {
-      en: 'Without internet the VPS and every outside service are out of reach, and the wall keeps the house going: the bridge runs the routines at their time, by the sun or with claps; plugs, bulbs, blinds and the projector answer over the local network; the screen keeps the app’s last copy, and the wall speaks with a stock Piper voice.',
-      es: 'Sin internet, el VPS y los servicios externos quedan fuera de alcance, y la pared sigue llevando la casa: el puente lanza las rutinas a su hora, con el sol o con palmadas; enchufes, bombillas, persianas y proyector responden por la red local; la pantalla conserva la última copia de la aplicación, y la pared habla con una voz estándar de Piper.',
+      en: 'Without internet the server and every outside service are out of reach, and the wall keeps the house going: the bridge runs the routines at their time, by the sun or with claps; plugs, bulbs, blinds and the projector answer over the local network; the screen keeps the app’s last copy, and the wall speaks with a stock Piper voice.',
+      es: 'Sin internet, el servidor y los servicios externos quedan fuera de alcance, y la pared sigue llevando la casa: el puente lanza las rutinas a su hora, con el sol o con palmadas; enchufes, bombillas, persianas y proyector responden por la red local; la pantalla conserva la última copia de la aplicación, y la pared habla con una voz estándar de Piper.',
     },
     keep: [
       'wall',

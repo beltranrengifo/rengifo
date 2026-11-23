@@ -38,7 +38,7 @@ export const ensayadero: SystemMap = {
     },
     {
       id: 'vps',
-      label: { en: 'On my VPS', es: 'En mi VPS' },
+      label: { en: 'On my server', es: 'En mi servidor' },
       box: { x: 10, y: 200, w: 980, h: 780 },
     },
     {
