@@ -220,7 +220,7 @@
   "cs_review_n4_b": "Con Vercel Workflow, cada entrega se corrige en su propio paso: la primera, sola, para calentar la caché del prompt; después, de cinco en cinco. Si un fallo o un despliegue lo corta a medias, sigue donde se quedó, sin pagar dos veces ninguna corrección. La web y el servicio de documentos se despliegan juntos, como un solo proyecto de Vercel.",
   "cs_review_n5_h": "Validar, no volver a corregir",
   "cs_review_n5_b": "El visor pone la rúbrica, el trabajo y el informe uno al lado del otro, con cada descuento subrayado en la página. Lo demás salió de lo que fue pidiendo la docente: zanjar de una vez en todo el lote un elemento discutido, ver qué elementos de la rúbrica fallan muchos estudiantes y saber cuánto coincide la IA con ella.",
-  "cs_review_access": "Acceso con Google, solo para docentes autorizados. Si quieres verlo, te lo enseño.",
+  "cs_review_access": "Acceso con inicio de sesión y lista blanca.",
   "cs_review_shot4_cap": "Validar una entrega: rúbrica, trabajo e informe, lado a lado.",
   "cs_review_shot4_alt": "El visor de revisión: la rúbrica a la izquierda, las páginas de la entrega en el centro y la nota a la derecha, con cada apartado marcado como cumplido, con su cita y su página.",
   "cs_review_shot3_cap": "Los materiales con los que corrige la IA y la rúbrica redactada a partir de la guía.",

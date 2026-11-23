@@ -220,7 +220,7 @@
   "cs_review_n4_b": "Vercel Workflow runs the batch one submission per step: the first on its own, to warm the prompt cache, then five at a time. After a failure or a deploy halfway through, it picks up where it left off, without paying for any grading twice. The web app and the document service ship together as one Vercel project.",
   "cs_review_n5_h": "Validate, don't regrade",
   "cs_review_n5_b": "The viewer puts the rubric, the work and the report side by side, with every deduction underlined on the page. The rest came from what the teacher asked for: settling a contested item across the whole batch at once, seeing which rubric items many students miss, and knowing how often the AI agrees.",
-  "cs_review_access": "Behind Google sign-in, for teachers on an allow-list. If you'd like a look, I'll show you around.",
+  "cs_review_access": "Sign-in required, with an allow-list.",
   "cs_review_shot4_cap": "Validating a submission: rubric, work and report side by side.",
   "cs_review_shot4_alt": "The review viewer: the rubric on the left, the submission's pages in the middle and the grade on the right, each item marked as met with a quote and its page.",
   "cs_review_shot3_cap": "The materials the AI grades with, and the rubric drafted from the guide.",
