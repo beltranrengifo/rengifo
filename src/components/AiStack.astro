@@ -1,9 +1,19 @@
 ---
 import SectionHeader from './SectionHeader.astro';
-import { t, resolveLocale } from '../lib/i18n';
-import { aiStack, reviewedOn } from '../data/ai';
+import { t, resolveLocale, localisedPath } from '../lib/i18n';
+import { aiStack, reviewedOn, type AiItem } from '../data/ai';
+import { findCaseStudy } from '../data/caseStudies';
 
 const locale = resolveLocale(Astro.currentLocale);
+
+// A line about a project links to its case study; a broken slug fails the build.
+function caseStudyHref(item: AiItem): string | undefined {
+  if (!item.caseStudy) return undefined;
+  if (!findCaseStudy(item.caseStudy)) {
+    throw new Error(`AI stack: no case study "${item.caseStudy}"`);
+  }
+  return localisedPath(`/work/${item.caseStudy}/`, 'en', locale);
+}
 
 // "October 2026" / "octubre de 2026": when this snapshot was taken.
 const reviewed = new Intl.DateTimeFormat(locale, {
@@ -42,7 +52,9 @@ const reviewed = new Intl.DateTimeFormat(locale, {
           <ul class="text-body m-0 grid list-none gap-[10px] p-0 text-[15px]">
             {group.items.map((item) => (
               <li>
-                {item.href ? (
+                {item.caseStudy ? (
+                  <a href={caseStudyHref(item)}>{t(item.key, locale)}</a>
+                ) : item.href ? (
                   <a href={item.href} target="_blank" rel="noopener">
                     {t(item.key, locale)}
                     <span
