@@ -257,8 +257,8 @@ export const infrastructure: SystemMap = {
       sub: { en: 'Every night', es: 'Cada noche' },
       glyph: 'bucket',
       body: {
-        en: 'Off the server, every night: a dump of each app’s Postgres and its Storage files, kept for 30 days. Restores tested.',
-        es: 'Fuera del servidor, cada noche: un volcado del Postgres de cada aplicación y sus archivos de Storage, guardados 30 días. Las restauraciones, probadas.',
+        en: 'Off the server, every night: a dump of each app’s Postgres and its Storage files, kept for 30 days. Tested: a database restore and a file restore.',
+        es: 'Fuera del servidor, cada noche: un volcado del Postgres de cada aplicación y sus archivos de Storage, guardados 30 días. Probada la restauración de una base de datos y de un archivo.',
       },
       tags: [
         'Backblaze B2',
