@@ -3,7 +3,7 @@ import type { SystemMap } from './types';
 /**
  * The server behind my apps' backends, part by part: what reaches it from
  * the internet, what runs on it, where its copies go and how it gets back
- * home. Positions are in a 1000 × 600 map; on a phone the zones stack and
+ * home. Positions are in a 1000 × 760 map; on a phone the zones stack and
  * the nodes flow in this order instead.
  *
  * Generic by design: the apps are never named or counted (the instances and
@@ -20,36 +20,36 @@ export const infrastructure: SystemMap = {
     en: 'Where the backends of my apps live, and where their copies go. Choose any part to see what it is and what it talks to, or follow a path through it.',
     es: 'Dónde viven los backends de mis aplicaciones y adónde van sus copias. Elige una pieza para ver qué es y con qué habla, o sigue alguno de estos recorridos.',
   },
-  size: { w: 1000, h: 600 },
+  size: { w: 1000, h: 760 },
 
   zones: [
     {
       id: 'internet',
       label: { en: 'On the internet', es: 'En internet' },
-      box: { x: 10, y: 14, w: 214, h: 572 },
+      box: { x: 10, y: 20, w: 228, h: 720 },
     },
     {
       id: 'tunnel',
       label: { en: 'A private network', es: 'Una red privada' },
-      box: { x: 219, y: 494, w: 48, h: 52 },
+      box: { x: 232, y: 610, w: 48, h: 60 },
       tunnel: true,
     },
     {
       id: 'vps',
       label: { en: 'On my VPS', es: 'En mi VPS' },
-      box: { x: 262, y: 14, w: 452, h: 572 },
+      box: { x: 274, y: 20, w: 466, h: 720 },
       host: 'vps',
     },
     {
       id: 'copies',
       label: { en: 'Copies and alerts', es: 'Copias y avisos' },
-      box: { x: 738, y: 14, w: 252, h: 336 },
+      box: { x: 764, y: 20, w: 226, h: 430 },
       outside: true,
     },
     {
       id: 'home',
       label: { en: 'At home', es: 'En casa' },
-      box: { x: 738, y: 376, w: 252, h: 210 },
+      box: { x: 764, y: 490, w: 226, h: 250 },
     },
   ],
 
@@ -66,7 +66,7 @@ export const infrastructure: SystemMap = {
         es: 'Cualquiera que abra una de mis aplicaciones, desde donde sea. Solo llega a las aplicaciones: el resto del servidor está cerrado.',
       },
       tags: ['HTTPS'],
-      at: { x: 117, y: 92 },
+      at: { x: 124, y: 110 },
     },
     {
       id: 'frontends',
@@ -84,7 +84,7 @@ export const infrastructure: SystemMap = {
         { en: 'One per app', es: 'Uno por aplicación' },
         'supabase-js',
       ],
-      at: { x: 117, y: 200 },
+      at: { x: 124, y: 250 },
     },
     {
       id: 'esp32',
@@ -98,7 +98,7 @@ export const infrastructure: SystemMap = {
         es: 'Placas pequeñas, ahí fuera, que mandan sus lecturas directamente al Supabase de su aplicación, por HTTPS. Cuando se mudó el backend, se pasaron a distancia, con una actualización de firmware.',
       },
       tags: ['ESP32', 'OTA', 'HTTPS'],
-      at: { x: 117, y: 330 },
+      at: { x: 124, y: 400 },
     },
     {
       id: 'laptop',
@@ -112,7 +112,7 @@ export const infrastructure: SystemMap = {
         es: 'Desde aquí lo administro todo. Al servidor solo llega por Tailscale: el SSH y los paneles, y nada más.',
       },
       tags: ['Tailscale', 'SSH'],
-      at: { x: 100, y: 520 },
+      at: { x: 116, y: 640 },
     },
 
     // ── A private network ───────────────────────────────────────
@@ -134,7 +134,7 @@ export const infrastructure: SystemMap = {
           es: 'Administración cerrada a internet',
         },
       ],
-      at: { x: 243, y: 520 },
+      at: { x: 256, y: 640 },
     },
 
     // ── On my VPS ───────────────────────────────────────────────
@@ -162,7 +162,7 @@ export const infrastructure: SystemMap = {
         es: 'La única puerta del servidor a internet. Sirve cada aplicación por HTTPS, con certificados que se renuevan solos, y pasa cada petición a la aplicación que le toca.',
       },
       tags: ['Traefik', 'Let’s Encrypt', 'TLS'],
-      at: { x: 380, y: 150 },
+      at: { x: 392, y: 200 },
     },
     {
       id: 'supabase',
@@ -181,7 +181,7 @@ export const infrastructure: SystemMap = {
         'Storage',
         { en: 'Trimmed template', es: 'Plantilla recortada' },
       ],
-      at: { x: 600, y: 110 },
+      at: { x: 622, y: 130 },
     },
     {
       id: 'app',
@@ -198,7 +198,7 @@ export const infrastructure: SystemMap = {
         'GitHub',
         { en: 'Deploys on push', es: 'Despliegue con cada push' },
       ],
-      at: { x: 600, y: 220 },
+      at: { x: 622, y: 280 },
     },
     {
       id: 'embeddings',
@@ -215,7 +215,7 @@ export const infrastructure: SystemMap = {
         'ONNX Runtime',
         { en: 'Same model', es: 'El mismo modelo' },
       ],
-      at: { x: 600, y: 320 },
+      at: { x: 622, y: 420 },
     },
     {
       id: 'coolify',
@@ -233,7 +233,7 @@ export const infrastructure: SystemMap = {
         { en: 'Auto-updates', es: 'Actualizaciones automáticas' },
         '2FA',
       ],
-      at: { x: 380, y: 390 },
+      at: { x: 392, y: 520 },
     },
     {
       id: 'kuma',
@@ -246,7 +246,7 @@ export const infrastructure: SystemMap = {
         es: 'Comprueba cada web y cada Supabase desde el propio servidor, y me avisa al móvil si alguno se cae. La copia de casa se reporta cada día; si deja de hacerlo, también salta un aviso. Su panel, como el resto, solo por Tailscale.',
       },
       tags: ['Uptime Kuma', { en: 'Push monitor', es: 'Monitor push' }],
-      at: { x: 600, y: 470 },
+      at: { x: 622, y: 600 },
     },
 
     // ── Copies and alerts ───────────────────────────────────────
@@ -266,20 +266,20 @@ export const infrastructure: SystemMap = {
         'rclone',
         { en: '30 days', es: '30 días' },
       ],
-      at: { x: 864, y: 90 },
+      at: { x: 877, y: 110 },
     },
     {
       id: 'snapshots',
       zone: 'copies',
       label: { en: 'Server snapshots', es: 'Copias del servidor' },
-      sub: { en: 'By the VPS provider', es: 'Del proveedor del VPS' },
+      sub: { en: 'By the provider', es: 'Del proveedor' },
       glyph: 'snapshot',
       body: {
         en: 'The VPS provider’s own backups of the whole server: a second layer that doesn’t depend on anything running on it.',
         es: 'Las copias del servidor entero que hace el propio proveedor del VPS: una segunda capa que no depende de nada de lo que corre en él.',
       },
       tags: [{ en: 'Whole server', es: 'Servidor entero' }],
-      at: { x: 864, y: 190 },
+      at: { x: 877, y: 240 },
     },
     {
       id: 'phone',
@@ -293,7 +293,7 @@ export const infrastructure: SystemMap = {
         es: 'Donde llegan los avisos: una web o una instancia caída, un despliegue que falla, y la copia de casa, con un OK silencioso o un fallo que suena.',
       },
       tags: ['ntfy', 'Telegram'],
-      at: { x: 864, y: 290 },
+      at: { x: 877, y: 370 },
     },
 
     // ── At home ─────────────────────────────────────────────────
@@ -315,7 +315,7 @@ export const infrastructure: SystemMap = {
         { en: 'Read-only key', es: 'Clave de solo lectura' },
         { en: 'GitHub mirrors', es: 'Espejos de GitHub' },
       ],
-      at: { x: 864, y: 440 },
+      at: { x: 877, y: 570 },
     },
     {
       id: 'nas',
@@ -333,7 +333,7 @@ export const infrastructure: SystemMap = {
         { en: 'Encrypted', es: 'Cifrada' },
         { en: 'Versioned', es: 'Con versiones' },
       ],
-      at: { x: 864, y: 530 },
+      at: { x: 877, y: 680 },
     },
   ],
 
@@ -615,4 +615,8 @@ export const infrastructure: SystemMap = {
     keep: ['b2', 'snapshots', 'pi', 'nas'],
     lose: ['vps', 'tunnel'],
   },
+
+  // Traefik's wires to everything that reaches it from the internet run as
+  // one trunk, in the gap between the two zones.
+  bundles: [{ from: 'traefik', zone: 'internet', trunk: 'vps' }],
 };
