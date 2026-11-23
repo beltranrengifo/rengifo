@@ -328,7 +328,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'ca-na-llum',
-    name: 'Ca Na Llum 3D',
+    name: 'Ca Na Llum, Mallorca',
     rowKey: 'proj_canallum_desc',
     taglineKey: 'cs_canallum_tagline',
     introKey: 'cs_canallum_intro',
