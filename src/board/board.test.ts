@@ -3,7 +3,7 @@ import { techs, projectSpans, boardWorks } from '../data/board';
 import { experience } from '../data/experience';
 import { projects } from '../data/caseStudies';
 import { buildModel, yearOf } from './model';
-import { createLayout, settle, timeX, YEAR_PX } from './layout';
+import { createLayout, LANE, settle, timeX, YEAR_PX } from './layout';
 import { Poncho } from './poncho';
 
 /** A deterministic random, so the cat's dice do not flake. */
@@ -16,9 +16,10 @@ function seeded(seed = 1): () => number {
 }
 
 const roleId = (key: string) => key.replace(/^exp_|_title$/g, '');
+const workIds = new Set(boardWorks.map((work) => work.id));
 
-function realModel() {
-  return buildModel({
+function realInput() {
+  return {
     clips: [
       ...experience.flatMap((entry) =>
         entry.roles.map((role) => ({
@@ -28,12 +29,14 @@ function realModel() {
           span: role.dates ?? entry.period,
         })),
       ),
-      ...projects.map((project) => ({
-        id: project.slug,
-        kind: 'project' as const,
-        label: project.name,
-        span: projectSpans[project.slug]!,
-      })),
+      ...projects
+        .filter((project) => !workIds.has(project.slug))
+        .map((project) => ({
+          id: project.slug,
+          kind: 'project' as const,
+          label: project.name,
+          span: projectSpans[project.slug]!,
+        })),
       ...boardWorks.map((work) => ({
         id: work.id,
         kind: 'project' as const,
@@ -45,6 +48,28 @@ function realModel() {
       ...tech,
       label: typeof tech.label === 'string' ? tech.label : tech.label.en,
     })),
+  };
+}
+
+const realModel = () => buildModel(realInput());
+
+/**
+ * The real board with a few more projects in its busiest months, long
+ * names and all — the next ones to come should still fit.
+ */
+function crowdedModel(extra = 3) {
+  const input = realInput();
+  return buildModel({
+    ...input,
+    clips: [
+      ...input.clips,
+      ...Array.from({ length: extra }, (_, i) => ({
+        id: `crowd-${i}`,
+        kind: 'project' as const,
+        label: 'A project with a long name',
+        span: ['2026-10', '2026-11'] as [string, string],
+      })),
+    ],
   });
 }
 
@@ -53,6 +78,11 @@ describe('board data', () => {
     for (const project of projects) {
       expect(projectSpans[project.slug], project.slug).toBeDefined();
     }
+  });
+
+  it('draws each clip once, even when a project is also a work', () => {
+    const ids = realModel().clips.map((clip) => clip.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('only uses technologies in roles and projects that exist', () => {
@@ -80,14 +110,51 @@ describe('model', () => {
 });
 
 describe('layout', () => {
-  it('keeps every role and project near its date', () => {
-    const layout = createLayout(realModel(), seeded(7));
-    settle(layout, 400);
-    for (const node of layout.nodes) {
-      if (node.kind === 'tech') continue;
-      expect(Math.abs(node.x - node.homeX), node.id).toBeLessThan(
-        YEAR_PX * 0.6,
-      );
+  // The browser lays the board out with Math.random, so try a few dice.
+  const seeds = [1, 7, 42, 2026];
+
+  it.each([
+    ['as it is', realModel],
+    ['with more projects in its busiest months', crowdedModel],
+  ])('keeps every role and project near its date, %s', (_, model) => {
+    for (const seed of seeds) {
+      const layout = createLayout(model(), seeded(seed));
+      settle(layout, 400);
+      for (const node of layout.nodes) {
+        if (node.kind === 'tech') continue;
+        expect(
+          Math.abs(node.x - node.homeX),
+          `${node.id}, seed ${seed}`,
+        ).toBeLessThan(YEAR_PX * 0.6);
+      }
+    }
+  });
+
+  it('stacks projects that share months in rows, the same on every load', () => {
+    const rowsOf = (seed: number) => {
+      const layout = createLayout(crowdedModel(), seeded(seed));
+      settle(layout, 400);
+      return layout;
+    };
+    const first = rowsOf(1);
+    const projects = first.nodes.filter((node) => node.kind === 'project');
+    // Busy months take more rows, and the floor drops below the last one.
+    const deepest = Math.max(...projects.map((node) => node.homeY));
+    expect(deepest).toBeGreaterThan(LANE.project);
+    expect(first.floor).toBeGreaterThan(deepest);
+    // Rows never depend on the dice.
+    expect(rowsOf(7).nodes.map((node) => node.homeY)).toEqual(
+      first.nodes.map((node) => node.homeY),
+    );
+    // Neighbours in a row leave room for both names.
+    for (const a of projects) {
+      for (const b of projects) {
+        if (a === b || a.homeY !== b.homeY) continue;
+        const room = (n: typeof a) => Math.max(n.r, n.labelLength * 3.6);
+        expect(Math.abs(a.x - b.x), `${a.id} / ${b.id}`).toBeGreaterThan(
+          room(a) + room(b),
+        );
+      }
     }
   });
 

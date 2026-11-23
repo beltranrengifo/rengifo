@@ -9,7 +9,7 @@ import {
   formatSpan,
 } from '../lib/i18n';
 import { experience, type Span } from '../data/experience';
-import { projects } from '../data/caseStudies';
+import { projects, caseStudies } from '../data/caseStudies';
 import { techs, projectSpans, eras, boardWorks } from '../data/board';
 import { buildModel, yearOf } from '../board/model';
 
@@ -39,13 +39,20 @@ const roles = experience.flatMap((entry) =>
   }),
 );
 
-const shownProjects = projects.map((project) => ({
-  id: project.slug,
-  kind: 'project' as const,
-  label: project.name,
-  span: projectSpans[project.slug]!,
-  project,
-}));
+// A project that shares its slug with a work (lacasaestudio: the company,
+// then its website) stays that one node; the work's panel links to the page.
+const workIds = new Set(boardWorks.map((work) => work.id));
+const studySlugs = new Set(caseStudies.map((study) => study.slug));
+
+const shownProjects = projects
+  .filter((project) => !workIds.has(project.slug))
+  .map((project) => ({
+    id: project.slug,
+    kind: 'project' as const,
+    label: project.name,
+    span: projectSpans[project.slug]!,
+    project,
+  }));
 
 // A work's years: one year, or the first and last when it ran longer.
 const workYears = (span: Span) => {
@@ -378,6 +385,11 @@ const caseStudyHref = (slug: string) =>
               class="board-cta no-underline"
             >
               {t('ui_board_watch', locale)} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {studySlugs.has(id) && (
+            <a href={caseStudyHref(id)} class="board-cta no-underline">
+              {t('ui_cs_read', locale)} <span aria-hidden="true">→</span>
             </a>
           )}
         </section>
