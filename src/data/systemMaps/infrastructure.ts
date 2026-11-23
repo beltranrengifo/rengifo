@@ -18,7 +18,7 @@ export const infrastructure: SystemMap = {
   },
   intro: {
     en: 'Below, every part of it, down to where the copies go. Choose any part to see what it is and what it talks to, or follow a path through it.',
-    es: 'Aquí debajo, todas sus piezas, hasta adónde van las copias. Elige una para ver qué es y con qué habla, o sigue alguno de los recorridos.',
+    es: 'Aquí debajo están todas sus piezas, también adónde van las copias. Elige una para ver qué es y con qué se comunica, o sigue uno de los recorridos.',
   },
   size: { w: 1000, h: 760 },
 
@@ -47,7 +47,7 @@ export const infrastructure: SystemMap = {
     },
     {
       id: 'copies',
-      label: { en: 'Copies and alerts', es: 'Copias y avisos' },
+      label: { en: 'Copies and alerts', es: 'Copias y alertas' },
       box: { x: 764, y: 20, w: 226, h: 430 },
       outside: true,
     },
@@ -70,7 +70,7 @@ export const infrastructure: SystemMap = {
       glyph: 'globe',
       body: {
         en: 'Whoever opens one of my apps, from anywhere. They only ever reach the apps: everything else on the server is closed to them.',
-        es: 'Cualquiera que abra una de mis aplicaciones, desde donde sea. Solo llega a las aplicaciones: el resto del servidor está cerrado.',
+        es: 'Cualquiera que abra una de mis aplicaciones, desde cualquier sitio. Solo llega a las aplicaciones: el resto del servidor está cerrado.',
       },
       tags: ['HTTPS'],
       at: { x: 124, y: 110 },
@@ -84,7 +84,7 @@ export const infrastructure: SystemMap = {
       many: true,
       body: {
         en: 'Each app’s frontend stays on Vercel, on purpose: a CDN, previews and instant rollbacks that a server of my own would not beat. Only the backends moved, and the frontends point at their own Supabase on the VPS.',
-        es: 'El frontend de cada aplicación sigue en Vercel a propósito: una CDN, previews y vuelta atrás al instante que un servidor propio no mejoraría. Solo se mudaron los backends, y cada frontend apunta a su propio Supabase en el VPS.',
+        es: 'El frontend de cada aplicación sigue en Vercel a propósito: CDN, previews y rollback inmediato, algo que un servidor propio no mejoraría. Solo se migraron los backends, y cada frontend apunta a su propio Supabase en el VPS.',
       },
       tags: [
         'Vercel',
@@ -102,7 +102,7 @@ export const infrastructure: SystemMap = {
       drawing: 'esp32',
       body: {
         en: 'Small boards out in the world that send their readings straight to their app’s Supabase, over HTTPS. When the backend moved, they switched over the air, with a firmware update.',
-        es: 'Placas pequeñas, ahí fuera, que mandan sus lecturas directamente al Supabase de su aplicación, por HTTPS. Cuando se mudó el backend, se pasaron a distancia, con una actualización de firmware.',
+        es: 'Placas repartidas por ahí que envían sus lecturas directamente al Supabase de su aplicación, por HTTPS. Cuando se migró el backend, se actualizaron en remoto con un firmware nuevo.',
       },
       tags: ['ESP32', 'OTA', 'HTTPS'],
       at: { x: 124, y: 400 },
@@ -118,7 +118,7 @@ export const infrastructure: SystemMap = {
       drawing: 'laptop',
       body: {
         en: 'Where I run it all from. It reaches the server only through Tailscale: SSH and the panels, and nothing else.',
-        es: 'Desde aquí lo administro todo. Al servidor solo llega por Tailscale: el SSH y los paneles, y nada más.',
+        es: 'Desde aquí lo administro todo. Al servidor solo accedo por Tailscale: SSH y paneles, nada más.',
       },
       tags: ['Tailscale', 'SSH'],
       at: { x: 124, y: 660 },
@@ -133,7 +133,7 @@ export const infrastructure: SystemMap = {
       glyph: 'tunnel',
       body: {
         en: 'A private network between my own devices and the server. SSH and the panels answer only here, so all the internet sees is the apps. Tailscale SSH lets me in by identity, with no keys to copy around.',
-        es: 'Una red privada entre mis aparatos y el servidor. El SSH y los paneles solo responden aquí, así que desde internet solo se ven las aplicaciones. Con Tailscale SSH entro por identidad, sin ir copiando claves.',
+        es: 'Una red privada entre mis dispositivos y el servidor. SSH y los paneles solo responden aquí, así que desde internet solo se ven las aplicaciones. Con Tailscale SSH accedo con mi identidad, sin ir copiando claves.',
       },
       tags: [
         'Tailscale',
@@ -156,7 +156,7 @@ export const infrastructure: SystemMap = {
       drawing: 'server',
       body: {
         en: 'One ARM VPS for every backend. A machine of my own instead of a managed project per app: cheaper by design, and a new app is one more instance on it, with plenty of room left to grow. The provider keeps snapshots of the whole server.',
-        es: 'Un solo VPS ARM para todos los backends. Una máquina propia en lugar de un proyecto gestionado por aplicación: más barato de entrada, y una aplicación nueva es una instancia más, con sitio de sobra para crecer. El proveedor guarda copias del servidor entero.',
+        es: 'Un único VPS ARM para todos los backends. Una máquina propia en lugar de un proyecto gestionado por aplicación: más barato por diseño, y cada aplicación nueva es una instancia más, con margen de sobra para crecer. El proveedor hace copias del servidor completo.',
       },
       tags: ['VPS', 'ARM', 'Docker', 'Coolify'],
     },
@@ -168,7 +168,7 @@ export const infrastructure: SystemMap = {
       glyph: 'route',
       body: {
         en: 'The server’s only door to the internet. It serves every app over HTTPS, with certificates that renew themselves, and hands each request to the app it is for.',
-        es: 'La única puerta del servidor a internet. Sirve cada aplicación por HTTPS, con certificados que se renuevan solos, y pasa cada petición a la aplicación que le toca.',
+        es: 'La única puerta del servidor a internet. Sirve cada aplicación por HTTPS, con certificados que se renuevan solos, y enruta cada petición a su aplicación.',
       },
       tags: ['Traefik', 'Let’s Encrypt', 'TLS'],
       at: { x: 392, y: 200 },
@@ -182,7 +182,7 @@ export const infrastructure: SystemMap = {
       many: true,
       body: {
         en: 'Every app gets a Supabase of its own, self-hosted from one trimmed template. Each instance runs only the services its app uses, and one app’s users and tokens are never valid in another. A new app is one more instance on the same machine, and its code doesn’t change: only the URL and the keys.',
-        es: 'Cada aplicación tiene su propio Supabase, autoalojado a partir de una plantilla recortada. Cada instancia levanta solo los servicios que usa su aplicación, y los usuarios y tokens de una nunca valen en otra. Una aplicación nueva es una instancia más en la misma máquina, y su código no cambia: solo la URL y las claves.',
+        es: 'Cada aplicación tiene su propio Supabase, autoalojado a partir de una plantilla reducida. Cada instancia levanta solo los servicios que usa su aplicación, y los usuarios y tokens de una no sirven en otra. Una aplicación nueva es una instancia más en la misma máquina, y su código no cambia: solo la URL y las claves.',
       },
       tags: [
         'Postgres 17',
@@ -201,7 +201,7 @@ export const infrastructure: SystemMap = {
       many: true,
       body: {
         en: 'When an app needs a backend of its own beyond Supabase, it runs here as a container. Coolify builds it from its GitHub repo on every push and keeps it next to its Supabase.',
-        es: 'Cuando una aplicación necesita un backend propio además de Supabase, corre aquí como contenedor. Coolify lo construye desde su repositorio de GitHub con cada push y lo deja junto a su Supabase.',
+        es: 'Cuando una aplicación necesita un backend propio además de Supabase, se ejecuta aquí como contenedor. Coolify lo compila desde su repositorio de GitHub en cada push y lo despliega junto a su Supabase.',
       },
       tags: [
         'Docker',
@@ -218,7 +218,7 @@ export const infrastructure: SystemMap = {
       glyph: 'vector',
       body: {
         en: 'Turns text into vectors for one of the apps. When the hosted inference it relied on stopped answering, the same model moved here: identical vectors, behind a token.',
-        es: 'Convierte texto en vectores para una de las aplicaciones. Cuando dejó de responder la inferencia alojada de la que dependía, el mismo modelo se vino aquí: vectores idénticos, detrás de un token.',
+        es: 'Genera embeddings de texto para una de las aplicaciones. Cuando dejó de responder la inferencia alojada de la que dependía, el mismo modelo pasó a ejecutarse aquí: vectores idénticos, protegido con un token.',
       },
       tags: [
         'Python',
@@ -235,7 +235,7 @@ export const infrastructure: SystemMap = {
       glyph: 'panel',
       body: {
         en: 'The panel the whole server runs on: it deploys every service, dumps every database each night and tells my phone when something fails. It updates itself, and it is never open to the internet, only over Tailscale.',
-        es: 'El panel sobre el que funciona todo el servidor: despliega cada servicio, vuelca cada base de datos todas las noches y me avisa al móvil si algo falla. Se actualiza solo, y nunca está abierto a internet: solo por Tailscale.',
+        es: 'El panel con el que se gestiona todo el servidor: despliega cada servicio, hace cada noche un volcado de cada base de datos y me avisa al móvil si algo falla. Se actualiza solo y nunca está expuesto a internet: solo se entra por Tailscale.',
       },
       tags: [
         'Coolify',
@@ -253,7 +253,7 @@ export const infrastructure: SystemMap = {
       glyph: 'pulse',
       body: {
         en: 'Checks every site and every Supabase from the server itself, and alerts my phone when one goes down. The copy at home checks in with it every day; if it goes quiet, that is an alert too. Its panel, like the rest, only over Tailscale.',
-        es: 'Comprueba cada web y cada Supabase desde el propio servidor, y me avisa al móvil si alguno se cae. La copia de casa se reporta cada día; si deja de hacerlo, también salta un aviso. Su panel, como el resto, solo por Tailscale.',
+        es: 'Comprueba cada web y cada Supabase desde el propio servidor, y me avisa al móvil si alguno se cae. La copia de casa informa cada día; si deja de hacerlo, también salta una alerta. Su panel, como el resto, solo es accesible por Tailscale.',
       },
       tags: ['Uptime Kuma', { en: 'Push monitor', es: 'Monitor push' }],
       at: { x: 622, y: 600 },
@@ -268,7 +268,7 @@ export const infrastructure: SystemMap = {
       glyph: 'bucket',
       body: {
         en: 'Off the server, every night: a dump of each app’s Postgres and its Storage files, kept for 30 days. Tested: a database restore and a file restore.',
-        es: 'Fuera del servidor, cada noche: un volcado del Postgres de cada aplicación y sus archivos de Storage, guardados 30 días. Probada la restauración de una base de datos y de un archivo.',
+        es: 'Fuera del servidor, cada noche: un volcado del Postgres de cada aplicación y sus archivos de Storage, con 30 días de retención. Restauración probada de una base de datos y de un archivo.',
       },
       tags: [
         'Backblaze B2',
@@ -286,7 +286,7 @@ export const infrastructure: SystemMap = {
       glyph: 'snapshot',
       body: {
         en: 'The VPS provider’s own backups of the whole server: a second layer that doesn’t depend on anything running on it.',
-        es: 'Las copias del servidor entero que hace el propio proveedor del VPS: una segunda capa que no depende de nada de lo que corre en él.',
+        es: 'Las copias del servidor completo que hace el proveedor del VPS: una segunda capa que no depende de nada de lo que se ejecuta en él.',
       },
       tags: [{ en: 'Whole server', es: 'Servidor entero' }],
       at: { x: 877, y: 240 },
@@ -300,7 +300,7 @@ export const infrastructure: SystemMap = {
       drawing: 'phone',
       body: {
         en: 'Where the alerts land: a site or an instance down, a failed deploy, and the copy at home, with a quiet OK or a failure that rings.',
-        es: 'Donde llegan los avisos: una web o una instancia caída, un despliegue que falla, y la copia de casa, con un OK silencioso o un fallo que suena.',
+        es: 'Aquí llegan las alertas: una web o una instancia caída, un despliegue fallido y el resultado de la copia de casa, con un OK silencioso o una alerta que suena.',
       },
       tags: ['ntfy', 'Telegram'],
       at: { x: 877, y: 370 },
@@ -316,7 +316,7 @@ export const infrastructure: SystemMap = {
       drawing: 'pi',
       body: {
         en: 'Every morning it pulls everything in B2 with a read-only key: it reaches out, and nothing on the server can reach it. It also keeps a mirror of every one of my GitHub repos. Then it hands it all to restic, on the NAS, and reports how it went.',
-        es: 'Cada mañana se baja todo lo que hay en B2 con una clave de solo lectura: es ella la que va a buscarlo, y nada del servidor puede llegar hasta ella. También guarda un espejo de cada uno de mis repositorios de GitHub. Después se lo pasa todo a restic, en el NAS, y avisa de cómo ha ido.',
+        es: 'Cada mañana descarga todo lo que hay en B2 con una clave de solo lectura: es ella la que va a buscarlo, y nada del servidor puede llegar hasta ella. También guarda un espejo de todos mis repositorios de GitHub. Después lo guarda todo con restic en el NAS e informa del resultado.',
       },
       tags: [
         'Raspberry Pi',
@@ -336,7 +336,7 @@ export const infrastructure: SystemMap = {
       drawing: 'nas',
       body: {
         en: 'The third copy, encrypted and versioned with restic, out of reach of anyone who gets into the server. Full restores tested, of the databases and of every repo.',
-        es: 'La tercera copia, cifrada y con versiones gracias a restic, fuera del alcance de quien entre en el servidor. Restauraciones completas probadas, de las bases de datos y de cada repositorio.',
+        es: 'La tercera copia, cifrada y versionada con restic, fuera del alcance de quien acceda al servidor. Restauraciones completas probadas, de las bases de datos y de cada repositorio.',
       },
       tags: [
         'restic',
@@ -407,7 +407,7 @@ export const infrastructure: SystemMap = {
       kind: 'local',
       label: {
         en: 'builds it on every push',
-        es: 'lo construye con cada push',
+        es: 'lo compila en cada push',
       },
     },
     {
@@ -487,21 +487,21 @@ export const infrastructure: SystemMap = {
           nodes: ['browsers', 'frontends'],
           caption: {
             en: 'Someone opens one of my apps: the page comes from Vercel.',
-            es: 'Alguien abre una de mis aplicaciones: la página llega desde Vercel.',
+            es: 'Alguien abre una de mis aplicaciones: la página se sirve desde Vercel.',
           },
         },
         {
           nodes: ['frontends', 'traefik'],
           caption: {
             en: 'Its calls for data go to the VPS, where Traefik takes them over HTTPS.',
-            es: 'Sus llamadas a los datos van al VPS, y Traefik las recibe por HTTPS.',
+            es: 'Sus peticiones de datos van al VPS, y Traefik las recibe por HTTPS.',
           },
         },
         {
           nodes: ['traefik', 'supabase'],
           caption: {
             en: 'Each one reaches only that app’s own Supabase: its users, its data, its files.',
-            es: 'Cada una llega solo al Supabase de esa aplicación: sus usuarios, sus datos, sus archivos.',
+            es: 'Cada una llega solo al Supabase de su aplicación: sus usuarios, sus datos, sus archivos.',
           },
         },
       ],
@@ -517,7 +517,7 @@ export const infrastructure: SystemMap = {
           nodes: ['coolify', 'supabase'],
           caption: {
             en: 'Every night, Coolify dumps each app’s Postgres.',
-            es: 'Cada noche, Coolify vuelca el Postgres de cada aplicación.',
+            es: 'Cada noche, Coolify hace un volcado del Postgres de cada aplicación.',
           },
         },
         {
@@ -531,21 +531,21 @@ export const infrastructure: SystemMap = {
           nodes: ['b2', 'pi'],
           caption: {
             en: 'In the morning, the Pi at home pulls it all with a read-only key.',
-            es: 'Por la mañana, la Pi de casa se lo baja todo con una clave de solo lectura.',
+            es: 'Por la mañana, la Pi de casa lo descarga todo con una clave de solo lectura.',
           },
         },
         {
           nodes: ['pi', 'nas'],
           caption: {
             en: 'Encrypted with restic, on the NAS: out of reach of anyone who gets into the server.',
-            es: 'Cifrado con restic, en el NAS: fuera del alcance de quien entre en el servidor.',
+            es: 'Se cifra con restic y se guarda en el NAS, fuera del alcance de quien acceda al servidor.',
           },
         },
         {
           nodes: ['pi', 'kuma', 'phone'],
           caption: {
             en: 'And it reports back: a quiet OK, or an alert that rings.',
-            es: 'Y da parte: un OK silencioso, o un aviso que suena.',
+            es: 'Y lo notifica: un OK silencioso o una alerta que suena.',
           },
         },
       ],
@@ -558,14 +558,14 @@ export const infrastructure: SystemMap = {
           nodes: ['laptop', 'tailscale'],
           caption: {
             en: 'From my laptop, the way in is Tailscale, a private network.',
-            es: 'Desde mi portátil, se entra por Tailscale, una red privada.',
+            es: 'Desde mi portátil, entro por Tailscale, una red privada.',
           },
         },
         {
           nodes: ['tailscale', 'coolify', 'kuma'],
           caption: {
             en: 'SSH and the panels only answer there.',
-            es: 'El SSH y los paneles solo responden ahí.',
+            es: 'SSH y los paneles solo responden ahí.',
           },
         },
         {
@@ -584,7 +584,7 @@ export const infrastructure: SystemMap = {
     glyph: 'server',
     note: {
       en: 'If the server dies, the apps stop with it, but their data survives: last night’s copies are in Backblaze B2, the provider keeps snapshots of the whole server, and the NAS at home has its own encrypted copy.',
-      es: 'Si se cae el servidor, las aplicaciones se paran con él, pero sus datos siguen a salvo: las copias de anoche están en Backblaze B2, el proveedor guarda copias del servidor entero y el NAS de casa tiene la suya, cifrada.',
+      es: 'Si se cae el servidor, las aplicaciones caen con él, pero sus datos están a salvo: las copias de anoche están en Backblaze B2, el proveedor tiene copias del servidor completo y el NAS de casa guarda la suya, cifrada.',
     },
     keep: ['b2', 'snapshots', 'pi', 'nas'],
     lose: ['vps', 'tunnel'],
