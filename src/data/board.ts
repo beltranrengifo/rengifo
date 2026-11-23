@@ -156,8 +156,8 @@ export const boardWorks: BoardWork[] = [
       {
         label: { en: 'My role', es: 'Mi papel' },
         value: {
-          en: 'Location sound and miking in Kenya, translations and dubbing, then post-production: foley, the mix, and recording and mixing the music we taped in the villages',
-          es: 'Sonido directo y microfonía en Kenia, traducciones y doblajes; después la postproducción: foleys, mezclas, y la grabación y mezcla de la música que grabamos en las aldeas',
+          en: 'Location sound and miking in Kenya, translations and dubbing; then post-production: foley, the mix and the music we recorded in the villages',
+          es: 'Sonido directo y microfonía en Kenia, traducciones y doblajes; después, la postproducción: foleys, la mezcla y la música que grabamos en las aldeas',
         },
       },
       { label: DIRECTION, value: 'David Muñoz' },

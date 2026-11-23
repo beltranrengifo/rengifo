@@ -35,24 +35,22 @@ const LOGO = [
 const cards = [
   {
     file: 'og.png',
-    kicker: 'PRODUCT ENGINEER · MADRID',
+    kicker: 'MADRID · REMOTE OR HYBRID',
     // The H1, split at the italic phrase so the serif can take over.
     lines: [
-      { text: 'I build products', italic: false },
-      { text: 'end to end, with', italic: false },
-      { text: 'UX and UI at heart.', italic: true },
+      { text: 'Full-stack', italic: false },
+      { text: 'product engineer.', italic: true },
     ],
-    foot: 'Product engineering · Full-stack · UI & UX — rengifo.es',
+    foot: 'Database · APIs · infrastructure · interface — rengifo.es',
   },
   {
     file: 'og-es.png',
-    kicker: 'PRODUCT ENGINEER · MADRID',
+    kicker: 'MADRID · REMOTO O HÍBRIDO',
     lines: [
-      { text: 'Desarrollo productos', italic: false },
-      { text: 'end-to-end, con', italic: false },
-      { text: 'la UX y la UI en el centro.', italic: true },
+      { text: 'Product engineer', italic: false },
+      { text: 'full stack.', italic: true },
     ],
-    foot: 'Product engineering · Full-stack · UI y UX — rengifo.es',
+    foot: 'Base de datos · APIs · infraestructura · interfaz — rengifo.es',
   },
 ];
 
@@ -62,11 +60,11 @@ const escape = (s) =>
 function card({ kicker, lines, foot }) {
   const headline = lines
     .map((line, i) => {
-      const y = 250 + i * 88;
+      const y = 300 + i * 104;
       const font = line.italic
         ? `font-family="Newsreader" font-style="italic" font-weight="300" fill="${ACCENT}"`
         : `font-family="Schibsted Grotesk" font-weight="500" fill="${INK}"`;
-      return `<text x="90" y="${y}" font-size="76" letter-spacing="-2" ${font}>${escape(line.text)}</text>`;
+      return `<text x="90" y="${y}" font-size="96" letter-spacing="-2.5" ${font}>${escape(line.text)}</text>`;
     })
     .join('\n    ');
 
@@ -86,7 +84,7 @@ function card({ kicker, lines, foot }) {
       ${LOGO.map((d) => `<path d="${d}"/>`).join('')}
     </g>
 
-    <text x="90" y="160" font-family="Schibsted Grotesk" font-weight="500" font-size="21" letter-spacing="4" fill="${MUTED}">${escape(kicker)}</text>
+    <text x="90" y="196" font-family="Schibsted Grotesk" font-weight="500" font-size="21" letter-spacing="4" fill="${MUTED}">${escape(kicker)}</text>
 
     ${headline}
 
