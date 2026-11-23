@@ -1,8 +1,9 @@
 /**
  * The system map's behaviour (see SystemMap.astro): wires drawn from where
  * the parts really sit, a part's panel, a hover preview, walkthroughs that
- * light a path one step at a time, and the «no internet» view. Without it,
- * the parts and their texts still read.
+ * light a whole path at once (strongest where it starts, each step's number
+ * on its parts), and the «no internet» view (or whatever the map's toggle
+ * names). Without it, the parts and their texts still read.
  */
 
 interface WireData {
@@ -15,10 +16,10 @@ interface MapData {
   edges: WireData[];
   hosts: Record<string, { zones: string[]; nodes: string[] }>;
   zoneOf: Record<string, string>;
-  walks: Record<string, { nodes: string[]; caption: string }[]>;
+  /** Each walkthrough's steps: the parts each one lights, in order. */
+  walks: Record<string, string[][]>;
   offline: { keep: string[]; lose: string[] } | null;
   bundles: { from: string; zone: string; trunk?: string }[];
-  stepOf: string;
 }
 interface Box {
   l: number;
@@ -44,7 +45,8 @@ interface Wire extends WireData {
 }
 
 const SVG = 'http://www.w3.org/2000/svg';
-const STEP_MS = 3600;
+/** How much a path's last step fades next to its first. */
+const FADE = 0.55;
 const WIDE = 1280; // side panel beside the map
 const STACKED = 840; // zones stacked, parts two by two
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -72,17 +74,9 @@ function init(root: HTMLElement) {
   const panel = $<HTMLElement>('[data-smap-panel]')!;
   const handle = $<HTMLButtonElement>('[data-smap-handle]')!;
   const more = $<HTMLButtonElement>('[data-smap-more]')!;
-  const player = $<HTMLElement>('[data-smap-player]')!;
-  const dots = $<HTMLElement>('[data-smap-dots]')!;
-  const stepN = $<HTMLElement>('[data-smap-step-n]')!;
-  const caption = $<HTMLElement>('[data-smap-caption]')!;
-  const intro = $<HTMLElement>('[data-smap-intro]');
   const offlineButton = $<HTMLButtonElement>('[data-smap-offline]');
   const offlineNote = $<HTMLElement>('[data-smap-offline-note]');
-  const prevs = $$<HTMLButtonElement>('[data-smap-prev]');
-  const nexts = $$<HTMLButtonElement>('[data-smap-next]');
-  const plays = $$<HTMLButtonElement>('[data-smap-play]');
-  const ends = $$<HTMLButtonElement>('[data-smap-end]');
+  const bar = $<HTMLElement>('.smap-bar')!;
 
   const nodes = new Map(
     $$<HTMLButtonElement>('[data-node]').map((el) => [el.dataset.node!, el]),
@@ -96,10 +90,16 @@ function init(root: HTMLElement) {
       el,
     ]),
   );
+  const badges = new Map(
+    [...nodes].map(([id, el]) => [
+      id,
+      el.querySelector<HTMLElement>('.smap-badge'),
+    ]),
+  );
   const walkButtons = $$<HTMLButtonElement>('[data-walk]');
-  const stepLists = new Map(
-    $$<HTMLElement>('[data-smap-steps]').map((el) => [
-      el.dataset.smapSteps!,
+  const walkSections = new Map(
+    [...panel.querySelectorAll<HTMLElement>('[data-panel-walk]')].map((el) => [
+      el.dataset.panelWalk!,
       el,
     ]),
   );
@@ -263,11 +263,18 @@ function init(root: HTMLElement) {
     const boxes = new Map(
       [...nodes].map(([id, el]) => [id, boxOf(el, origin)]),
     );
+    // A stack's cards behind, for the labels to keep clear of too.
+    const stacks = [...nodes]
+      .filter(([, el]) => el.classList.contains('smap-stacked'))
+      .map(([id]) => {
+        const b = boxes.get(id)!;
+        return { ...b, r: b.r + 10, b: b.b + 10 };
+      });
     // Zone titles too: a label over one would hide it.
     const titles = $$<HTMLElement>('.smap-zone-label')
       .filter((el) => el.offsetParent)
       .map((el) => boxOf(el, origin));
-    cards = [...boxes.values(), ...titles];
+    cards = [...boxes.values(), ...stacks, ...titles];
     const bundled = (w: Wire) =>
       isStacked()
         ? undefined
@@ -326,9 +333,9 @@ function init(root: HTMLElement) {
   // ── State ──────────────────────────────────────────────────
   let selected: string | null = null;
   let preview: string | null = null;
-  let walk: { id: string; step: number; playing: boolean } | null = null;
+  /** The path on show, and the one step brought forward, if any. */
+  let walk: { id: string; step: number | null } | null = null;
   let offline = false;
-  let timer = 0;
   let returnFocus: HTMLElement | null = null;
 
   // A chosen (or hovered) part's labels sit by its neighbours, where they
@@ -410,6 +417,10 @@ function init(root: HTMLElement) {
     const trail = new Set<Wire>();
     const litZones = new Set<string>();
     const downZones = new Set<string>();
+    // A path's parts and wires, each with its strength: 1 at the start.
+    const path = new Map<string, number>();
+    const pathWires = new Map<Wire, number>();
+    const numbers = new Map<string, number>();
     const focus = selected ?? preview;
 
     if (focus) {
@@ -422,21 +433,39 @@ function init(root: HTMLElement) {
         if (w.from === focus || w.to === focus) lit.set(w, false);
       });
     } else if (walk) {
+      // The whole path at once. Each part and wire belongs to the first
+      // step it shows up in, numbered so, and fades a little with each step
+      // after the first: the order reads without waiting for it.
       const steps = data.walks[walk.id]!;
-      const order = steps[walk.step]!.nodes;
-      order.forEach((n) => active.add(n));
-      wires.forEach((w) => {
-        const i = order.indexOf(w.from);
-        const j = order.indexOf(w.to);
-        if (i >= 0 && j >= 0) lit.set(w, i > j);
-      });
-      steps.slice(0, walk.step).forEach((step) => {
-        step.nodes.forEach((n) => active.has(n) || visited.add(n));
+      const strength = (i: number) =>
+        steps.length > 1 ? 1 - (FADE * i) / (steps.length - 1) : 1;
+      const flow = new Map<Wire, boolean>();
+      steps.forEach((order, i) => {
+        order.forEach((n) => numbers.has(n) || numbers.set(n, i));
         wires.forEach((w) => {
-          if (step.nodes.includes(w.from) && step.nodes.includes(w.to))
-            trail.add(w);
+          const a = order.indexOf(w.from);
+          const b = order.indexOf(w.to);
+          if (a < 0 || b < 0 || flow.has(w)) return;
+          flow.set(w, a > b);
+          pathWires.set(w, strength(i));
         });
       });
+      if (walk.step === null) {
+        numbers.forEach((i, n) => path.set(n, strength(i)));
+        flow.forEach((rev, w) => lit.set(w, rev));
+      } else {
+        // One step brought forward; the rest of the path stays in sight.
+        const order = steps[walk.step]!;
+        order.forEach((n) => active.add(n));
+        numbers.forEach((_, n) => active.has(n) || visited.add(n));
+        flow.forEach((_, w) => {
+          const a = order.indexOf(w.from);
+          const b = order.indexOf(w.to);
+          if (a >= 0 && b >= 0) lit.set(w, a > b);
+          else trail.add(w);
+        });
+        pathWires.clear();
+      }
     } else if (offline && data.offline) {
       const keep = new Set(data.offline.keep);
       keep.forEach((n) => related.add(n));
@@ -451,7 +480,7 @@ function init(root: HTMLElement) {
 
     root.toggleAttribute(
       'data-focus',
-      active.size + related.size + down.size > 0,
+      active.size + related.size + down.size + path.size > 0,
     );
     root.toggleAttribute('data-preview', !selected && !!preview);
     nodes.forEach((el, id) => {
@@ -459,6 +488,14 @@ function init(root: HTMLElement) {
       el.classList.toggle('is-related', related.has(id) && !active.has(id));
       el.classList.toggle('is-visited', visited.has(id));
       el.classList.toggle('is-down', down.has(id));
+      el.classList.toggle('is-path', path.has(id));
+      if (path.has(id)) el.style.setProperty('--s', String(path.get(id)));
+      else el.style.removeProperty('--s');
+      const badge = badges.get(id);
+      if (badge) {
+        const n = numbers.get(id);
+        badge.textContent = n === undefined ? '' : String(n + 1);
+      }
       el.setAttribute('aria-expanded', String(id === selected));
     });
     zones.forEach((el, id) => {
@@ -469,6 +506,10 @@ function init(root: HTMLElement) {
       w.g.classList.toggle('is-lit', lit.has(w));
       w.g.classList.toggle('is-rev', lit.get(w) === true);
       w.g.classList.toggle('is-visited', trail.has(w) && !lit.has(w));
+      w.g.classList.toggle('is-path', pathWires.has(w));
+      if (pathWires.has(w))
+        w.g.style.setProperty('--s', String(pathWires.get(w)));
+      else w.g.style.removeProperty('--s');
       // Lit wires on top of the faded ones.
       if (lit.has(w)) svg.append(w.g);
     });
@@ -492,7 +533,7 @@ function init(root: HTMLElement) {
 
   // ── The panel ──────────────────────────────────────────────
   const measureSheet = () => {
-    if (!panel.hasAttribute('data-open') || isWide()) {
+    if (!panel.hasAttribute('data-open') || isWide() || walk) {
       panel.removeAttribute('data-more');
       return;
     }
@@ -571,7 +612,9 @@ function init(root: HTMLElement) {
     );
     if (target) select(target.dataset.smapGoto!);
   });
-  $('[data-smap-close]')!.addEventListener('click', () => close());
+  $('[data-smap-close]')!.addEventListener('click', () =>
+    walk ? endWalk(true) : close(),
+  );
   more.addEventListener('click', () => expand(true));
 
   // The sheet's handle: a tap grows or shrinks it, a drag up grows it, a
@@ -591,6 +634,17 @@ function init(root: HTMLElement) {
     if (dragFrom === null) return;
     const dy = event.clientY - dragFrom;
     dragFrom = null;
+    if (walk) {
+      // A path's sheet never scrolls: it folds down to its title instead.
+      const folded = panel.hasAttribute('data-folded');
+      if (!dragged) fold(!folded);
+      else if (dy < -30) fold(false);
+      else if (dy > 40) {
+        if (folded) endWalk(true);
+        else fold(true);
+      }
+      return;
+    }
     const expanded = panel.hasAttribute('data-expanded');
     if (!dragged) expand(!expanded);
     else if (dy < -30) expand(true);
@@ -602,7 +656,8 @@ function init(root: HTMLElement) {
   handle.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      expand(!panel.hasAttribute('data-expanded'));
+      if (walk) fold(!panel.hasAttribute('data-folded'));
+      else expand(!panel.hasAttribute('data-expanded'));
     }
   });
 
@@ -610,6 +665,7 @@ function init(root: HTMLElement) {
   canvas.addEventListener('click', (event) => {
     if ((event.target as HTMLElement).closest('[data-node]')) return;
     if (selected) close();
+    else if (walk && walk.step !== null) bringForward(null);
   });
 
   document.addEventListener('keydown', (event) => {
@@ -633,12 +689,14 @@ function init(root: HTMLElement) {
     offlineButton?.setAttribute('aria-pressed', String(on));
     if (offlineNote) offlineNote.hidden = !on;
     paint();
-    // Bring the note and as much of the map as fits into view.
+    // Bring the toggle, its note and as much of the map as fits into view,
+    // below the header.
     if (on && offlineNote) {
-      const top = offlineNote.getBoundingClientRect().top;
+      const head = headOf();
+      const top = bar.getBoundingClientRect().top;
       const bottom = canvas.getBoundingClientRect().bottom;
-      if (top < 72 || bottom > window.innerHeight)
-        window.scrollBy({ top: top - 80, behavior: smooth() });
+      if (top < head - 4 || bottom > window.innerHeight)
+        window.scrollBy({ top: top - head, behavior: smooth() });
     }
   };
   offlineButton?.addEventListener('click', () => {
@@ -648,143 +706,121 @@ function init(root: HTMLElement) {
   });
 
   // ── Walkthroughs ───────────────────────────────────────────
-  const schedule = () => {
-    window.clearTimeout(timer);
-    if (!walk?.playing) return;
-    timer = window.setTimeout(() => {
-      if (!walk) return;
-      const steps = data.walks[walk.id]!;
-      if (walk.step < steps.length - 1) {
-        go(walk.step + 1);
-      } else {
-        walk.playing = false;
-        showWalk();
-      }
-    }, STEP_MS);
-  };
-
-  const showWalk = () => {
-    if (!walk) return;
-    const steps = data.walks[walk.id]!;
-    const step = steps[walk.step]!;
-    player.hidden = false;
-    stepN.textContent = data.stepOf
-      .replace('{n}', String(walk.step + 1))
-      .replace('{total}', String(steps.length));
-    caption.textContent = step.caption;
-    dots.replaceChildren(
-      ...steps.map((_, i) => {
-        const li = document.createElement('li');
-        if (i < walk!.step) li.className = 'is-done';
-        if (i === walk!.step) li.className = 'is-now';
-        return li;
-      }),
+  // A path lights whole, at once; its steps are listed in the panel (beside
+  // the map, or as a sheet), and choosing one brings it forward.
+  const fold = (on: boolean) => {
+    panel.toggleAttribute('data-folded', on);
+    handle.setAttribute(
+      'aria-label',
+      on ? handle.dataset.more! : handle.dataset.less!,
     );
-    prevs.forEach((b) => (b.disabled = walk!.step === 0));
-    nexts.forEach((b) => (b.disabled = walk!.step === steps.length - 1));
-    const paused = !walk.playing;
-    plays.forEach((b) => {
-      b.toggleAttribute('data-paused', paused);
-      b.hidden = reducedMotion.matches;
-      const label = paused ? b.dataset.play! : b.dataset.pause!;
-      b.setAttribute('aria-label', label);
-      b.title = label;
-    });
-    walkButtons.forEach((b) =>
-      b.setAttribute('aria-pressed', String(b.dataset.walk === walk!.id)),
-    );
-    if (intro) intro.hidden = true;
-    stepLists.forEach((el, id) => {
-      el.hidden = id !== walk!.id;
-      el.querySelectorAll<HTMLElement>('[data-smap-goto-step]').forEach(
-        (b, i) => {
-          b.classList.toggle('is-now', i === walk!.step);
-          b.classList.toggle('is-done', i < walk!.step);
-          if (i === walk!.step) b.setAttribute('aria-current', 'step');
-          else b.removeAttribute('aria-current');
-        },
-      );
-    });
-    paint();
-    schedule();
   };
 
-  const go = (step: number) => {
-    if (!walk) return;
-    const steps = data.walks[walk.id]!;
-    walk.step = Math.max(0, Math.min(steps.length - 1, step));
-    showWalk();
-    if (isStacked()) followStep();
-    else frameMap();
+  /** Just below the site's sticky header, wherever it sits now. */
+  const headOf = () => {
+    const header = document.querySelector('[data-header]');
+    const bottom = header ? header.getBoundingClientRect().bottom : 0;
+    return Math.max(0, bottom) + 12;
   };
 
-  // A path must stay in sight. On wider screens the whole map (and the
-  // player below it, when there is one) comes into view; stacked on a
-  // phone, the step's parts are brought above the player.
+  /** Where a sheet's top sits once it is in place, or the window's floor. */
+  const floorOf = () =>
+    window.innerHeight -
+    (isWide() || !panel.hasAttribute('data-open')
+      ? 8
+      : panel.offsetHeight + 12);
+
+  // A path must stay in sight, and so must the bar it was chosen from. On
+  // wider screens the bar and the map come into view below the header (the
+  // bar first, when both don't fit); stacked on a phone, the path's first
+  // parts are brought above the sheet.
   const frameMap = () => {
-    if (isStacked()) return;
-    // Wide: the header is all that sits on top. In between, the slim header
-    // and the player held at the bottom.
-    const top = isWide() ? 84 : 46;
-    const floor =
-      window.innerHeight -
-      (isWide() ? 8 : player.getBoundingClientRect().height + 16);
-    const r = canvas.getBoundingClientRect();
-    if (r.top >= top - 4 && r.bottom <= floor + 4) return;
-    const room = floor - top;
-    // A map taller than the room: frame the step's parts instead.
-    if (r.height > room + 4) return followStep(top, floor);
-    const offset = (room - r.height) / 2;
-    window.scrollBy({ top: r.top - top - offset, behavior: smooth() });
+    const first = data.walks[walk!.id]![0]!;
+    if (isStacked()) return followParts(first);
+    const head = headOf();
+    const floor = floorOf();
+    const top = bar.getBoundingClientRect().top;
+    const bottom = canvas.getBoundingClientRect().bottom;
+    if (top < head - 4 || bottom > floor + 4) {
+      const room = floor - head;
+      const span = bottom - top;
+      const offset = span <= room ? (room - span) / 2 : 0;
+      window.scrollTo({
+        top: window.scrollY + top - head - offset,
+        behavior: smooth(),
+      });
+    }
   };
 
-  const followStep = (
-    head = 72,
-    floor = player.getBoundingClientRect().top - 12,
-  ) => {
-    if (!walk) return;
-    const parts = data.walks[walk.id]![walk.step]!.nodes.map((id) =>
-      nodes.get(id),
-    ).filter((el): el is HTMLButtonElement => !!el);
-    if (!parts.length) return;
-    const rects = parts.map((el) => el.getBoundingClientRect());
+  const followParts = (ids: string[], head = headOf()) => {
+    const floor = floorOf();
+    const rects = ids
+      .map((id) => nodes.get(id)?.getBoundingClientRect())
+      .filter((r): r is DOMRect => !!r);
+    if (!rects.length) return;
     const top = Math.min(...rects.map((r) => r.top));
     const bottom = Math.max(...rects.map((r) => r.bottom));
     if (top >= head && bottom <= floor) return;
-    // As many of the step's parts as fit between the header and the floor.
+    // As many of the parts as fit between the header and the floor. When
+    // they don't all fit, the first one (where the step starts) always does,
+    // with the rest running away from it.
     const room = floor - head;
     const span = bottom - top;
+    const lead = rects[0]!;
     const shift =
-      span <= room ? top - head - (room - span) / 2 : top - head - 8;
+      span <= room
+        ? top - head - (room - span) / 2
+        : lead.top <= top + 1
+          ? top - head - 8
+          : lead.bottom - floor + 8;
     window.scrollBy({ top: shift, behavior: smooth() });
+  };
+
+  const bringForward = (step: number | null) => {
+    if (!walk) return;
+    walk.step = step;
+    walkSections
+      .get(walk.id)
+      ?.querySelectorAll<HTMLElement>('[data-smap-step]')
+      .forEach((b, i) => b.setAttribute('aria-pressed', String(i === step)));
+    paint();
   };
 
   const startWalk = (id: string) => {
     if (selected) close();
     if (offline) setOffline(false);
     preview = null;
-    walk = { id, step: 0, playing: !reducedMotion.matches };
-    showWalk();
-    if (isStacked()) followStep();
-    else frameMap();
+    walk = { id, step: null };
+    sections.forEach((el) => (el.hidden = true));
+    walkSections.forEach((el, key) => (el.hidden = key !== id));
+    panel.inert = false;
+    panel.toggleAttribute('data-open', true);
+    panel.toggleAttribute('data-walk', true);
+    panel.removeAttribute('data-more');
+    expand(false);
+    fold(false);
+    walkButtons.forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.walk === id)),
+    );
+    bringForward(null);
+    frameMap();
   };
 
   const endWalk = (restoreFocus: boolean) => {
     if (!walk) return;
     const id = walk.id;
-    window.clearTimeout(timer);
     walk = null;
-    player.hidden = true;
+    panel.removeAttribute('data-open');
+    panel.removeAttribute('data-walk');
+    fold(false);
+    panel.inert = true;
+    walkSections.forEach((el) => (el.hidden = true));
     walkButtons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
-    stepLists.forEach((el) => (el.hidden = true));
-    if (intro) intro.hidden = false;
     paint();
     if (restoreFocus)
       walkButtons
         .find((b) => b.dataset.walk === id)
-        ?.focus({
-          preventScroll: true,
-        });
+        ?.focus({ preventScroll: true });
   };
 
   walkButtons.forEach((button) =>
@@ -794,43 +830,20 @@ function init(root: HTMLElement) {
         : startWalk(button.dataset.walk!),
     ),
   );
-  prevs.forEach((b) =>
-    b.addEventListener('click', () => {
-      if (!walk) return;
-      walk.playing = false;
-      go(walk.step - 1);
-    }),
-  );
-  nexts.forEach((b) =>
-    b.addEventListener('click', () => {
-      if (!walk) return;
-      walk.playing = false;
-      go(walk.step + 1);
-    }),
-  );
-  plays.forEach((b) =>
-    b.addEventListener('click', () => {
-      if (!walk) return;
-      const steps = data.walks[walk.id]!;
-      walk.playing = !walk.playing;
-      // Playing from the last step starts the path again.
-      if (walk.playing && walk.step === steps.length - 1) walk.step = 0;
-      showWalk();
-    }),
-  );
-  ends.forEach((b) => b.addEventListener('click', () => endWalk(true)));
-  stepLists.forEach((el) =>
+  walkSections.forEach((el) =>
     el.addEventListener('click', (event) => {
       const b = (event.target as HTMLElement).closest<HTMLElement>(
-        '[data-smap-goto-step]',
+        '[data-smap-step]',
       );
       if (!b || !walk) return;
-      walk.playing = false;
-      go(Number(b.dataset.smapGotoStep));
+      const i = Number(b.dataset.smapStep);
+      bringForward(walk.step === i ? null : i);
+      if (isWide()) return;
+      // As a sheet: fold it down to the chosen step, so the step's parts
+      // have the screen, and bring them into view. Letting go of the step
+      // opens the whole list again.
+      fold(walk.step !== null);
+      if (walk.step !== null) followParts(data.walks[walk.id]![walk.step]!);
     }),
   );
-  reducedMotion.addEventListener('change', () => {
-    if (walk && reducedMotion.matches) walk.playing = false;
-    showWalk();
-  });
 }

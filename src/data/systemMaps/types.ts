@@ -1,7 +1,7 @@
 /**
  * An explorable map of how a system fits together: zones (where things
  * run), nodes (the parts), edges (how they talk) and walkthroughs (a path
- * lit step by step). One data file per map; SystemMap.astro draws any of
+ * lit all at once, strongest where it starts). One data file per map; SystemMap.astro draws any of
  * them.
  */
 
@@ -41,6 +41,17 @@ export type GlyphId =
   | 'bell'
   | 'pulse'
   | 'stack'
+  | 'globe'
+  | 'laptop'
+  | 'antenna'
+  | 'route'
+  | 'panel'
+  | 'vector'
+  | 'box'
+  | 'bucket'
+  | 'snapshot'
+  | 'board'
+  | 'nas'
   | 'cloud'
   | 'voice';
 
@@ -56,7 +67,11 @@ export type DrawingId =
   | 'bulb'
   | 'projector'
   | 'cast'
-  | 'server';
+  | 'server'
+  | 'laptop'
+  | 'esp32'
+  | 'pi'
+  | 'nas';
 
 export type EdgeKind =
   | 'https' // over the internet
@@ -64,7 +79,8 @@ export type EdgeKind =
   | 'lan' // the home's local network
   | 'local' // inside one machine
   | 'audio' // sound out of a speaker
-  | 'training'; // done once, to make a model
+  | 'training' // done once, to make a model
+  | 'backup'; // a copy, kept somewhere else
 
 /** A box in the map's own units (see SystemMap.size). */
 export interface Box {
@@ -87,6 +103,10 @@ export interface MapZone {
    * a wide map, as a band of its own when the zones stack.
    */
   tunnel?: true;
+  /** Someone else's machines rather than mine: drawn dashed. */
+  outside?: true;
+  /** Its title at the right end of its top edge, clear of wires on the left. */
+  titleEnd?: true;
 }
 
 export interface MapNode {
@@ -108,6 +128,11 @@ export interface MapNode {
    * band across the bottom of the zone, or its first row on a phone.
    */
   layer?: true;
+  /**
+   * One of many alike (an instance per app): drawn as a stack, two more
+   * cards peeking out behind it, never named or counted.
+   */
+  many?: true;
   /** Its centre, in the map's units. A zone's host needs none. */
   at?: { x: number; y: number };
 }
@@ -134,8 +159,15 @@ export interface Walkthrough {
   steps: WalkStep[];
 }
 
-/** What still works when the internet goes: the map's «no internet» view. */
+/**
+ * What still stands when something goes: by default the internet (the
+ * map's «no internet» view), or whatever its own label names.
+ */
 export interface OfflineView {
+  /** The toggle's words, when it is not «no internet». */
+  label?: Text;
+  /** The toggle's icon, struck through when on; a wifi sign by default. */
+  glyph?: GlyphId;
   note: Text;
   /** The parts that keep working, lit. */
   keep: string[];
@@ -158,6 +190,8 @@ export interface SystemMap {
   id: string;
   /** What a screen reader hears for the whole map. */
   label: Text;
+  /** A line under the map's heading: what it shows and how to use it. */
+  intro: Text;
   /** The map's own units: every box and position is measured in them. */
   size: { w: number; h: number };
   zones: MapZone[];

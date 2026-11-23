@@ -17,6 +17,10 @@ export const tablux: SystemMap = {
     en: 'Map of Tablux, part by part',
     es: 'Mapa de Tablux, pieza a pieza',
   },
+  intro: {
+    en: 'Below, every part of Tablux, at home and on my own VPS. Choose one to see what it is and what it talks to, or follow a path through it.',
+    es: 'Aquí debajo están todas las piezas de Tablux, en casa y en mi propio VPS. Elige una para ver qué es y con qué se comunica, o sigue uno de los recorridos.',
+  },
   size: { w: 1000, h: 800 },
 
   zones: [
@@ -51,11 +55,13 @@ export const tablux: SystemMap = {
       id: 'training',
       label: { en: 'Training', es: 'Entrenamiento' },
       box: { x: 588, y: 620, w: 184, h: 110 },
+      outside: true,
     },
     {
       id: 'services',
       label: { en: 'Outside services', es: 'Servicios externos' },
       box: { x: 784, y: 20, w: 208, h: 772 },
+      outside: true,
     },
   ],
 
@@ -83,7 +89,7 @@ export const tablux: SystemMap = {
       drawing: 'speaker',
       body: {
         en: 'The wall’s own speaker. Spotify’s official receiver for devices without a screen runs on the wall, so it is a Spotify Connect speaker like any other and music reaches it from any phone. It is also where the assistant speaks; if the internet drops, a stock Piper voice on the wall takes over.',
-        es: 'El altavoz de la propia pared. En ella corre el receptor oficial de Spotify para aparatos sin pantalla, así que es un altavoz de Spotify Connect como cualquier otro y se le manda música desde cualquier móvil. También es por donde habla el asistente; si se cae internet, toma el relevo una voz estándar de Piper que vive en la pared.',
+        es: 'El altavoz de la propia pared. En ella se ejecuta el receptor oficial de Spotify para aparatos sin pantalla, así que es un altavoz de Spotify Connect como cualquier otro y se le manda música desde cualquier móvil. También es por donde habla el asistente; si se cae internet, toma el relevo una voz estándar de Piper que vive en la pared.',
       },
       tags: [
         'Spotify Connect',
@@ -99,7 +105,7 @@ export const tablux: SystemMap = {
       glyph: 'window',
       body: {
         en: 'Chromium opens the app full screen as soon as the wall starts, with nothing around it. It is the same PWA every other screen runs; the wall only adds what needs a body: a speaker, a microphone and the bridge. At night it rests with the clock and any running timer, and «Buenas noches» can send it to rest. Without internet, the app’s own offline cache keeps the clock, the agenda and the menu on screen.',
-        es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
+        es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo añade lo físico: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
       },
       tags: ['Chromium', 'PWA', 'Phosh'],
       at: { x: 345, y: 348 },
@@ -112,7 +118,7 @@ export const tablux: SystemMap = {
       glyph: 'bridge',
       body: {
         en: 'A small Node service on the wall, and the only part of Tablux that has to be at home. It talks to every device over the local network with local keys, never through the makers’ clouds. It runs the routines the app hands it — at a set time, by the sun, which it works out itself, or with two or three claps — so they keep working without internet; only a routine that says the weather or the agenda asks the app for it. When the wake word is heard, it wakes the page and hands it what came next. It also looks after the wall’s backlight.',
-        es: 'Un pequeño servicio en Node que corre en la pared, y la única parte de Tablux que tiene que estar en casa. Habla con cada aparato por la red local, con claves locales y sin pasar por la nube de ningún fabricante. Lanza las rutinas que le pasa la aplicación —a una hora, con el sol, que calcula él mismo, o con dos o tres palmadas—, así que siguen funcionando sin internet; solo las que dicen el tiempo o la agenda se lo piden a la aplicación. Cuando se oye la palabra de activación, despierta la página y le pasa lo que se dijo después. También se ocupa del brillo de la pantalla.',
+        es: 'Un pequeño servicio en Node que se ejecuta en la pared, y la única parte de Tablux que tiene que estar en casa. Habla con cada aparato por la red local, con claves locales y sin pasar por la nube de ningún fabricante. Lanza las rutinas que le pasa la aplicación —a una hora, con el sol, que calcula él mismo, o con dos o tres palmadas—, así que siguen funcionando sin internet; solo las que dicen el tiempo o la agenda se lo piden a la aplicación. Cuando se oye la palabra de activación, despierta la página y le pasa lo que se dijo después. También se ocupa del brillo de la pantalla.',
       },
       tags: [
         'Node',
@@ -151,7 +157,7 @@ export const tablux: SystemMap = {
       layer: true,
       body: {
         en: 'My own Linux for a board with no public documentation. First, a full backup of the factory Android. Then a device tree written from the vendor’s own, U-Boot built with the memory init this board needs, and Linux 6.18 compiled with the display drivers it lacked, on Armbian. Phosh on top makes it a system for fingers. Everything on the wall runs on it.',
-        es: 'Un Linux propio para una placa sin documentación pública. Primero, una copia completa del Android de fábrica. Después, un device tree escrito a partir del original del fabricante, un U-Boot compilado con la inicialización de memoria que pide esta placa y Linux 6.18 compilado con los drivers de pantalla que le faltaban, sobre Armbian. Encima, Phosh lo convierte en un sistema pensado para los dedos. Todo lo que hay en la pared corre sobre él.',
+        es: 'Un Linux propio para una placa sin documentación pública. Primero, una copia completa del Android de fábrica. Después, un device tree escrito a partir del original del fabricante, un U-Boot compilado con la inicialización de memoria que pide esta placa y Linux 6.18 compilado con los drivers de pantalla que le faltaban, sobre Armbian. Encima, Phosh lo convierte en un sistema pensado para los dedos. Todo lo que hay en la pared se ejecuta sobre él.',
       },
       tags: ['Linux 6.18', 'Armbian', 'Phosh', 'U-Boot', 'Device tree'],
       at: { x: 345, y: 614 },
@@ -232,7 +238,7 @@ export const tablux: SystemMap = {
       drawing: 'projector',
       body: {
         en: 'The living-room projector, an Android TV. The bridge speaks its remote-control protocol itself, with no library, to switch it off, set the volume or open an app, and sends it Spotify over Cast.',
-        es: 'El proyector del salón, un Android TV. El puente habla él mismo su protocolo de mando a distancia, sin librerías, para apagarlo, subir o bajar el volumen o abrir una aplicación, y le manda Spotify por Cast.',
+        es: 'El proyector del salón, un Android TV. El puente implementa él mismo su protocolo de mando a distancia, sin librerías, para apagarlo, subir o bajar el volumen o abrir una aplicación, y le manda Spotify por Cast.',
       },
       tags: [
         'Android TV',
@@ -347,7 +353,7 @@ export const tablux: SystemMap = {
       glyph: 'wave',
       body: {
         en: 'Turns the assistant’s answers into speech with Piper voices, each screen in the one it chose. The main one is my own: a Piper voice fine-tuned on Runpod from a public Spanish checkpoint. If it fails, Google’s voice answers instead.',
-        es: 'Convierte en voz las respuestas del asistente con voces de Piper, cada pantalla con la que eligió. La principal es propia: una voz de Piper afinada en Runpod a partir de un modelo público en español. Si falla, contesta la voz de Google.',
+        es: 'Convierte en voz las respuestas del asistente con voces de Piper, cada pantalla con la que haya elegido. La principal es propia: una voz de Piper afinada en Runpod a partir de un modelo público en español. Si falla, contesta la voz de Google.',
       },
       tags: [
         'Piper',
@@ -386,7 +392,7 @@ export const tablux: SystemMap = {
       glyph: 'cloud',
       body: {
         en: 'The Smart Life account behind the plugs and bulbs. The app uses it to find new plugs and their local keys, which it hands to the bridge; to read and change the schedules Smart Life runs in its own cloud; and to copy a new name back. It only switches a plug when the bridge can’t reach it or is down.',
-        es: 'La cuenta de Smart Life de enchufes y bombillas. La aplicación la usa para descubrir enchufes nuevos y sus claves locales, que pasa al puente; para leer y cambiar los horarios que Smart Life ejecuta en su propia nube, y para devolverle un nombre nuevo. Solo enciende o apaga un enchufe cuando el puente no llega a él o está caído.',
+        es: 'La cuenta de Smart Life de enchufes y bombillas. La aplicación la usa para descubrir enchufes nuevos y sus claves locales, que pasa al puente; para leer y cambiar los horarios que Smart Life ejecuta en su propia nube, y para sincronizar los cambios de nombre. Solo enciende o apaga un enchufe cuando el puente no llega a él o está caído.',
       },
       tags: [
         'Tuya',
@@ -418,7 +424,7 @@ export const tablux: SystemMap = {
       glyph: 'bubble',
       body: {
         en: 'Reads what was said and answers with the same tools the app has, so one sentence can dim a light, plan the week’s menu or start a timer. Asked how the app works, it reads the app’s own guide instead of making it up. If it fails, a backup model answers.',
-        es: 'Entiende lo que se le dice y responde con las mismas herramientas que tiene la aplicación: con una frase se baja una luz, se planea el menú de la semana o se pone un temporizador. Si le preguntan cómo funciona la aplicación, consulta su propia guía en vez de inventárselo. Si falla, responde un modelo de reserva.',
+        es: 'Entiende lo que se le dice y responde con las mismas herramientas que tiene la aplicación: con una frase se baja una luz, se planifica el menú de la semana o se pone un temporizador. Si le preguntan cómo funciona la aplicación, consulta su propia guía en vez de inventárselo. Si falla, responde un modelo de reserva.',
       },
       tags: [
         { en: 'Tool use', es: 'Herramientas' },
@@ -507,7 +513,7 @@ export const tablux: SystemMap = {
       glyph: 'key',
       body: {
         en: 'Any assistant that speaks MCP can run the house through the app’s MCP server, with a personal key.',
-        es: 'Cualquier asistente que hable MCP puede llevar la casa a través del servidor MCP de la aplicación, con una clave personal.',
+        es: 'Cualquier asistente compatible con MCP puede llevar la casa a través del servidor MCP de la aplicación, con una clave personal.',
       },
       tags: ['MCP'],
       at: { x: 888, y: 681 },
@@ -537,7 +543,7 @@ export const tablux: SystemMap = {
       from: 'linux',
       to: part,
       kind: 'local' as const,
-      label: { en: 'runs on it', es: 'corre sobre él' },
+      label: { en: 'runs on it', es: 'se ejecuta sobre él' },
     })),
     // On the wall
     {
@@ -805,7 +811,7 @@ export const tablux: SystemMap = {
           nodes: ['listener'],
           caption: {
             en: 'The wall hears the wake word itself, with a model of my own.',
-            es: 'La pared oye ella misma la palabra de activación, con un modelo mío.',
+            es: 'La propia pared detecta la palabra de activación, con un modelo mío.',
           },
         },
         {

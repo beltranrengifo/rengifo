@@ -167,6 +167,51 @@ const allProjects: Project[] = [
     code: 'private',
   },
   {
+    slug: 'infrastructure',
+    name: 'rengifo.dev infrastructure',
+    rowKey: 'proj_infrastructure_desc',
+    taglineKey: 'cs_infrastructure_tagline',
+    introKey: 'cs_infrastructure_intro',
+    systemMap: 'infrastructure',
+    stack: [
+      'VPS (ARM) · Coolify · Docker',
+      'Supabase (self-hosted) · Postgres 17',
+      'Python · ONNX Runtime',
+      'Tailscale',
+      'Backblaze B2 · rclone · restic',
+      'Uptime Kuma',
+    ],
+    notes: [
+      {
+        headingKey: 'cs_infrastructure_n1_h',
+        bodyKey: 'cs_infrastructure_n1_b',
+      },
+      {
+        headingKey: 'cs_infrastructure_n2_h',
+        bodyKey: 'cs_infrastructure_n2_b',
+      },
+      {
+        headingKey: 'cs_infrastructure_n3_h',
+        bodyKey: 'cs_infrastructure_n3_b',
+      },
+      {
+        headingKey: 'cs_infrastructure_n4_h',
+        bodyKey: 'cs_infrastructure_n4_b',
+      },
+      {
+        headingKey: 'cs_infrastructure_n5_h',
+        bodyKey: 'cs_infrastructure_n5_b',
+      },
+      {
+        headingKey: 'cs_infrastructure_n6_h',
+        bodyKey: 'cs_infrastructure_n6_b',
+      },
+    ],
+    // The map below the intro shows the whole setup.
+    screenshots: [],
+    code: 'private',
+  },
+  {
     slug: 'ensayadero',
     name: 'Ensayadero.studio',
     rowKey: 'proj_ensayadero_desc',
@@ -174,7 +219,7 @@ const allProjects: Project[] = [
     introKey: 'cs_ensayadero_intro',
     stack: [
       'Next.js 16 · React 19',
-      'Supabase',
+      'Supabase (self-hosted)',
       'Tone.js · wavesurfer',
       'Python — Demucs, Basic Pitch, Omnizart',
       'TensorFlow · PyTorch',
@@ -261,8 +306,8 @@ const allProjects: Project[] = [
     stack: [
       'Python 3.14 · FastAPI',
       'Claude API',
-      'pgvector on Supabase',
-      'Hugging Face inference',
+      'pgvector on Supabase (self-hosted)',
+      'Embeddings on ONNX Runtime (self-hosted)',
       'React 19 · Vite',
       'whisper.cpp',
       'Vercel',
@@ -362,7 +407,7 @@ const allProjects: Project[] = [
     stack: [
       'Astro 5 (SSR)',
       'React islands',
-      'Supabase — Postgres, Auth, RLS',
+      'Supabase (self-hosted) — Postgres, Auth, RLS',
       'Snipcart',
       'Playwright',
       'Vercel',
@@ -489,7 +534,7 @@ const allProjects: Project[] = [
     introKey: 'cs_paellalab_intro',
     stack: [
       'Astro 5 · React 19',
-      'Supabase',
+      'Supabase (self-hosted)',
       'Groq — Llama 3.3 70B',
       'Hugging Face embeddings',
       'Framer Motion · Radix',

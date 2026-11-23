@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import Header from './Header.astro';
 import ContactFooter from './ContactFooter.astro';
 import SystemMap from './SystemMap.astro';
+import { systemMaps } from '../data/systemMaps';
 import { t, resolveLocale, homeHref, contact } from '../lib/i18n';
 import type { CaseStudy } from '../data/caseStudies';
 
@@ -58,7 +59,7 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
               class="text-body mt-5 mb-0 max-w-[620px] text-[17px] leading-[1.65]"
               style={`animation: fadeUp 0.8s 0.25s ${EASE} both;`}
             >
-              {t('map_intro', locale)}
+              {systemMaps[study.systemMap].intro[locale]}
             </p>
           )
         }

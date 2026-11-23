@@ -1,0 +1,596 @@
+import type { SystemMap } from './types';
+
+/**
+ * The server behind my apps' backends, part by part: what reaches it from
+ * the internet, what runs on it, where its copies go and how it gets back
+ * home. Positions are in a 1000 × 760 map; on a phone the zones stack and
+ * the nodes flow in this order instead.
+ *
+ * Generic by design: the apps are never named or counted (whatever there is
+ * one of per app is drawn as a stack of cards), there is no money, no provider
+ * by name, and no addresses, hosts, ports or ids.
+ */
+export const infrastructure: SystemMap = {
+  id: 'infrastructure',
+  label: {
+    en: 'Map of the infrastructure behind my apps, part by part',
+    es: 'Mapa de la infraestructura de mis aplicaciones, pieza a pieza',
+  },
+  intro: {
+    en: 'Below, every part of it, down to where the copies go. Choose any part to see what it is and what it talks to, or follow a path through it.',
+    es: 'Aquí debajo están todas sus piezas, también adónde van las copias. Elige una para ver qué es y con qué se comunica, o sigue uno de los recorridos.',
+  },
+  size: { w: 1000, h: 760 },
+
+  zones: [
+    {
+      id: 'internet',
+      label: { en: 'On the internet', es: 'En internet' },
+      box: { x: 10, y: 20, w: 228, h: 520 },
+    },
+    {
+      id: 'mine',
+      label: { en: 'Where I work', es: 'Donde trabajo' },
+      box: { x: 10, y: 580, w: 228, h: 160 },
+    },
+    {
+      id: 'tunnel',
+      label: { en: 'A private network', es: 'Una red privada' },
+      box: { x: 232, y: 630, w: 48, h: 60 },
+      tunnel: true,
+    },
+    {
+      id: 'vps',
+      label: { en: 'On my VPS', es: 'En mi VPS' },
+      box: { x: 274, y: 20, w: 466, h: 720 },
+      host: 'vps',
+    },
+    {
+      id: 'copies',
+      label: { en: 'Copies and alerts', es: 'Copias y alertas' },
+      box: { x: 764, y: 20, w: 226, h: 430 },
+      outside: true,
+    },
+    {
+      id: 'home',
+      label: { en: 'At home', es: 'En casa' },
+      box: { x: 764, y: 490, w: 226, h: 250 },
+      // The wires down from the copies cross its top edge on the left.
+      titleEnd: true,
+    },
+  ],
+
+  nodes: [
+    // ── On the internet ─────────────────────────────────────────
+    {
+      id: 'browsers',
+      zone: 'internet',
+      label: { en: 'Browsers', es: 'Navegadores' },
+      sub: { en: 'Anyone using an app', es: 'Cualquier usuario' },
+      glyph: 'globe',
+      body: {
+        en: 'Whoever opens one of my apps, from anywhere. They only ever reach the apps: everything else on the server is closed to them.',
+        es: 'Cualquiera que abra una de mis aplicaciones, desde cualquier sitio. Solo llega a las aplicaciones: el resto del servidor está cerrado.',
+      },
+      tags: ['HTTPS'],
+      at: { x: 124, y: 110 },
+    },
+    {
+      id: 'frontends',
+      zone: 'internet',
+      label: { en: 'Frontends', es: 'Frontends' },
+      sub: { en: 'On Vercel', es: 'En Vercel' },
+      glyph: 'window',
+      many: true,
+      body: {
+        en: 'Each app’s frontend stays on Vercel, on purpose: a CDN, previews and instant rollbacks that a server of my own would not beat. Only the backends moved, and the frontends point at their own Supabase on the VPS.',
+        es: 'El frontend de cada aplicación sigue en Vercel a propósito: CDN, previews y rollback inmediato, algo que un servidor propio no mejoraría. Solo se migraron los backends, y cada frontend apunta a su propio Supabase en el VPS.',
+      },
+      tags: [
+        'Vercel',
+        { en: 'One per app', es: 'Uno por aplicación' },
+        'supabase-js',
+      ],
+      at: { x: 124, y: 250 },
+    },
+    {
+      id: 'esp32',
+      zone: 'internet',
+      label: { en: 'ESP32 devices', es: 'Dispositivos ESP32' },
+      sub: { en: 'Sensors', es: 'Sensores' },
+      glyph: 'antenna',
+      drawing: 'esp32',
+      body: {
+        en: 'Small boards out in the world that send their readings straight to their app’s Supabase, over HTTPS. When the backend moved, they switched over the air, with a firmware update.',
+        es: 'Placas repartidas por ahí que envían sus lecturas directamente al Supabase de su aplicación, por HTTPS. Cuando se migró el backend, se actualizaron en remoto con un firmware nuevo.',
+      },
+      tags: ['ESP32', 'OTA', 'HTTPS'],
+      at: { x: 124, y: 400 },
+    },
+
+    // ── Where I work ────────────────────────────────────────────
+    {
+      id: 'laptop',
+      zone: 'mine',
+      label: { en: 'My laptop', es: 'Mi portátil' },
+      sub: { en: 'On Tailscale', es: 'En Tailscale' },
+      glyph: 'laptop',
+      drawing: 'laptop',
+      body: {
+        en: 'Where I run it all from. It reaches the server only through Tailscale: SSH and the panels, and nothing else.',
+        es: 'Desde aquí lo administro todo. Al servidor solo accedo por Tailscale: SSH y paneles, nada más.',
+      },
+      tags: ['Tailscale', 'SSH'],
+      at: { x: 124, y: 660 },
+    },
+
+    // ── A private network ───────────────────────────────────────
+    {
+      id: 'tailscale',
+      zone: 'tunnel',
+      label: { en: 'Tailscale', es: 'Tailscale' },
+      sub: { en: 'VPN', es: 'VPN' },
+      glyph: 'tunnel',
+      body: {
+        en: 'A private network between my own devices and the server. SSH and the panels answer only here, so all the internet sees is the apps. Tailscale SSH lets me in by identity, with no keys to copy around.',
+        es: 'Una red privada entre mis dispositivos y el servidor. SSH y los paneles solo responden aquí, así que desde internet solo se ven las aplicaciones. Con Tailscale SSH accedo con mi identidad, sin ir copiando claves.',
+      },
+      tags: [
+        'Tailscale',
+        'Tailscale SSH',
+        {
+          en: 'Admin closed to the internet',
+          es: 'Administración cerrada a internet',
+        },
+      ],
+      at: { x: 256, y: 660 },
+    },
+
+    // ── On my VPS ───────────────────────────────────────────────
+    {
+      id: 'vps',
+      zone: 'vps',
+      label: { en: 'My VPS', es: 'Mi VPS' },
+      sub: { en: 'ARM · Coolify', es: 'ARM · Coolify' },
+      glyph: 'server',
+      drawing: 'server',
+      body: {
+        en: 'One ARM VPS for every backend. A machine of my own instead of a managed project per app: cheaper by design, and a new app is one more instance on it, with plenty of room left to grow. The provider keeps snapshots of the whole server.',
+        es: 'Un único VPS ARM para todos los backends. Una máquina propia en lugar de un proyecto gestionado por aplicación: más barato por diseño, y cada aplicación nueva es una instancia más, con margen de sobra para crecer. El proveedor hace copias del servidor completo.',
+      },
+      tags: ['VPS', 'ARM', 'Docker', 'Coolify'],
+    },
+    {
+      id: 'traefik',
+      zone: 'vps',
+      label: { en: 'Traefik', es: 'Traefik' },
+      sub: { en: 'HTTPS', es: 'HTTPS' },
+      glyph: 'route',
+      body: {
+        en: 'The server’s only door to the internet. It serves every app over HTTPS, with certificates that renew themselves, and hands each request to the app it is for.',
+        es: 'La única puerta del servidor a internet. Sirve cada aplicación por HTTPS, con certificados que se renuevan solos, y enruta cada petición a su aplicación.',
+      },
+      tags: ['Traefik', 'Let’s Encrypt', 'TLS'],
+      at: { x: 392, y: 200 },
+    },
+    {
+      id: 'supabase',
+      zone: 'vps',
+      label: { en: 'Supabase', es: 'Supabase' },
+      sub: { en: 'One per app', es: 'Uno por aplicación' },
+      glyph: 'db',
+      many: true,
+      body: {
+        en: 'Every app gets a Supabase of its own, self-hosted from one trimmed template. Each instance runs only the services its app uses, and one app’s users and tokens are never valid in another. A new app is one more instance on the same machine, and its code doesn’t change: only the URL and the keys.',
+        es: 'Cada aplicación tiene su propio Supabase, autoalojado a partir de una plantilla reducida. Cada instancia levanta solo los servicios que usa su aplicación, y los usuarios y tokens de una no sirven en otra. Una aplicación nueva es una instancia más en la misma máquina, y su código no cambia: solo la URL y las claves.',
+      },
+      tags: [
+        'Postgres 17',
+        'Auth',
+        'Storage',
+        { en: 'Trimmed template', es: 'Plantilla recortada' },
+      ],
+      at: { x: 622, y: 130 },
+    },
+    {
+      id: 'app',
+      zone: 'vps',
+      label: { en: 'App container', es: 'Contenedor' },
+      sub: { en: 'Built from its repo', es: 'Desde su repositorio' },
+      glyph: 'box',
+      many: true,
+      body: {
+        en: 'When an app needs a backend of its own beyond Supabase, it runs here as a container. Coolify builds it from its GitHub repo on every push and keeps it next to its Supabase.',
+        es: 'Cuando una aplicación necesita un backend propio además de Supabase, se ejecuta aquí como contenedor. Coolify lo compila desde su repositorio de GitHub en cada push y lo despliega junto a su Supabase.',
+      },
+      tags: [
+        'Docker',
+        'GitHub',
+        { en: 'Deploys on push', es: 'Despliegue con cada push' },
+      ],
+      at: { x: 622, y: 280 },
+    },
+    {
+      id: 'embeddings',
+      zone: 'vps',
+      label: { en: 'Embeddings', es: 'Embeddings' },
+      sub: { en: 'ONNX Runtime', es: 'ONNX Runtime' },
+      glyph: 'vector',
+      body: {
+        en: 'Turns text into vectors for one of the apps. When the hosted inference it relied on stopped answering, the same model moved here: identical vectors, behind a token.',
+        es: 'Genera embeddings de texto para una de las aplicaciones. Cuando dejó de responder la inferencia alojada de la que dependía, el mismo modelo pasó a ejecutarse aquí: vectores idénticos, protegido con un token.',
+      },
+      tags: [
+        'Python',
+        'ONNX Runtime',
+        { en: 'Same model', es: 'El mismo modelo' },
+      ],
+      at: { x: 622, y: 420 },
+    },
+    {
+      id: 'coolify',
+      zone: 'vps',
+      label: { en: 'Coolify', es: 'Coolify' },
+      sub: { en: 'Deploys and copies', es: 'Despliega y copia' },
+      glyph: 'panel',
+      body: {
+        en: 'The panel the whole server runs on: it deploys every service, dumps every database each night and tells my phone when something fails. It updates itself, and it is never open to the internet, only over Tailscale.',
+        es: 'El panel con el que se gestiona todo el servidor: despliega cada servicio, hace cada noche un volcado de cada base de datos y me avisa al móvil si algo falla. Se actualiza solo y nunca está expuesto a internet: solo se entra por Tailscale.',
+      },
+      tags: [
+        'Coolify',
+        'Docker',
+        { en: 'Auto-updates', es: 'Actualizaciones automáticas' },
+        '2FA',
+      ],
+      at: { x: 392, y: 520 },
+    },
+    {
+      id: 'kuma',
+      zone: 'vps',
+      label: { en: 'Uptime Kuma', es: 'Uptime Kuma' },
+      sub: { en: 'Monitoring', es: 'Monitorización' },
+      glyph: 'pulse',
+      body: {
+        en: 'Checks every site and every Supabase from the server itself, and alerts my phone when one goes down. The copy at home checks in with it every day; if it goes quiet, that is an alert too. Its panel, like the rest, only over Tailscale.',
+        es: 'Comprueba cada web y cada Supabase desde el propio servidor, y me avisa al móvil si alguno se cae. La copia de casa informa cada día; si deja de hacerlo, también salta una alerta. Su panel, como el resto, solo es accesible por Tailscale.',
+      },
+      tags: ['Uptime Kuma', { en: 'Push monitor', es: 'Monitor push' }],
+      at: { x: 622, y: 600 },
+    },
+
+    // ── Copies and alerts ───────────────────────────────────────
+    {
+      id: 'b2',
+      zone: 'copies',
+      label: { en: 'Backblaze B2', es: 'Backblaze B2' },
+      sub: { en: 'Every night', es: 'Cada noche' },
+      glyph: 'bucket',
+      body: {
+        en: 'Off the server, every night: a dump of each app’s Postgres and its Storage files, kept for 30 days. Tested: a database restore and a file restore.',
+        es: 'Fuera del servidor, cada noche: un volcado del Postgres de cada aplicación y sus archivos de Storage, con 30 días de retención. Restauración probada de una base de datos y de un archivo.',
+      },
+      tags: [
+        'Backblaze B2',
+        'pg_dump',
+        'rclone',
+        { en: '30 days', es: '30 días' },
+      ],
+      at: { x: 877, y: 110 },
+    },
+    {
+      id: 'snapshots',
+      zone: 'copies',
+      label: { en: 'Server snapshots', es: 'Copias del servidor' },
+      sub: { en: 'By the provider', es: 'Del proveedor' },
+      glyph: 'snapshot',
+      body: {
+        en: 'The VPS provider’s own backups of the whole server: a second layer that doesn’t depend on anything running on it.',
+        es: 'Las copias del servidor completo que hace el proveedor del VPS: una segunda capa que no depende de nada de lo que se ejecuta en él.',
+      },
+      tags: [{ en: 'Whole server', es: 'Servidor entero' }],
+      at: { x: 877, y: 240 },
+    },
+    {
+      id: 'phone',
+      zone: 'copies',
+      label: { en: 'My phone', es: 'Mi móvil' },
+      sub: { en: 'Alerts', es: 'Avisos' },
+      glyph: 'phone',
+      drawing: 'phone',
+      body: {
+        en: 'Where the alerts land: a site or an instance down, a failed deploy, and the copy at home, with a quiet OK or a failure that rings.',
+        es: 'Aquí llegan las alertas: una web o una instancia caída, un despliegue fallido y el resultado de la copia de casa, con un OK silencioso o una alerta que suena.',
+      },
+      tags: ['ntfy', 'Telegram'],
+      at: { x: 877, y: 370 },
+    },
+
+    // ── At home ─────────────────────────────────────────────────
+    {
+      id: 'pi',
+      zone: 'home',
+      label: { en: 'Raspberry Pi', es: 'Raspberry Pi' },
+      sub: { en: 'Pulls the copies', es: 'Se trae las copias' },
+      glyph: 'board',
+      drawing: 'pi',
+      body: {
+        en: 'Every morning it pulls everything in B2 with a read-only key: it reaches out, and nothing on the server can reach it. It also keeps a mirror of every one of my GitHub repos. Then it hands it all to restic, on the NAS, and reports how it went.',
+        es: 'Cada mañana descarga todo lo que hay en B2 con una clave de solo lectura: es ella la que va a buscarlo, y nada del servidor puede llegar hasta ella. También guarda un espejo de todos mis repositorios de GitHub. Después lo guarda todo con restic en el NAS e informa del resultado.',
+      },
+      tags: [
+        'Raspberry Pi',
+        'rclone',
+        'restic',
+        { en: 'Read-only key', es: 'Clave de solo lectura' },
+        { en: 'GitHub mirrors', es: 'Espejos de GitHub' },
+      ],
+      at: { x: 877, y: 570 },
+    },
+    {
+      id: 'nas',
+      zone: 'home',
+      label: { en: 'NAS', es: 'NAS' },
+      sub: { en: 'Encrypted copy', es: 'Copia cifrada' },
+      glyph: 'nas',
+      drawing: 'nas',
+      body: {
+        en: 'The third copy, encrypted and versioned with restic, out of reach of anyone who gets into the server. Full restores tested, of the databases and of every repo.',
+        es: 'La tercera copia, cifrada y versionada con restic, fuera del alcance de quien acceda al servidor. Restauraciones completas probadas, de las bases de datos y de cada repositorio.',
+      },
+      tags: [
+        'restic',
+        { en: 'Encrypted', es: 'Cifrada' },
+        { en: 'Versioned', es: 'Con versiones' },
+      ],
+      at: { x: 877, y: 680 },
+    },
+  ],
+
+  edges: [
+    // From the internet, only the apps
+    {
+      from: 'browsers',
+      to: 'frontends',
+      kind: 'https',
+      label: { en: 'the app', es: 'la aplicación' },
+    },
+    {
+      from: 'browsers',
+      to: 'traefik',
+      kind: 'https',
+      label: {
+        en: 'an app served from here',
+        es: 'una aplicación servida desde aquí',
+      },
+    },
+    {
+      from: 'frontends',
+      to: 'traefik',
+      kind: 'https',
+      label: { en: 'data and sign-in', es: 'datos y acceso' },
+    },
+    {
+      from: 'esp32',
+      to: 'traefik',
+      kind: 'https',
+      label: { en: 'readings', es: 'lecturas' },
+    },
+    // Inside the server
+    {
+      from: 'traefik',
+      to: 'supabase',
+      kind: 'local',
+      label: { en: 'each app to its own', es: 'cada aplicación al suyo' },
+    },
+    {
+      from: 'traefik',
+      to: 'app',
+      kind: 'local',
+      label: { en: 'its requests', es: 'sus peticiones' },
+    },
+    {
+      from: 'traefik',
+      to: 'embeddings',
+      kind: 'local',
+      label: { en: 'with a token', es: 'con un token' },
+    },
+    {
+      from: 'coolify',
+      to: 'supabase',
+      kind: 'local',
+      label: { en: 'runs and dumps each one', es: 'levanta y vuelca cada uno' },
+    },
+    {
+      from: 'coolify',
+      to: 'app',
+      kind: 'local',
+      label: {
+        en: 'builds it on every push',
+        es: 'lo compila en cada push',
+      },
+    },
+    {
+      from: 'coolify',
+      to: 'embeddings',
+      kind: 'local',
+      label: { en: 'runs it', es: 'lo levanta' },
+    },
+    // The only way in for me
+    {
+      from: 'laptop',
+      to: 'tailscale',
+      kind: 'tailscale',
+      label: { en: 'SSH · the panels', es: 'SSH · los paneles' },
+    },
+    {
+      from: 'tailscale',
+      to: 'coolify',
+      kind: 'tailscale',
+      label: { en: 'the panel', es: 'el panel' },
+    },
+    {
+      from: 'tailscale',
+      to: 'kuma',
+      kind: 'tailscale',
+      label: { en: 'its panel', es: 'su panel' },
+    },
+    // Copies, all the way home
+    {
+      from: 'supabase',
+      to: 'b2',
+      kind: 'backup',
+      label: { en: 'every night', es: 'cada noche' },
+    },
+    {
+      from: 'b2',
+      to: 'pi',
+      kind: 'backup',
+      label: { en: 'read-only key', es: 'clave de solo lectura' },
+    },
+    {
+      from: 'pi',
+      to: 'nas',
+      kind: 'backup',
+      label: { en: 'encrypted, with restic', es: 'cifrada, con restic' },
+    },
+    // Alerts
+    {
+      from: 'pi',
+      to: 'kuma',
+      kind: 'tailscale',
+      label: { en: 'checks in every day', es: 'se reporta cada día' },
+    },
+    {
+      from: 'kuma',
+      to: 'phone',
+      kind: 'https',
+      label: { en: 'alerts', es: 'avisos' },
+    },
+    {
+      from: 'pi',
+      to: 'phone',
+      kind: 'https',
+      label: { en: 'OK, or a failure', es: 'OK, o un fallo' },
+    },
+  ],
+
+  walkthroughs: [
+    {
+      id: 'request',
+      title: {
+        en: 'A request from an app',
+        es: 'Una petición de una aplicación',
+      },
+      steps: [
+        {
+          nodes: ['browsers', 'frontends'],
+          caption: {
+            en: 'Someone opens one of my apps: the page comes from Vercel.',
+            es: 'Alguien abre una de mis aplicaciones: la página se sirve desde Vercel.',
+          },
+        },
+        {
+          nodes: ['frontends', 'traefik'],
+          caption: {
+            en: 'Its calls for data go to the VPS, where Traefik takes them over HTTPS.',
+            es: 'Sus peticiones de datos van al VPS, y Traefik las recibe por HTTPS.',
+          },
+        },
+        {
+          nodes: ['traefik', 'supabase'],
+          caption: {
+            en: 'Each one reaches only that app’s own Supabase: its users, its data, its files.',
+            es: 'Cada una llega solo al Supabase de su aplicación: sus usuarios, sus datos, sus archivos.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'nightly',
+      title: {
+        en: 'The nightly copy, all the way home',
+        es: 'La copia de cada noche, hasta casa',
+      },
+      steps: [
+        {
+          nodes: ['coolify', 'supabase'],
+          caption: {
+            en: 'Every night, Coolify dumps each app’s Postgres.',
+            es: 'Cada noche, Coolify hace un volcado del Postgres de cada aplicación.',
+          },
+        },
+        {
+          nodes: ['supabase', 'b2'],
+          caption: {
+            en: 'The dumps and the Storage files leave the server for Backblaze B2.',
+            es: 'Los volcados y los archivos de Storage salen del servidor hacia Backblaze B2.',
+          },
+        },
+        {
+          nodes: ['b2', 'pi'],
+          caption: {
+            en: 'In the morning, the Pi at home pulls it all with a read-only key.',
+            es: 'Por la mañana, la Pi de casa lo descarga todo con una clave de solo lectura.',
+          },
+        },
+        {
+          nodes: ['pi', 'nas'],
+          caption: {
+            en: 'Encrypted with restic, on the NAS: out of reach of anyone who gets into the server.',
+            es: 'Se cifra con restic y se guarda en el NAS, fuera del alcance de quien acceda al servidor.',
+          },
+        },
+        {
+          nodes: ['pi', 'kuma', 'phone'],
+          caption: {
+            en: 'And it reports back: a quiet OK, or an alert that rings.',
+            es: 'Y lo notifica: un OK silencioso o una alerta que suena.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'admin',
+      title: { en: 'Administering it', es: 'Administrarlo' },
+      steps: [
+        {
+          nodes: ['laptop', 'tailscale'],
+          caption: {
+            en: 'From my laptop, the way in is Tailscale, a private network.',
+            es: 'Desde mi portátil, entro por Tailscale, una red privada.',
+          },
+        },
+        {
+          nodes: ['tailscale', 'coolify', 'kuma'],
+          caption: {
+            en: 'SSH and the panels only answer there.',
+            es: 'SSH y los paneles solo responden ahí.',
+          },
+        },
+        {
+          nodes: ['browsers', 'traefik'],
+          caption: {
+            en: 'From the internet, only the apps answer. Nothing else is open.',
+            es: 'Desde internet solo responden las aplicaciones. No hay nada más abierto.',
+          },
+        },
+      ],
+    },
+  ],
+
+  offline: {
+    label: { en: 'If the server dies', es: 'Si se cae el servidor' },
+    glyph: 'server',
+    note: {
+      en: 'If the server dies, the apps stop with it, but their data survives: last night’s copies are in Backblaze B2, the provider keeps snapshots of the whole server, and the NAS at home has its own encrypted copy.',
+      es: 'Si se cae el servidor, las aplicaciones caen con él, pero sus datos están a salvo: las copias de anoche están en Backblaze B2, el proveedor tiene copias del servidor completo y el NAS de casa guarda la suya, cifrada.',
+    },
+    keep: ['b2', 'snapshots', 'pi', 'nas'],
+    lose: ['vps', 'tunnel'],
+  },
+
+  // Traefik's wires to everything that reaches it from the internet run as
+  // one trunk, in the gap between the two zones.
+  bundles: [{ from: 'traefik', zone: 'internet', trunk: 'vps' }],
+};

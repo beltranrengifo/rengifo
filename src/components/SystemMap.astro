@@ -2,8 +2,8 @@
 /*
  * An explorable map of how a system fits together. Zones hold the parts;
  * a part opens its panel (what it is, what it does, what it talks to); a
- * walkthrough lights a path through the map one step at a time; «no
- * internet» shows what keeps working at home.
+ * walkthrough lights a whole path at once, its steps listed beside it; a
+ * toggle («no internet», or whatever the map names) shows what still stands.
  *
  * The data lives in src/data/systemMaps; this draws any of them. Wires are
  * drawn in the browser from where the parts actually sit, so the same map
@@ -19,7 +19,6 @@ import type {
 } from '../data/systemMaps/types';
 import { glyphs, drawings } from './systemMap/art';
 import Part from './systemMap/Part.astro';
-import Controls from './systemMap/Controls.astro';
 import { t, resolveLocale, localisedPath } from '../lib/i18n';
 
 interface Props {
@@ -68,15 +67,19 @@ const placeOf = (node: MapNode) => {
   return parent ? say(parent.label) : say(zone.label);
 };
 
-// The legend leaves out the wires inside one machine: they stay in their
-// zone and read for themselves.
-const legendKinds: EdgeKind[] = [
-  'https',
-  'tailscale',
-  'lan',
-  'audio',
-  'training',
-];
+// The legend lists the kinds of wire this map uses, leaving out the ones
+// inside one machine: they stay in their zone and read for themselves.
+const usedKinds = new Set(map.edges.map((edge) => edge.kind));
+const legendKinds = (
+  [
+    'https',
+    'tailscale',
+    'lan',
+    'audio',
+    'training',
+    'backup',
+  ] satisfies EdgeKind[]
+).filter((kind) => usedKinds.has(kind));
 const kindLabel = (kind: EdgeKind) => t(`map_kind_${kind}`, locale);
 
 // What each part talks to, for its panel.
@@ -123,17 +126,13 @@ const clientData = {
   walks: Object.fromEntries(
     map.walkthroughs.map((walk) => [
       walk.id,
-      walk.steps.map((step) => ({
-        nodes: step.nodes,
-        caption: say(step.caption),
-      })),
+      walk.steps.map((step) => step.nodes),
     ]),
   ),
   offline: map.offline
     ? { keep: map.offline.keep, lose: map.offline.lose }
     : null,
   bundles: map.bundles ?? [],
-  stepOf: t('map_step', locale, { n: '{n}', total: '{total}' }),
 };
 ---
 
@@ -164,12 +163,22 @@ const clientData = {
           aria-pressed="false"
           aria-controls={`${uid}-offline`}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0" />
-            <circle cx="12" cy="19.2" r="1" />
-            <path class="smap-offline-cut" d="M4 3.5l16 17" />
-          </svg>
-          {t('map_offline', locale)}
+          {map.offline.glyph ? (
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              set:html={`${glyphs[map.offline.glyph]}<path class="smap-offline-cut" d="M4 3.5l16 17"/>`}
+            />
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0" />
+              <circle cx="12" cy="19.2" r="1" />
+              <path class="smap-offline-cut" d="M4 3.5l16 17" />
+            </svg>
+          )}
+          {map.offline.label
+            ? say(map.offline.label)
+            : t('map_offline', locale)}
         </button>
       )
     }
@@ -204,7 +213,14 @@ const clientData = {
         {
           topZones.map((zone) => (
             <div
-              class:list={['smap-zone', { 'smap-tunnel': zone.tunnel }]}
+              class:list={[
+                'smap-zone',
+                {
+                  'smap-tunnel': zone.tunnel,
+                  'smap-outside': zone.outside,
+                  'smap-title-end': zone.titleEnd,
+                },
+              ]}
               data-zone={zone.id}
               style={boxStyle(zone.box, whole)}
             >
@@ -221,7 +237,10 @@ const clientData = {
 
               {childZones(zone).map((child) => (
                 <div
-                  class="smap-zone smap-subzone"
+                  class:list={[
+                    'smap-zone smap-subzone',
+                    { 'smap-outside': child.outside },
+                  ]}
                   data-zone={child.id}
                   style={boxStyle(child.box, zone.box)}
                 >
@@ -262,15 +281,6 @@ const clientData = {
           ))
         }
       </div>
-
-      <div class="smap-player" data-smap-player hidden>
-        <ol class="smap-dots" aria-hidden="true" data-smap-dots></ol>
-        <p class="smap-caption" aria-live="polite">
-          <span class="smap-step-n" data-smap-step-n></span>
-          <span data-smap-caption></span>
-        </p>
-        <Controls locale={locale} />
-      </div>
     </div>
 
     <div class="smap-side">
@@ -280,25 +290,6 @@ const clientData = {
           <h3>{t('map_pick_h', locale)}</h3>
           <p>{t('map_pick_b', locale)}</p>
         </div>
-
-        {
-          map.walkthroughs.map((walk) => (
-            <div class="smap-steps" data-smap-steps={walk.id} hidden>
-              <p class="smap-kicker">{t('map_walks', locale)}</p>
-              <h3>{say(walk.title)}</h3>
-              <Controls locale={locale} />
-              <ol>
-                {walk.steps.map((step, i) => (
-                  <li>
-                    <button type="button" data-smap-goto-step={i}>
-                      {say(step.caption)}
-                    </button>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))
-        }
 
         <div class="smap-legend">
           <p class="smap-kicker">{t('map_legend', locale)}</p>
@@ -429,6 +420,32 @@ const clientData = {
                   </>
                 )
               )}
+            </section>
+          ))
+        }
+
+        {
+          map.walkthroughs.map((walk) => (
+            <section data-panel-walk={walk.id} hidden>
+              <p class="smap-kicker">{t('map_walks', locale)}</p>
+              <h3>{say(walk.title)}</h3>
+              <p class="smap-walk-hint">{t('map_walk_hint', locale)}</p>
+              <ol class="smap-steps">
+                {walk.steps.map((step, i) => (
+                  <li>
+                    <button
+                      type="button"
+                      data-smap-step={i}
+                      aria-pressed="false"
+                    >
+                      <span class="smap-step-n" aria-hidden="true">
+                        {i + 1}
+                      </span>
+                      <span>{say(step.caption)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
             </section>
           ))
         }
@@ -617,8 +634,7 @@ const clientData = {
     border-color: color-mix(in srgb, var(--ink) 24%, transparent);
     --zone-bg: color-mix(in srgb, var(--ink) 3.5%, var(--canvas));
   }
-  .smap-zone[data-zone='training'],
-  .smap-zone[data-zone='services'] {
+  .smap-outside {
     border-style: dashed;
     --zone-bg: var(--smap-paper);
   }
@@ -630,6 +646,12 @@ const clientData = {
   @media (min-width: 840px) {
     .smap-zone[data-zone='training'] > .smap-zone-label {
       top: 100%;
+    }
+  }
+  @media (min-width: 840px) {
+    .smap-title-end > .smap-zone-label {
+      left: auto;
+      right: 16px;
     }
   }
   /* Out of reach (no internet): hatched, its title struck through. */
@@ -711,7 +733,9 @@ const clientData = {
     border: 1px solid var(--smap-line);
     border-radius: 0.85em;
     background: var(--smap-paper);
-    box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 4%, transparent);
+    box-shadow:
+      0 1px 0 color-mix(in srgb, var(--ink) 4%, transparent),
+      var(--stack);
     font: inherit;
     text-align: left;
     color: var(--color-ink);
@@ -765,6 +789,61 @@ const clientData = {
     color: var(--color-muted);
   }
 
+  /*
+   * One of many alike: a stack, two more cards peeking out behind it. Drawn
+   * as shadows, so the wires still meet the card in front and the cards
+   * behind cover the wires like any other card.
+   */
+  .smap-node {
+    --stack: 0 0 transparent;
+  }
+  .smap-stacked {
+    --stack-gap: 5px;
+    --stack-bg: var(--smap-paper);
+    --stack-line: color-mix(in srgb, var(--ink) 20%, var(--canvas));
+    --stack-line-2: color-mix(in srgb, var(--ink) 13%, var(--canvas));
+    --stack:
+      var(--stack-gap) var(--stack-gap) 0 -1px var(--stack-bg),
+      var(--stack-gap) var(--stack-gap) 0 0 var(--stack-line),
+      calc(var(--stack-gap) * 2) calc(var(--stack-gap) * 2) 0 -1px
+        var(--stack-bg),
+      calc(var(--stack-gap) * 2) calc(var(--stack-gap) * 2) 0 0
+        var(--stack-line-2);
+    box-shadow: var(--stack);
+  }
+  .smap-stacked.is-active,
+  .smap-stacked.is-related,
+  .smap-stacked.is-path {
+    --stack-line: color-mix(in srgb, var(--accent) 55%, var(--canvas));
+    --stack-line-2: color-mix(in srgb, var(--accent) 32%, var(--canvas));
+  }
+
+  /* A lit path's step number, on the card's corner. */
+  .smap-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    min-width: 1.6em;
+    height: 1.6em;
+    padding: 0 0.3em;
+    box-sizing: border-box;
+    transform: translate(-40%, -45%);
+    border-radius: 999px;
+    background: var(--accent);
+    font: 600 10px/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    color: var(--canvas);
+    pointer-events: none;
+  }
+  .smap-badge:empty {
+    display: none;
+  }
+  .smap-node.is-visited .smap-badge {
+    background: color-mix(in srgb, var(--accent) 45%, var(--canvas));
+  }
+
   /* A zone's host is its title, sitting on the zone's top edge. */
   .smap-host {
     left: 16px;
@@ -801,8 +880,9 @@ const clientData = {
    * rest: every card stays solid and legible, just a touch quieter, and
    * always covers the wires behind it.
    */
-  .smap[data-focus] .smap-node:not(.is-active, .is-related, .is-visited) {
-    box-shadow: none;
+  .smap[data-focus]
+    .smap-node:not(.is-active, .is-related, .is-visited, .is-path) {
+    box-shadow: var(--stack);
   }
   .smap[data-focus]
     .smap-node:not(.is-active, .is-related, .is-visited)
@@ -814,6 +894,7 @@ const clientData = {
     background: color-mix(in srgb, var(--accent) 11%, var(--smap-paper));
     box-shadow:
       0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent),
+      var(--stack),
       0 6px 18px color-mix(in srgb, var(--ink) 8%, transparent);
   }
   .smap-node.is-active .smap-glyph,
@@ -830,16 +911,47 @@ const clientData = {
   .smap-node.is-visited {
     border-color: color-mix(in srgb, var(--accent) 40%, var(--smap-line));
   }
+  /* A lit path: every part at once, strongest at the start (--s, 1 → 0.45). */
+  .smap-node.is-path {
+    border-color: color-mix(
+      in srgb,
+      var(--accent) calc(var(--s, 1) * 100%),
+      var(--smap-line)
+    );
+    background: color-mix(
+      in srgb,
+      var(--accent) calc(var(--s, 1) * 12%),
+      var(--smap-paper)
+    );
+    box-shadow:
+      0 0 0 3px
+        color-mix(
+          in srgb,
+          var(--accent) calc(var(--s, 1) * 14%),
+          transparent
+        ),
+      var(--stack);
+  }
+  .smap-node.is-path .smap-glyph,
+  .smap-node.is-path .smap-name {
+    color: color-mix(
+      in srgb,
+      var(--accent) calc(var(--s, 1) * 100%),
+      var(--color-ink)
+    );
+  }
   /* A hover only previews: lighter than a choice. */
   .smap[data-preview] .smap-node.is-active {
     background: color-mix(in srgb, var(--accent) 6%, var(--smap-paper));
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent),
+      var(--stack);
   }
   /* No internet: what keeps working is lit, what is out of reach dashed. */
   .smap-node.is-down {
     border-style: dashed;
     background: var(--zone-bg, var(--smap-paper));
-    box-shadow: none;
+    box-shadow: var(--stack);
   }
   .smap-node.is-down .smap-name {
     color: var(--color-muted);
@@ -874,6 +986,10 @@ const clientData = {
   .k-training {
     stroke-dasharray: 2 6;
   }
+  .k-backup {
+    stroke-width: 1.4;
+    stroke-dasharray: 11 3 2 3;
+  }
   .smap-legend .smap-line,
   .smap-swatch .smap-line {
     stroke-opacity: 0.75;
@@ -904,6 +1020,13 @@ const clientData = {
   }
   .smap-wire.is-lit .k-lan {
     stroke-width: 2.6;
+  }
+  /* A path's wires fade with its steps, like its parts. */
+  .smap-wire.is-path .base {
+    stroke-opacity: var(--s, 1);
+  }
+  .smap-wire.is-path .pulse {
+    opacity: var(--s, 1);
   }
   .smap-wire .pulse {
     fill: none;
@@ -947,63 +1070,6 @@ const clientData = {
     opacity: 1;
   }
 
-  /* ── The player (below the map, on narrower screens) ──────── */
-  .smap-player {
-    z-index: 5;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 6px 18px;
-    margin-top: 18px;
-    padding: 12px 12px 12px 20px;
-    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--canvas) 94%, var(--accent));
-  }
-  .smap-player[hidden] {
-    display: none;
-  }
-  .smap-dots {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 5px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .smap-dots li {
-    flex: 1;
-    max-width: 44px;
-    height: 2px;
-    border-radius: 2px;
-    background: color-mix(in srgb, var(--ink) 14%, transparent);
-    transition: background 0.3s ease;
-  }
-  .smap-dots li.is-done {
-    background: color-mix(in srgb, var(--accent) 45%, transparent);
-  }
-  .smap-dots li.is-now {
-    background: var(--accent);
-  }
-  .smap-caption {
-    margin: 0;
-    font: italic 400 18px/1.4 var(--font-serif);
-    color: var(--color-ink);
-  }
-  .smap-step-n {
-    margin-right: 10px;
-    font: 500 11px var(--font-sans);
-    font-style: normal;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    vertical-align: 2px;
-    color: var(--accent);
-  }
-  .smap-controls {
-    display: flex;
-    gap: 4px;
-  }
-  .smap-controls button,
   .smap-close {
     display: grid;
     place-items: center;
@@ -1019,7 +1085,6 @@ const clientData = {
       background 0.2s ease,
       color 0.2s ease;
   }
-  .smap-controls svg,
   .smap-close svg {
     width: 16px;
     height: 16px;
@@ -1029,31 +1094,9 @@ const clientData = {
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .smap-controls .smap-i-play path {
-    fill: currentColor;
-    stroke-width: 1;
-  }
-  .smap-controls button:hover,
   .smap-close:hover {
     background: color-mix(in srgb, var(--ink) 7%, transparent);
     color: var(--accent);
-  }
-  .smap-controls button:disabled {
-    opacity: 0.3;
-    cursor: default;
-    background: none;
-    color: var(--color-ink);
-  }
-  .smap-controls .smap-end {
-    margin-left: 6px;
-    color: var(--color-muted);
-  }
-  [data-smap-play]:not([data-paused]) .smap-i-play,
-  [data-smap-play][data-paused] .smap-i-pause {
-    display: none;
-  }
-  [data-smap-play][hidden] {
-    display: none;
   }
 
   /* ── Side: what to do, the steps, the lines, and the panel ── */
@@ -1083,25 +1126,25 @@ const clientData = {
     line-height: 1.6;
     color: var(--color-body);
   }
-  .smap-steps[hidden],
   .smap-intro[hidden] {
     display: none;
   }
-  .smap-steps .smap-controls {
-    margin: 6px 0 4px -8px;
+  /* A path's steps: all there at once, numbered, none of them waiting. */
+  .smap-walk-hint {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--color-muted);
   }
-  .smap-steps ol {
-    margin: 8px 0 0;
+  .smap-steps {
+    margin: 0;
     padding: 0;
     list-style: none;
-    counter-reset: step;
   }
-  .smap-steps li {
-    counter-increment: step;
-  }
-  .smap-steps ol button {
+  .smap-steps button {
     display: grid;
-    grid-template-columns: 26px 1fr;
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: baseline;
     width: 100%;
     padding: 8px 0;
     border: 0;
@@ -1109,26 +1152,40 @@ const clientData = {
     background: none;
     font: 14.5px/1.45 var(--font-sans);
     text-align: left;
-    color: var(--color-muted);
+    color: var(--color-body);
     cursor: pointer;
     transition: color 0.2s ease;
   }
-  .smap-steps ol button::before {
-    content: counter(step, decimal-leading-zero);
-    padding-top: 2px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--color-faint);
+  .smap-step-n {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--accent);
+    font: 600 10px/1 var(--font-sans);
+    color: var(--canvas);
+    transform: translateY(-1px);
   }
-  .smap-steps ol button:hover,
-  .smap-steps ol button.is-done {
-    color: var(--color-body);
+  /* The order reads in the list too: the first steps strongest. */
+  .smap-steps li:nth-child(n + 3) .smap-step-n {
+    background: color-mix(in srgb, var(--accent) 80%, var(--canvas));
   }
-  .smap-steps ol button.is-now {
+  .smap-steps li:nth-child(n + 5) .smap-step-n {
+    background: color-mix(in srgb, var(--accent) 62%, var(--canvas));
+  }
+  .smap-steps button:hover {
     color: var(--color-ink);
   }
-  .smap-steps ol button.is-now::before {
-    color: var(--accent);
+  .smap-steps button[aria-pressed='true'] {
+    color: var(--color-ink);
+    box-shadow: inset 2px 0 0 var(--accent);
+    padding-left: 8px;
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+  .smap-steps button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   .smap-legend ul {
     display: grid;
@@ -1375,10 +1432,6 @@ const clientData = {
       position: sticky;
       top: var(--smap-top);
     }
-    /* The steps and their controls live in the side column here. */
-    .smap-player {
-      display: none !important;
-    }
     .smap-rest {
       display: grid;
       gap: 30px;
@@ -1428,21 +1481,41 @@ const clientData = {
   }
 
   @media (max-width: 1279.98px) {
-    .smap-intro,
-    .smap-steps {
+    .smap-intro {
       display: none !important;
     }
-    /* Held at the bottom, compact, right under the framed map. */
-    .smap-player {
-      position: sticky;
-      bottom: 8px;
-      margin-top: 12px;
-      padding: 8px 8px 8px 16px;
-      box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 12%, transparent);
+    /* A path's sheet holds its whole list and never scrolls. Folded (by its
+       handle, or on choosing a step) it keeps the title and the chosen step
+       only, so the map has the screen. */
+    .smap-panel[data-walk] {
+      max-height: none;
+      overflow: hidden;
+      padding-top: 30px;
+      padding-bottom: 14px;
     }
-    .smap-caption {
-      font-size: 16px;
-      line-height: 1.35;
+    .smap-panel[data-walk] h3 {
+      padding-right: 36px;
+      font-size: 24px;
+    }
+    .smap-panel[data-walk] .smap-walk-hint {
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .smap-panel[data-walk] .smap-steps button {
+      padding: 6px 0;
+      font-size: 14px;
+      line-height: 1.38;
+    }
+    .smap-panel[data-folded] .smap-walk-hint,
+    .smap-panel[data-folded] .smap-steps li:not(:has([aria-pressed='true'])) {
+      display: none;
+    }
+    .smap-panel[data-folded] h3 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+    .smap-panel[data-folded] .smap-steps button {
+      border-top: 0;
     }
     .smap-side {
       max-width: 1000px;
@@ -1496,6 +1569,14 @@ const clientData = {
     .smap-node .smap-sub {
       white-space: normal;
     }
+    /* A stack keeps the room its cards behind take, inside its cell. */
+    .smap-stacked {
+      --stack-gap: 4px;
+    }
+    .smap-node.smap-stacked:not(.smap-host) {
+      width: calc(100% - 8px);
+      margin: 0 8px 8px 0;
+    }
     .smap-node.smap-layer {
       grid-column: 1 / -1;
       min-height: 46px;
@@ -1527,7 +1608,7 @@ const clientData = {
     }
     /* Too tall for wires at rest: the sheet tells the connections. */
     .smap:not([data-focus]) .smap-wires,
-    .smap[data-focus] .smap-wire:not(.is-lit) {
+    .smap[data-focus] .smap-wire:not(.is-lit, .is-visited) {
       display: none;
     }
     .smap-labels {
@@ -1547,33 +1628,6 @@ const clientData = {
     .smap-walks button,
     .smap-offline {
       justify-content: flex-start;
-    }
-    /* A compact player, held at the bottom while the path is walked. */
-    .smap-player {
-      position: sticky;
-      bottom: 10px;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 4px 6px;
-      padding: 8px 6px 8px 14px;
-      box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 12%, transparent);
-    }
-    .smap-caption {
-      font-size: 15px;
-      line-height: 1.35;
-    }
-    .smap-step-n {
-      display: block;
-      margin: 0 0 2px;
-    }
-    .smap-player .smap-controls {
-      gap: 0;
-    }
-    .smap-player .smap-controls button {
-      width: 34px;
-      height: 34px;
-    }
-    .smap-player .smap-end {
-      margin-left: 0;
     }
   }
 

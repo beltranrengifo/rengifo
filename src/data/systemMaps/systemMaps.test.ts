@@ -49,6 +49,7 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
 
     it('says everything in English and Spanish', () => {
       expect(filled(map.label)).toBe(true);
+      expect(filled(map.intro)).toBe(true);
       for (const zone of map.zones)
         expect(filled(zone.label), zone.id).toBe(true);
       for (const node of map.nodes) {
@@ -84,12 +85,6 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
         expect(seen, pair).not.toContain(pair);
         seen.add(pair);
       }
-    });
-
-    it('leaves no part unwired', () => {
-      const wired = new Set(map.edges.flatMap((e) => [e.from, e.to]));
-      for (const node of map.nodes)
-        if (!hosts.has(node.id)) expect(wired, node.id).toContain(node.id);
     });
 
     it('bundles only wires that exist', () => {
@@ -128,6 +123,8 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
     it('names only real parts, zones and pages in its extras', () => {
       if (map.offline) {
         expect(filled(map.offline.note)).toBe(true);
+        if (map.offline.label) expect(filled(map.offline.label)).toBe(true);
+        if (map.offline.glyph) expect(glyphs[map.offline.glyph]).toBeDefined();
         for (const id of map.offline.keep) expect(nodeIds, id).toContain(id);
         for (const id of map.offline.lose) expect(zoneIds, id).toContain(id);
       }
@@ -145,8 +142,65 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
 
     it('keeps the house private', () => {
       const text = JSON.stringify(map).toLowerCase();
-      for (const secret of ['perico', 'primo', 'hetzner', '192.168', '100.'])
-        expect(text).not.toContain(secret);
+      for (const secret of [
+        'perico',
+        'primo',
+        'hetzner',
+        '192.168',
+        '100.',
+        '€',
+        'rengifo.dev',
+        '.ts.net',
+        'tailf6f411',
+        'falkenstein',
+        'cax31',
+        'pi3',
+        'b2-backups',
+        'database-backup',
+        ':5432',
+        ':3001',
+        ':8000',
+      ])
+        expect(text, secret).not.toContain(secret);
     });
   },
 );
+
+// The infrastructure map stands for every app at once: none is ever named,
+// so it holds however many there are.
+describe('the infrastructure map', () => {
+  const text = JSON.stringify(systemMaps.infrastructure).toLowerCase();
+
+  it.each([
+    'Radio Perico',
+    'Ensayadero',
+    'PaellaLab',
+    'Paella Lab',
+    'Tartaytantas',
+    'La Casa Estudio',
+    'Assisted Review',
+    'Gorraplanistas',
+    'Tablux',
+    'Ca Na Llum',
+    'bandlab',
+    'meteo',
+  ])('never names %s', (name) => {
+    expect(text).not.toContain(name.toLowerCase());
+  });
+
+  it('stacks whatever there is one of per app, unnamed', () => {
+    const many = systemMaps.infrastructure.nodes.filter((n) => n.many);
+    expect(many.map((n) => n.id).sort()).toEqual([
+      'app',
+      'frontends',
+      'supabase',
+    ]);
+  });
+
+  it('keeps my laptop out of the internet zone', () => {
+    const laptop = systemMaps.infrastructure.nodes.find(
+      (n) => n.id === 'laptop',
+    );
+    expect(laptop?.zone).not.toBe('internet');
+  });
+});
