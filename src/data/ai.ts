@@ -5,12 +5,14 @@
  */
 
 /** Year and month of the last review. */
-export const reviewedOn = '2026-10';
+export const reviewedOn = '2026-11';
 
 export interface AiItem {
   /** Message key for the line. */
   key: string;
-  /** Where to see it: the code, or the deployed app when the code is private. */
+  /** The project's case study on this site, by slug. */
+  caseStudy?: string;
+  /** Somewhere outside the site to see it, when there is no case study. */
   href?: string;
 }
 
@@ -19,51 +21,59 @@ export interface AiGroup {
   items: AiItem[];
 }
 
-export const aiStack: AiGroup[] = [
-  {
-    headingKey: 'ai_h_tools',
-    items: [
-      { key: 'ai_tools_claude_code' },
-      { key: 'ai_tools_plugins' },
-      { key: 'ai_tools_models' },
-      { key: 'ai_tools_codex' },
-      { key: 'ai_tools_supabase' },
-      { key: 'ai_tools_voice' },
-      { key: 'ai_tools_chrome' },
-      { key: 'ai_tools_local' },
-    ],
-  },
-  {
-    headingKey: 'ai_h_practice',
-    items: [
-      { key: 'ai_practice_flow' },
-      { key: 'ai_practice_review' },
-      { key: 'ai_practice_beads' },
-      { key: 'ai_practice_mcp' },
-      { key: 'ai_practice_tokens' },
-      { key: 'ai_practice_own' },
-    ],
-  },
-  {
-    headingKey: 'ai_h_built',
-    items: [
-      { key: 'ai_built_tablux' },
-      { key: 'ai_built_perico', href: 'https://radioperico.com' },
-      {
-        key: 'ai_built_lacasaestudio',
-        href: 'https://lacasaestudio.com/',
-      },
-      { key: 'ai_built_ensayadero', href: 'https://ensayadero.studio/' },
-      { key: 'ai_built_paella', href: 'https://paella-lab.vercel.app/' },
-      {
-        key: 'ai_built_voice',
-        href: 'https://github.com/beltranrengifo/agent-voice',
-      },
-      {
-        key: 'ai_built_worktree',
-        href: 'https://github.com/beltranrengifo/worktree-flow',
-      },
-      { key: 'ai_built_review', href: 'https://assisted-review.vercel.app/' },
-    ],
-  },
+/**
+ * Two columns on wide screens: how I work, then the tools, on the left; what
+ * I have built, which runs longest, on the right. One column on a phone, in
+ * the same order.
+ */
+export const aiColumns: AiGroup[][] = [
+  [
+    {
+      headingKey: 'ai_h_practice',
+      items: [
+        { key: 'ai_practice_flow' },
+        { key: 'ai_practice_review' },
+        { key: 'ai_practice_beads' },
+        { key: 'ai_practice_mcp' },
+        { key: 'ai_practice_tokens' },
+        { key: 'ai_practice_own' },
+      ],
+    },
+    {
+      headingKey: 'ai_h_tools',
+      items: [
+        { key: 'ai_tools_claude_code' },
+        { key: 'ai_tools_models' },
+        { key: 'ai_tools_codex' },
+        { key: 'ai_tools_cli' },
+        { key: 'ai_tools_runpod' },
+        { key: 'ai_tools_voice' },
+        { key: 'ai_tools_chrome' },
+        { key: 'ai_tools_local' },
+      ],
+    },
+  ],
+  [
+    {
+      headingKey: 'ai_h_built',
+      items: [
+        { key: 'ai_built_tablux', caseStudy: 'tablux' },
+        { key: 'ai_built_tablux_changes', caseStudy: 'tablux' },
+        { key: 'ai_built_lacasaestudio', caseStudy: 'lacasaestudio' },
+        { key: 'ai_built_review', caseStudy: 'assisted-review' },
+        { key: 'ai_built_perico', caseStudy: 'radio-perico' },
+        { key: 'ai_built_ensayadero', caseStudy: 'ensayadero' },
+        { key: 'ai_built_paella', caseStudy: 'paellalab' },
+        { key: 'ai_built_canallum', caseStudy: 'ca-na-llum' },
+        {
+          key: 'ai_built_voice',
+          href: 'https://github.com/beltranrengifo/agent-voice',
+        },
+        {
+          key: 'ai_built_worktree',
+          href: 'https://github.com/beltranrengifo/worktree-flow',
+        },
+      ],
+    },
+  ],
 ];
