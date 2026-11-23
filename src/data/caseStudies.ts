@@ -1,10 +1,10 @@
 import type { ImageMetadata } from 'astro';
+import type { SystemMapId } from './systemMaps';
 import billingOverview from '../assets/work/billing-overview.png';
 import ensayaderoLibrary from '../assets/work/ensayadero-library.png';
 import ensayaderoSession from '../assets/work/ensayadero-session.png';
 import ensayaderoChart from '../assets/work/ensayadero-chart.png';
 import billingAdvance from '../assets/work/billing-advance.png';
-import tabluxDiagram from '../assets/work/tablux-diagram.png';
 import tabluxHome from '../assets/work/tablux-home.png';
 import tabluxCasa from '../assets/work/tablux-casa.png';
 import tabluxLight from '../assets/work/tablux-light.png';
@@ -68,6 +68,8 @@ export interface CaseStudy extends ProjectBase {
    * public site needs no such line — the link is the proof.
    */
   accessKey?: string;
+  /** An explorable map of how the parts fit (see src/data/systemMaps). */
+  systemMap?: SystemMapId;
 }
 
 export type Project = CaseStudy | LinkedProject;
@@ -85,6 +87,7 @@ const allProjects: Project[] = [
     rowKey: 'proj_tablux_desc',
     taglineKey: 'cs_tablux_tagline',
     introKey: 'cs_tablux_intro',
+    systemMap: 'tablux',
     stack: [
       'Linux 6.18 · U-Boot · device tree',
       'Armbian · Phosh',
@@ -106,11 +109,6 @@ const allProjects: Project[] = [
       { headingKey: 'cs_tablux_n7_h', bodyKey: 'cs_tablux_n7_b' },
     ],
     screenshots: [
-      {
-        src: tabluxDiagram,
-        altKey: 'cs_tablux_diagram_alt',
-        captionKey: 'cs_tablux_diagram_cap',
-      },
       {
         src: tabluxHome,
         altKey: 'cs_tablux_shot1_alt',
