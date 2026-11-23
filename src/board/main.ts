@@ -29,7 +29,6 @@ const NARROW = '(max-width: 720px)';
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 1.8;
 const TOP = -540;
-const BOTTOM = 460;
 
 interface Labels {
   labels: Record<string, { title: string; sub?: string; years?: string }>;
@@ -73,6 +72,10 @@ function boot(root: HTMLElement): void {
   const layout = createLayout(model);
   settle(layout, 400);
   const { nodes, links } = layout;
+  // The floor sits under the deepest row of projects, and the camera
+  // rests on the middle of everything above it.
+  const BOTTOM = layout.floor;
+  const MID = (TOP + BOTTOM) / 2;
 
   // Poncho's moods decide when he reacts; the sprite does the reacting.
   const moods = { dataset: {} as DOMStringMap } as HTMLElement;
@@ -312,8 +315,8 @@ function boot(root: HTMLElement): void {
   let cx = clampX(Infinity, zoom);
   let tcx = cx;
   // A little low, so the eras clear the bar at the top.
-  let cy = -40;
-  let tcy = -40;
+  let cy = MID;
+  let tcy = MID;
 
   cat = new Companion(
     catLayer,
@@ -643,7 +646,7 @@ function boot(root: HTMLElement): void {
       layout.sim.alpha(0.3);
     } else {
       cx = tcx = clampX(cx - dx / zoom, zoom);
-      cy = tcy = Math.min(200, Math.max(-200, cy - dy / zoom));
+      cy = tcy = Math.min(MID + 240, Math.max(MID - 160, cy - dy / zoom));
     }
   });
 
@@ -713,7 +716,7 @@ function boot(root: HTMLElement): void {
     intro?.toggleAttribute('data-hidden', true);
     // The board rises into its usual place.
     tz = fit();
-    tcy = -40;
+    tcy = MID;
   };
   // While the title shows, the whole board fits in the space below it.
   if (intro) {
