@@ -16,6 +16,10 @@ import tabluxChat from '../assets/work/tablux-chat.png';
 import gorraStation from '../assets/work/gorraplanistas-station.png';
 import gorraCharts from '../assets/work/gorraplanistas-charts.png';
 import gorraForecast from '../assets/work/gorraplanistas-forecast.png';
+import canallumExterior from '../assets/work/canallum-exterior.png';
+import canallumPlan from '../assets/work/canallum-plan.png';
+import canallumTour from '../assets/work/canallum-tour.png';
+import canallumNight from '../assets/work/canallum-night.png';
 import tabluxNight from '../assets/work/tablux-night.png';
 
 export interface Screenshot {
@@ -321,6 +325,55 @@ const allProjects: Project[] = [
     ],
     code: { href: 'https://github.com/beltranrengifo/meteo-station' },
     href: 'https://gorraplanistas.vercel.app/',
+  },
+  {
+    slug: 'ca-na-llum',
+    name: 'Ca Na Llum, Mallorca',
+    rowKey: 'proj_canallum_desc',
+    taglineKey: 'cs_canallum_tagline',
+    introKey: 'cs_canallum_intro',
+    stack: [
+      'three.js · WebGL',
+      'TypeScript (strict) · Vite',
+      'postprocessing · N8AO',
+      'Web Audio API',
+      'Python · Catastro · IGN',
+      'Blender · Cycles',
+      'Vitest',
+      'Vercel',
+    ],
+    notes: [
+      { headingKey: 'cs_canallum_n1_h', bodyKey: 'cs_canallum_n1_b' },
+      { headingKey: 'cs_canallum_n4_h', bodyKey: 'cs_canallum_n4_b' },
+      { headingKey: 'cs_canallum_n5_h', bodyKey: 'cs_canallum_n5_b' },
+      { headingKey: 'cs_canallum_n2_h', bodyKey: 'cs_canallum_n2_b' },
+      { headingKey: 'cs_canallum_n6_h', bodyKey: 'cs_canallum_n6_b' },
+      { headingKey: 'cs_canallum_n3_h', bodyKey: 'cs_canallum_n3_b' },
+    ],
+    screenshots: [
+      {
+        src: canallumExterior,
+        altKey: 'cs_canallum_shot1_alt',
+        captionKey: 'cs_canallum_shot1_cap',
+      },
+      {
+        src: canallumPlan,
+        altKey: 'cs_canallum_shot2_alt',
+        captionKey: 'cs_canallum_shot2_cap',
+      },
+      {
+        src: canallumTour,
+        altKey: 'cs_canallum_shot4_alt',
+        captionKey: 'cs_canallum_shot4_cap',
+      },
+      {
+        src: canallumNight,
+        altKey: 'cs_canallum_shot3_alt',
+        captionKey: 'cs_canallum_shot3_cap',
+      },
+    ],
+    code: 'private',
+    href: 'https://ca-na-llum.vercel.app/',
   },
   {
     slug: 'paellalab',
