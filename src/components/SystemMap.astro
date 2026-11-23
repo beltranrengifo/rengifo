@@ -1484,8 +1484,9 @@ const clientData = {
     .smap-intro {
       display: none !important;
     }
-    /* A path's sheet holds its whole list and never scrolls; its handle
-       folds it down to the title, to see more of the map. */
+    /* A path's sheet holds its whole list and never scrolls. Folded (by its
+       handle, or on choosing a step) it keeps the title and the chosen step
+       only, so the map has the screen. */
     .smap-panel[data-walk] {
       max-height: none;
       overflow: hidden;
@@ -1506,11 +1507,15 @@ const clientData = {
       line-height: 1.38;
     }
     .smap-panel[data-folded] .smap-walk-hint,
-    .smap-panel[data-folded] .smap-steps {
+    .smap-panel[data-folded] .smap-steps li:not(:has([aria-pressed='true'])) {
       display: none;
     }
     .smap-panel[data-folded] h3 {
-      margin: 0;
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+    .smap-panel[data-folded] .smap-steps button {
+      border-top: 0;
     }
     .smap-side {
       max-width: 1000px;

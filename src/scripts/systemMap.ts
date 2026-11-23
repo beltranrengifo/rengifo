@@ -76,6 +76,7 @@ function init(root: HTMLElement) {
   const more = $<HTMLButtonElement>('[data-smap-more]')!;
   const offlineButton = $<HTMLButtonElement>('[data-smap-offline]');
   const offlineNote = $<HTMLElement>('[data-smap-offline-note]');
+  const bar = $<HTMLElement>('.smap-bar')!;
 
   const nodes = new Map(
     $$<HTMLButtonElement>('[data-node]').map((el) => [el.dataset.node!, el]),
@@ -688,12 +689,14 @@ function init(root: HTMLElement) {
     offlineButton?.setAttribute('aria-pressed', String(on));
     if (offlineNote) offlineNote.hidden = !on;
     paint();
-    // Bring the note and as much of the map as fits into view.
+    // Bring the toggle, its note and as much of the map as fits into view,
+    // below the header.
     if (on && offlineNote) {
-      const top = offlineNote.getBoundingClientRect().top;
+      const head = headOf();
+      const top = bar.getBoundingClientRect().top;
       const bottom = canvas.getBoundingClientRect().bottom;
-      if (top < 72 || bottom > window.innerHeight)
-        window.scrollBy({ top: top - 80, behavior: smooth() });
+      if (top < head - 4 || bottom > window.innerHeight)
+        window.scrollBy({ top: top - head, behavior: smooth() });
     }
   };
   offlineButton?.addEventListener('click', () => {
@@ -713,6 +716,13 @@ function init(root: HTMLElement) {
     );
   };
 
+  /** Just below the site's sticky header, wherever it sits now. */
+  const headOf = () => {
+    const header = document.querySelector('[data-header]');
+    const bottom = header ? header.getBoundingClientRect().bottom : 0;
+    return Math.max(0, bottom) + 12;
+  };
+
   /** Where a sheet's top sits once it is in place, or the window's floor. */
   const floorOf = () =>
     window.innerHeight -
@@ -720,23 +730,29 @@ function init(root: HTMLElement) {
       ? 8
       : panel.offsetHeight + 12);
 
-  // A path must stay in sight. On wider screens the whole map comes into
-  // view; stacked on a phone, the parts asked for are brought above the
-  // sheet.
+  // A path must stay in sight, and so must the bar it was chosen from. On
+  // wider screens the bar and the map come into view below the header (the
+  // bar first, when both don't fit); stacked on a phone, the path's first
+  // parts are brought above the sheet.
   const frameMap = () => {
-    if (isStacked()) return followParts(data.walks[walk!.id]![0]!);
-    const top = isWide() ? 84 : 46;
+    const first = data.walks[walk!.id]![0]!;
+    if (isStacked()) return followParts(first);
+    const head = headOf();
     const floor = floorOf();
-    const r = canvas.getBoundingClientRect();
-    if (r.top >= top - 4 && r.bottom <= floor + 4) return;
-    const room = floor - top;
-    // A map taller than the room: frame the path's first parts instead.
-    if (r.height > room + 4) return followParts(data.walks[walk!.id]![0]!, top);
-    const offset = (room - r.height) / 2;
-    window.scrollBy({ top: r.top - top - offset, behavior: smooth() });
+    const top = bar.getBoundingClientRect().top;
+    const bottom = canvas.getBoundingClientRect().bottom;
+    if (top < head - 4 || bottom > floor + 4) {
+      const room = floor - head;
+      const span = bottom - top;
+      const offset = span <= room ? (room - span) / 2 : 0;
+      window.scrollTo({
+        top: window.scrollY + top - head - offset,
+        behavior: smooth(),
+      });
+    }
   };
 
-  const followParts = (ids: string[], head = 72) => {
+  const followParts = (ids: string[], head = headOf()) => {
     const floor = floorOf();
     const rects = ids
       .map((id) => nodes.get(id)?.getBoundingClientRect())
@@ -745,11 +761,18 @@ function init(root: HTMLElement) {
     const top = Math.min(...rects.map((r) => r.top));
     const bottom = Math.max(...rects.map((r) => r.bottom));
     if (top >= head && bottom <= floor) return;
-    // As many of the parts as fit between the header and the floor.
+    // As many of the parts as fit between the header and the floor. When
+    // they don't all fit, the first one (where the step starts) always does,
+    // with the rest running away from it.
     const room = floor - head;
     const span = bottom - top;
+    const lead = rects[0]!;
     const shift =
-      span <= room ? top - head - (room - span) / 2 : top - head - 8;
+      span <= room
+        ? top - head - (room - span) / 2
+        : lead.top <= top + 1
+          ? top - head - 8
+          : lead.bottom - floor + 8;
     window.scrollBy({ top: shift, behavior: smooth() });
   };
 
@@ -815,8 +838,12 @@ function init(root: HTMLElement) {
       if (!b || !walk) return;
       const i = Number(b.dataset.smapStep);
       bringForward(walk.step === i ? null : i);
-      if (walk.step !== null && !isWide())
-        followParts(data.walks[walk.id]![walk.step]!);
+      if (isWide()) return;
+      // As a sheet: fold it down to the chosen step, so the step's parts
+      // have the screen, and bring them into view. Letting go of the step
+      // opens the whole list again.
+      fold(walk.step !== null);
+      if (walk.step !== null) followParts(data.walks[walk.id]![walk.step]!);
     }),
   );
 }
