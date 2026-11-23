@@ -4,6 +4,9 @@ import billingOverview from '../assets/work/billing-overview.png';
 import ensayaderoLibrary from '../assets/work/ensayadero-library.png';
 import ensayaderoSession from '../assets/work/ensayadero-session.png';
 import ensayaderoChart from '../assets/work/ensayadero-chart.png';
+import ensayaderoLibraryMobile from '../assets/work/ensayadero-library-mobile.png';
+import ensayaderoSessionMobile from '../assets/work/ensayadero-session-mobile.png';
+import ensayaderoChartMobile from '../assets/work/ensayadero-chart-mobile.png';
 import billingAdvance from '../assets/work/billing-advance.png';
 import tabluxHome from '../assets/work/tablux-home.png';
 import tabluxCasa from '../assets/work/tablux-casa.png';
@@ -35,6 +38,8 @@ export interface Screenshot {
   src: ImageMetadata;
   altKey: string;
   captionKey: string;
+  /** The same view on a phone, shown beside the desktop shot. */
+  mobile?: { src: ImageMetadata; altKey: string };
 }
 
 /** One idea worth explaining: what was decided, and why. */
@@ -234,16 +239,28 @@ const allProjects: Project[] = [
         src: ensayaderoLibrary,
         altKey: 'cs_ensayadero_shot1_alt',
         captionKey: 'cs_ensayadero_shot1_cap',
+        mobile: {
+          src: ensayaderoLibraryMobile,
+          altKey: 'cs_ensayadero_shot1_mobile_alt',
+        },
       },
       {
         src: ensayaderoSession,
         altKey: 'cs_ensayadero_shot2_alt',
         captionKey: 'cs_ensayadero_shot2_cap',
+        mobile: {
+          src: ensayaderoSessionMobile,
+          altKey: 'cs_ensayadero_shot2_mobile_alt',
+        },
       },
       {
         src: ensayaderoChart,
         altKey: 'cs_ensayadero_shot3_alt',
         captionKey: 'cs_ensayadero_shot3_cap',
+        mobile: {
+          src: ensayaderoChartMobile,
+          altKey: 'cs_ensayadero_shot3_mobile_alt',
+        },
       },
     ],
     code: 'private',
