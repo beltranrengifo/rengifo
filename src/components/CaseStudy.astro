@@ -107,14 +107,37 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
         {
           study.screenshots.map((shot, i) => (
             <figure data-reveal class="m-0">
-              <Image
-                src={shot.src}
-                alt={t(shot.altKey, locale)}
-                widths={[640, 960, 1280, 1600]}
-                sizes="(min-width: 1080px) 1000px, 100vw"
-                loading={i === 0 ? 'eager' : 'lazy'}
-                class="border-hairline block h-auto w-full rounded-xs border"
-              />
+              {shot.mobile ? (
+                // A device pair: the phone overlaps the desktop's lower-right
+                // corner. On a phone screen only the phone shot is shown.
+                <div class="sm:relative sm:pb-[20%]">
+                  <Image
+                    src={shot.src}
+                    alt={t(shot.altKey, locale)}
+                    widths={[640, 960, 1280, 1680]}
+                    sizes="(min-width: 1080px) 840px, 84vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    class="border-hairline hidden h-auto w-[84%] rounded-xs border sm:block"
+                  />
+                  <Image
+                    src={shot.mobile.src}
+                    alt={t(shot.mobile.altKey, locale)}
+                    widths={[300, 480, 780]}
+                    sizes="(min-width: 1080px) 240px, (min-width: 640px) 24vw, 72vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    class="border-hairline mx-auto block h-auto w-[72%] max-w-[300px] rounded-[10px] border shadow-[0_18px_40px_-18px_rgba(0,0,0,0.35)] sm:absolute sm:right-0 sm:bottom-0 sm:mx-0 sm:w-[24%] sm:max-w-none"
+                  />
+                </div>
+              ) : (
+                <Image
+                  src={shot.src}
+                  alt={t(shot.altKey, locale)}
+                  widths={[640, 960, 1280, 1600]}
+                  sizes="(min-width: 1080px) 1000px, 100vw"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  class="border-hairline block h-auto w-full rounded-xs border"
+                />
+              )}
               <figcaption class="text-muted mt-3 max-w-[620px] text-[14px] leading-[1.6]">
                 {t(shot.captionKey, locale)}
               </figcaption>

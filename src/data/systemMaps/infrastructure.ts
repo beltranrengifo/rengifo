@@ -41,7 +41,7 @@ export const infrastructure: SystemMap = {
     },
     {
       id: 'vps',
-      label: { en: 'On my VPS', es: 'En mi VPS' },
+      label: { en: 'On my server', es: 'En mi servidor' },
       box: { x: 274, y: 20, w: 466, h: 720 },
       host: 'vps',
     },
@@ -83,8 +83,8 @@ export const infrastructure: SystemMap = {
       glyph: 'window',
       many: true,
       body: {
-        en: 'Each app’s frontend stays on Vercel, on purpose: a CDN, previews and instant rollbacks that a server of my own would not beat. Only the backends moved, and the frontends point at their own Supabase on the VPS.',
-        es: 'El frontend de cada aplicación sigue en Vercel a propósito: CDN, previews y rollback inmediato, algo que un servidor propio no mejoraría. Solo se migraron los backends, y cada frontend apunta a su propio Supabase en el VPS.',
+        en: 'Each app’s frontend stays on Vercel, on purpose: a CDN, previews and instant rollbacks that a server of my own would not beat. Only the backends moved, and the frontends point at their own Supabase on the server.',
+        es: 'El frontend de cada aplicación sigue en Vercel a propósito: CDN, previews y rollback inmediato, algo que un servidor propio no mejoraría. Solo se migraron los backends, y cada frontend apunta a su propio Supabase en el servidor.',
       },
       tags: [
         'Vercel',
@@ -150,7 +150,7 @@ export const infrastructure: SystemMap = {
     {
       id: 'vps',
       zone: 'vps',
-      label: { en: 'My VPS', es: 'Mi VPS' },
+      label: { en: 'My server', es: 'Mi servidor' },
       sub: { en: 'ARM · Coolify', es: 'ARM · Coolify' },
       glyph: 'server',
       drawing: 'server',
@@ -493,8 +493,8 @@ export const infrastructure: SystemMap = {
         {
           nodes: ['frontends', 'traefik'],
           caption: {
-            en: 'Its calls for data go to the VPS, where Traefik takes them over HTTPS.',
-            es: 'Sus peticiones de datos van al VPS, y Traefik las recibe por HTTPS.',
+            en: 'Its calls for data go to the server, where Traefik takes them over HTTPS.',
+            es: 'Sus peticiones de datos van al servidor, y Traefik las recibe por HTTPS.',
           },
         },
         {

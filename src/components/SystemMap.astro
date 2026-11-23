@@ -78,6 +78,8 @@ const legendKinds = (
     'audio',
     'training',
     'backup',
+    'files',
+    'fallback',
   ] satisfies EdgeKind[]
 ).filter((kind) => usedKinds.has(kind));
 const kindLabel = (kind: EdgeKind) => t(`map_kind_${kind}`, locale);
@@ -989,6 +991,14 @@ const clientData = {
   .k-backup {
     stroke-width: 1.4;
     stroke-dasharray: 11 3 2 3;
+  }
+  .k-files {
+    stroke-width: 2.2;
+    stroke-linecap: butt;
+    stroke-dasharray: 3 2;
+  }
+  .k-fallback {
+    stroke-dasharray: 9 5;
   }
   .smap-legend .smap-line,
   .smap-swatch .smap-line {
