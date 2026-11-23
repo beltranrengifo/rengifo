@@ -48,6 +48,11 @@ export const glyphs: Record<GlyphId, string> = {
   terminal:
     '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M6.5 9.5l3 2.5-3 2.5" class="a"/><path d="M11.5 15h6"/>',
   key: '<circle cx="8" cy="12" r="4"/><circle cx="8" cy="12" r="1.2" class="a"/><path d="M12 12h9.5M18.5 12v3M21.5 12v2"/>',
+  tunnel:
+    '<path d="M2 20.5h20"/><path d="M4 20.5V13a8 8 0 0 1 16 0v7.5"/><path d="M8.5 20.5V14a3.5 3.5 0 0 1 7 0v6.5" class="a"/><path d="M12 6.5v-2" class="f"/>',
+  bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/><path d="M19.5 5.5q1.8 1.8 1.8 4.5M4.5 5.5Q2.7 7.3 2.7 10" class="a"/>',
+  pulse:
+    '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M5.5 13h3l2-5 3 9 2-4h3" class="a"/>',
   chip: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx=".6" class="a"/><path d="M9 2.5V6M12 2.5V6M15 2.5V6M9 18v3.5M12 18v3.5M15 18v3.5M2.5 9H6M2.5 12H6M2.5 15H6M18 9h3.5M18 12h3.5M18 15h3.5"/>',
 };
 

@@ -16,6 +16,12 @@ interface MapData {
   walks: Record<string, { nodes: string[]; caption: string }[]>;
   stepOf: string;
 }
+interface Box {
+  l: number;
+  r: number;
+  t: number;
+  b: number;
+}
 interface Wire extends WireData {
   g: SVGGElement;
   base: SVGPathElement;
@@ -112,8 +118,9 @@ function init(root: HTMLElement) {
     };
   };
 
-  // A soft S between two parts; parts stacked in one column bow out to the
-  // side, so the wire does not run behind the parts between them.
+  // A soft S between two parts, leaving and arriving sideways; parts
+  // stacked in one column bow out to the side instead, so the wire does not
+  // run behind the parts between them.
   const curve = (a: Point, b: Point, width: number) => {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
@@ -124,7 +131,7 @@ function init(root: HTMLElement) {
       const bow = side * Math.min(150, Math.abs(dy) * 0.42 + 16);
       c1 = { x: a.x + bow, y: a.y + dy * 0.2 };
       c2 = { x: b.x + bow, y: b.y - dy * 0.2 };
-    } else if (Math.abs(dx) >= Math.abs(dy) * 0.6) {
+    } else if (Math.abs(dx) >= 60 || Math.abs(dx) >= Math.abs(dy) * 0.6) {
       const mx = (a.x + b.x) / 2;
       c1 = { x: mx, y: a.y };
       c2 = { x: mx, y: b.y };
@@ -178,8 +185,20 @@ function init(root: HTMLElement) {
     return { ...at(0.5), anchor: 'middle' };
   };
 
+  /** Every card's box on the canvas, for labels to keep clear of. */
+  let cards: Box[] = [];
+
   const layout = () => {
     const origin = canvas.getBoundingClientRect();
+    cards = [...nodes.values()].map((el) => {
+      const r = el.getBoundingClientRect();
+      return {
+        l: r.left - origin.left,
+        r: r.right - origin.left,
+        t: r.top - origin.top,
+        b: r.bottom - origin.top,
+      };
+    });
     svg.setAttribute('viewBox', `0 0 ${origin.width} ${origin.height}`);
     labels.setAttribute('viewBox', `0 0 ${origin.width} ${origin.height}`);
     wires.forEach((wire) => {
@@ -202,20 +221,55 @@ function init(root: HTMLElement) {
     placeLabels();
   };
 
-  // A chosen part's labels sit by its neighbours, where they fan out and
-  // do not pile up; a step's labels sit halfway.
+  // A chosen part's labels sit by its neighbours, where they fan out. Each
+  // tries a few spots and takes the first that covers no card and no other
+  // label; one that finds none stays hidden (the panel lists every wire).
   const placeLabels = () => {
-    wires.forEach((wire) => {
-      const spot =
-        selected === wire.from
-          ? wire.spots.nearTo
-          : selected === wire.to
-            ? wire.spots.nearFrom
-            : wire.spots.mid;
-      wire.text.setAttribute('x', spot.x.toFixed(1));
-      wire.text.setAttribute('y', spot.y.toFixed(1));
-      wire.text.setAttribute('text-anchor', spot.anchor);
-    });
+    wires.forEach((w) => w.text.classList.remove('is-shown'));
+    if (!selected || getComputedStyle(labels).display === 'none') return;
+    const taken: Box[] = [];
+    const hits = (b: Box) =>
+      [...cards, ...taken].some(
+        (o) => b.l < o.r && b.r > o.l && b.t < o.b && b.b > o.t,
+      );
+    wires
+      .filter((w) => w.from === selected || w.to === selected)
+      .forEach((w) => {
+        const near = selected === w.from ? w.spots.nearTo : w.spots.nearFrom;
+        const far = selected === w.from ? w.spots.nearFrom : w.spots.nearTo;
+        const mid = w.spots.mid;
+        const tries: Spot[] = [
+          near,
+          { ...near, y: near.y - 13 },
+          { ...near, y: near.y + 13 },
+          mid,
+          { ...mid, y: mid.y - 13 },
+          { ...mid, y: mid.y + 13 },
+          far,
+        ];
+        for (const spot of tries) {
+          w.text.setAttribute('x', spot.x.toFixed(1));
+          w.text.setAttribute('y', spot.y.toFixed(1));
+          w.text.setAttribute('text-anchor', spot.anchor);
+          let box: DOMRect;
+          try {
+            box = w.text.getBBox();
+          } catch {
+            return;
+          }
+          const b = {
+            l: box.x - 3,
+            r: box.x + box.width + 3,
+            t: box.y - 2,
+            b: box.y + box.height + 2,
+          };
+          if (!hits(b)) {
+            taken.push(b);
+            w.text.classList.add('is-shown');
+            return;
+          }
+        }
+      });
   };
 
   // ── State ──────────────────────────────────────────────────
@@ -272,7 +326,6 @@ function init(root: HTMLElement) {
     }
 
     root.toggleAttribute('data-focus', active.size > 0);
-    placeLabels();
     nodes.forEach((el, id) => {
       el.classList.toggle('is-active', active.has(id));
       el.classList.toggle('is-related', related.has(id) && !active.has(id));
@@ -286,11 +339,11 @@ function init(root: HTMLElement) {
       w.g.classList.toggle('is-lit', lit.has(w));
       w.g.classList.toggle('is-rev', lit.get(w) === true);
       w.g.classList.toggle('is-visited', trail.has(w) && !lit.has(w));
-      // Labels only for a chosen part: a step has its caption instead.
-      w.text.classList.toggle('is-lit', !!selected && lit.has(w));
-      // Lit wires on top, so their labels are not crossed by the rest.
+      // Lit wires on top of the faded ones.
       if (lit.has(w)) svg.append(w.g);
     });
+    // Labels only for a chosen part: a step has its caption instead.
+    placeLabels();
   };
 
   // ── The panel ──────────────────────────────────────────────

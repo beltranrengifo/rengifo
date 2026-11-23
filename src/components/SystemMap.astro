@@ -163,7 +163,7 @@ const clientData = {
         {
           topZones.map((zone) => (
             <div
-              class="smap-zone"
+              class:list={['smap-zone', { 'smap-tunnel': zone.tunnel }]}
               data-zone={zone.id}
               style={boxStyle(zone.box, whole)}
             >
@@ -617,7 +617,9 @@ const clientData = {
     box-sizing: border-box;
     border: 1px solid var(--smap-line);
     border-radius: 18px;
-    background: var(--smap-zone);
+    /* Each zone hands its paper to its parts' quiet state. */
+    --zone-bg: var(--smap-zone);
+    background: var(--zone-bg);
     transition:
       border-color 0.3s ease,
       opacity 0.3s ease;
@@ -625,12 +627,30 @@ const clientData = {
   .smap-subzone {
     border-radius: 14px;
     border-color: color-mix(in srgb, var(--ink) 24%, transparent);
-    background: color-mix(in srgb, var(--ink) 3.5%, var(--canvas));
+    --zone-bg: color-mix(in srgb, var(--ink) 3.5%, var(--canvas));
   }
   .smap-zone[data-zone='training'],
   .smap-zone[data-zone='services'] {
     border-style: dashed;
-    background: transparent;
+    --zone-bg: var(--smap-paper);
+  }
+  /* A passage, not a place: on the wide map only its gateway shows. */
+  .smap-tunnel {
+    border: 0;
+    --zone-bg: var(--smap-paper);
+    background: none;
+  }
+  .smap-tunnel .smap-zone-label {
+    display: none;
+  }
+  .smap-tunnel .smap-node {
+    border: 1.5px dashed color-mix(in srgb, var(--accent) 70%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 7%, var(--smap-paper));
+    box-shadow: 0 0 0 5px var(--smap-paper);
+  }
+  .smap-tunnel .smap-glyph {
+    color: var(--accent);
   }
   .smap-zone.is-active {
     border-color: var(--accent);
@@ -745,17 +765,24 @@ const clientData = {
     white-space: nowrap;
   }
 
-  /* Focus: the chosen part and its neighbours stay; the rest steps back. */
+  /*
+   * Focus. Emphasis comes from the chosen part, never from greying the
+   * rest: every card stays solid and legible, just a touch quieter, and
+   * always covers the wires behind it.
+   */
   .smap[data-focus] .smap-node:not(.is-active, .is-related, .is-visited) {
-    opacity: 0.3;
+    box-shadow: none;
   }
-  .smap[data-focus] .smap-zone-label {
-    opacity: 0.6;
+  .smap[data-focus]
+    .smap-node:not(.is-active, .is-related, .is-visited)
+    .smap-name {
+    color: var(--color-body);
   }
   .smap-node.is-active {
     border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 11%, var(--smap-paper));
     box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent),
+      0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent),
       0 6px 18px color-mix(in srgb, var(--ink) 8%, transparent);
   }
   .smap-node.is-active .smap-glyph,
@@ -763,10 +790,14 @@ const clientData = {
     color: var(--accent);
   }
   .smap-node.is-related {
-    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--smap-paper));
+  }
+  .smap-node.is-related .smap-glyph {
+    color: var(--accent);
   }
   .smap-node.is-visited {
-    opacity: 0.75;
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--smap-line));
   }
 
   /* ── Wires ────────────────────────────────────────────────── */
@@ -816,16 +847,18 @@ const clientData = {
     stroke-opacity: 0.6;
   }
   .smap[data-focus] .smap-wire:not(.is-lit, .is-visited) .base {
-    stroke-opacity: 0.05;
+    stroke-opacity: 0.07;
   }
   .smap-wire.is-visited .base {
     stroke: var(--accent);
-    stroke-opacity: 0.3;
+    stroke-opacity: 0.35;
   }
+  /* A chosen part's wires: solid accent, a little heavier. */
   .smap-wire.is-lit .base {
     stroke: var(--accent);
-    stroke-opacity: 0.95;
-    stroke-width: 1.6;
+    stroke-opacity: 1;
+    stroke-width: 2.2;
+    stroke-dasharray: none;
   }
   .smap-wire .pulse {
     fill: none;
@@ -862,7 +895,7 @@ const clientData = {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  .smap-labels text.is-lit {
+  .smap-labels text.is-shown {
     opacity: 1;
   }
 
@@ -1340,6 +1373,26 @@ const clientData = {
     }
     .smap-host {
       left: 12px;
+    }
+    /* Stacked, the passage gets a band of its own between the two. */
+    .smap-tunnel {
+      margin: -6px 18px;
+      padding: 26px 10px 12px;
+      border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 4%, var(--smap-paper));
+    }
+    .smap-tunnel .smap-zone-label {
+      display: block;
+      color: var(--accent);
+    }
+    .smap-tunnel .smap-parts {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+    }
+    .smap-tunnel .smap-node:not(.smap-host) {
+      width: auto;
+      min-width: 60%;
+      box-shadow: none;
     }
     .smap-walks {
       flex-direction: column;

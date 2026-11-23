@@ -19,25 +19,34 @@ export const tablux: SystemMap = {
     {
       id: 'home',
       label: { en: 'At home', es: 'En casa' },
-      box: { x: 10, y: 14, w: 530, h: 572 },
+      box: { x: 10, y: 14, w: 506, h: 572 },
     },
     {
       id: 'wall',
       label: { en: 'On the wall', es: 'En la pared' },
-      box: { x: 222, y: 62, w: 306, h: 330 },
+      box: { x: 206, y: 62, w: 300, h: 330 },
       parent: 'home',
       host: 'wall',
     },
     {
+      id: 'tunnel',
+      label: {
+        en: 'Between home and the VPS',
+        es: 'Entre casa y el VPS',
+      },
+      box: { x: 521, y: 296, w: 48, h: 52 },
+      tunnel: true,
+    },
+    {
       id: 'cloud',
       label: { en: 'On my VPS', es: 'En mi VPS' },
-      box: { x: 566, y: 14, w: 206, h: 400 },
+      box: { x: 580, y: 14, w: 200, h: 392 },
       host: 'server',
     },
     {
       id: 'training',
       label: { en: 'Training', es: 'Entrenamiento' },
-      box: { x: 566, y: 446, w: 206, h: 140 },
+      box: { x: 580, y: 440, w: 200, h: 146 },
     },
     {
       id: 'services',
@@ -68,11 +77,11 @@ export const tablux: SystemMap = {
       sub: { en: 'Chromium', es: 'Chromium · quiosco' },
       glyph: 'window',
       body: {
-        en: 'Chromium opens the app full screen as soon as the wall starts, with nothing around it. It is the same PWA every other screen runs; the wall only adds what needs a body: a speaker, a microphone and the bridge.',
-        es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente.',
+        en: 'Chromium opens the app full screen as soon as the wall starts, with nothing around it. It is the same PWA every other screen runs; the wall only adds what needs a body: a speaker, a microphone and the bridge. At night it rests with the clock and any running timer, and «Buenas noches» can send it to rest. Without internet, the app’s own offline cache keeps the clock, the agenda and the menu on screen.',
+        es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
       },
       tags: ['Chromium', 'PWA', 'Phosh'],
-      at: { x: 377, y: 135 },
+      at: { x: 356, y: 135 },
     },
     {
       id: 'listener',
@@ -91,7 +100,7 @@ export const tablux: SystemMap = {
         'WASM',
         { en: 'USB microphone', es: 'Micrófono USB' },
       ],
-      at: { x: 298, y: 228 },
+      at: { x: 284, y: 228 },
     },
     {
       id: 'speaker',
@@ -101,14 +110,14 @@ export const tablux: SystemMap = {
       glyph: 'speaker',
       drawing: 'speaker',
       body: {
-        en: 'The wall’s own speaker. It is a Spotify Connect device like any other, so music reaches it from any phone, and it is where the assistant speaks. If the internet drops, an offline Piper voice on the wall takes over.',
-        es: 'El altavoz de la propia pared. Es un dispositivo de Spotify Connect como cualquier otro, así que se le manda música desde cualquier móvil, y es por donde habla el asistente. Si se cae internet, toma el relevo una voz de Piper que vive en la pared.',
+        en: 'The wall’s own speaker. Spotify’s official receiver for devices without a screen runs on the wall, so it is a Spotify Connect speaker like any other and music reaches it from any phone. It is also where the assistant speaks; if the internet drops, an offline Piper voice on the wall takes over.',
+        es: 'El altavoz de la propia pared. En ella corre el receptor oficial de Spotify para aparatos sin pantalla, así que es un altavoz de Spotify Connect como cualquier otro y se le manda música desde cualquier móvil. También es por donde habla el asistente; si se cae internet, toma el relevo una voz de Piper que vive en la pared.',
       },
       tags: [
         'Spotify Connect',
         { en: 'Offline Piper', es: 'Piper sin conexión' },
       ],
-      at: { x: 456, y: 228 },
+      at: { x: 430, y: 228 },
     },
     {
       id: 'bridge',
@@ -117,8 +126,8 @@ export const tablux: SystemMap = {
       sub: { en: 'Node · Hono', es: 'Node · Hono' },
       glyph: 'bridge',
       body: {
-        en: 'A small Node service on the wall, and the only part of Tablux that has to be at home. It talks to every device over the local network with local keys, never through the makers’ clouds, and runs the routines — at a set time, by the sun or with two or three claps — so they keep working without internet.',
-        es: 'Un pequeño servicio en Node que corre en la pared, y la única parte de Tablux que tiene que estar en casa. Habla con cada aparato por la red local, con claves locales y sin pasar por la nube de ningún fabricante. También lanza las rutinas —a una hora, con el sol o con dos o tres palmadas—, así que siguen funcionando sin internet.',
+        en: 'A small Node service on the wall, and the only part of Tablux that has to be at home. It talks to every device over the local network with local keys, never through the makers’ clouds. It runs the routines the app hands it — at a set time, by the sun, which it works out itself, or with two or three claps — so they keep working without internet, and it keeps their log. It also looks after the wall’s backlight.',
+        es: 'Un pequeño servicio en Node que corre en la pared, y la única parte de Tablux que tiene que estar en casa. Habla con cada aparato por la red local, con claves locales y sin pasar por la nube de ningún fabricante. Lanza las rutinas que le pasa la aplicación —a una hora, con el sol, que calcula él mismo, o con dos o tres palmadas—, así que siguen funcionando sin internet, y guarda su registro. También se ocupa del brillo de la pantalla.',
       },
       tags: [
         'Node',
@@ -127,7 +136,7 @@ export const tablux: SystemMap = {
         { en: 'Routines', es: 'Rutinas' },
         { en: 'Works offline', es: 'Funciona sin red' },
       ],
-      at: { x: 377, y: 322 },
+      at: { x: 356, y: 322 },
     },
 
     // ── Around the house ────────────────────────────────────────
@@ -143,7 +152,7 @@ export const tablux: SystemMap = {
         es: 'Enchufes wifi para lámparas y aparatos. El puente habla su protocolo por la red local, con la clave de cada uno. «Encender durante» deja uno encendido un rato, y luego se apaga solo.',
       },
       tags: ['Tuya', 'Smart Life', { en: 'Local keys', es: 'Claves locales' }],
-      at: { x: 112, y: 100 },
+      at: { x: 108, y: 100 },
     },
     {
       id: 'bulbs',
@@ -157,7 +166,7 @@ export const tablux: SystemMap = {
         es: 'Bombillas de color de dos marcas, que se regulan y cambian de color desde cualquier pantalla, con la voz o con una rutina. El puente llega a cada una por la red local, con el protocolo de su fabricante.',
       },
       tags: ['Smart Life', 'Shelly', { en: 'Colour', es: 'Color' }],
-      at: { x: 112, y: 196 },
+      at: { x: 108, y: 196 },
     },
     {
       id: 'blinds',
@@ -175,7 +184,7 @@ export const tablux: SystemMap = {
         { en: 'Local RPC', es: 'RPC local' },
         { en: 'By the sun', es: 'Con el sol' },
       ],
-      at: { x: 112, y: 292 },
+      at: { x: 108, y: 292 },
     },
     {
       id: 'projector',
@@ -193,7 +202,7 @@ export const tablux: SystemMap = {
         'Cast',
         { en: 'Own protocol code', es: 'Protocolo propio' },
       ],
-      at: { x: 112, y: 388 },
+      at: { x: 108, y: 388 },
     },
     {
       id: 'cast',
@@ -207,7 +216,7 @@ export const tablux: SystemMap = {
         es: 'Los altavoces Cast de casa. El puente los encuentra en la red y los despierta él mismo como dispositivos de Spotify Connect, así que la música pasa a cualquier habitación sin abrir la aplicación de Spotify.',
       },
       tags: ['Cast', 'Spotify Connect', 'mDNS'],
-      at: { x: 112, y: 484 },
+      at: { x: 108, y: 484 },
     },
     {
       id: 'tablets',
@@ -221,7 +230,7 @@ export const tablux: SystemMap = {
         es: 'Tablets viejas repartidas por casa con la misma PWA. Como son de todos, de noche descansan con el reloj y los temporizadores en marcha, preguntan quién las usa y pueden estar atentas a la palabra de activación desde el navegador.',
       },
       tags: ['PWA', { en: 'Night rest', es: 'Descanso nocturno' }, 'WASM'],
-      at: { x: 300, y: 470 },
+      at: { x: 284, y: 470 },
     },
     {
       id: 'phones',
@@ -231,11 +240,31 @@ export const tablux: SystemMap = {
       glyph: 'phone',
       drawing: 'phone',
       body: {
-        en: 'Our phones run the app installed as a PWA. They are personal, so they never rest or ask who is there, and a Web Push tells them when a timer they set has finished. Changes asked for out loud are merged from here, and only from here.',
-        es: 'Nuestros móviles llevan la aplicación instalada como PWA. Son personales: no descansan ni preguntan quién los usa, y les llega un aviso cuando acaba un temporizador que pusieron ellos. Los cambios pedidos en voz alta se fusionan desde aquí, y solo desde aquí.',
+        en: 'Our phones run the app installed as a PWA. They are personal, so they never rest or ask who is there, and a Web Push tells them when a timer they set has finished. Changes asked for out loud are merged from the «Cambios» card on a phone, and only from there.',
+        es: 'Nuestros móviles llevan la aplicación instalada como PWA. Son personales: no descansan ni preguntan quién los usa, y les llega un aviso cuando acaba un temporizador que pusieron ellos. Los cambios pedidos en voz alta se fusionan desde la tarjeta «Cambios» de un móvil, y solo desde ahí.',
       },
       tags: ['PWA', 'Web Push'],
-      at: { x: 452, y: 540 },
+      at: { x: 430, y: 540 },
+    },
+
+    // ── Between home and the VPS ────────────────────────────────
+    {
+      id: 'tailscale',
+      zone: 'tunnel',
+      label: { en: 'Tailscale', es: 'Tailscale' },
+      sub: { en: 'VPN', es: 'VPN' },
+      glyph: 'tunnel',
+      body: {
+        en: 'A private network between the wall, the VPS and my laptop. The cloud reaches the wall’s bridge only through it, so nothing at home is open to the internet. The VPS’s own admin — SSH and the Coolify panel — is only reachable through it too.',
+        es: 'Una red privada entre la pared, el VPS y mi portátil. La nube solo llega al puente de la pared a través de ella, así que en casa no hay nada abierto a internet. La administración del propio VPS —el SSH y el panel de Coolify— también queda detrás de ella.',
+      },
+      tags: [
+        'Tailscale',
+        'VPN',
+        { en: 'No open ports', es: 'Sin puertos abiertos' },
+        'SSH',
+      ],
+      at: { x: 545, y: 322 },
     },
 
     // ── On my VPS ───────────────────────────────────────────────
@@ -247,8 +276,8 @@ export const tablux: SystemMap = {
       glyph: 'server',
       drawing: 'server',
       body: {
-        en: 'My own VPS, run with Coolify — the same one that hosts my other apps. Everything Tablux needs in the cloud lives here, apart from the outside services. It reaches the wall only over Tailscale: nothing at home is open to the internet.',
-        es: 'Un VPS propio, gestionado con Coolify, el mismo donde viven mis otras aplicaciones. Aquí está todo lo que Tablux necesita en la nube, salvo los servicios externos. Llega a la pared solo por Tailscale: en casa no hay nada abierto a internet.',
+        en: 'My own VPS, run with Coolify — the same one that hosts my other apps. Everything Tablux needs in the cloud lives here, apart from the outside services. It reaches the wall only over Tailscale, and its own admin is behind Tailscale too.',
+        es: 'Un VPS propio, gestionado con Coolify, el mismo donde viven mis otras aplicaciones. Aquí está todo lo que Tablux necesita en la nube, salvo los servicios externos. Llega a la pared solo por Tailscale, y su propia administración también queda detrás de Tailscale.',
       },
       tags: ['VPS', 'Coolify', 'Docker', 'Tailscale'],
     },
@@ -259,11 +288,11 @@ export const tablux: SystemMap = {
       sub: { en: 'Next.js · PWA', es: 'Next.js · PWA' },
       glyph: 'window',
       body: {
-        en: 'One Next.js app serves the PWA and its API to every screen. It runs the assistant, keeps the household’s data and shows any change on every screen within about two seconds, whether it came from a tap, a voice or a routine.',
-        es: 'Una sola aplicación en Next.js sirve la PWA y su API a todas las pantallas. Lleva el asistente, guarda los datos de la casa y hace que cualquier cambio aparezca en todas las pantallas en unos dos segundos, venga de un toque, de la voz o de una rutina.',
+        en: 'One Next.js app serves the PWA and its API to every screen: the assistant, lights and blinds, agenda, menus, the shopping list, timers and stopwatches. Recipes come in typed, dictated or from any website. Each screen asks every two seconds whether anything changed — plain polling, so a 2014 tablet keeps up — and every screen is checked at ten sizes, day and night, before a change to the interface ships.',
+        es: 'Una sola aplicación en Next.js sirve la PWA y su API a todas las pantallas: el asistente, luces y persianas, agenda, menús, lista de la compra, temporizadores y cronómetros. Las recetas entran escritas, dictadas o desde cualquier web. Cada pantalla pregunta cada dos segundos si algo ha cambiado —una consulta sencilla, para que una tablet de 2014 no se quede atrás—, y antes de publicar un cambio en la interfaz todas las pantallas se revisan en diez tamaños, de día y de noche.',
       },
       tags: ['Next.js 16', 'React 19', 'PWA', 'Web Push'],
-      at: { x: 669, y: 100 },
+      at: { x: 680, y: 88 },
     },
     {
       id: 'supabase',
@@ -280,7 +309,7 @@ export const tablux: SystemMap = {
         { en: 'Google sign-in', es: 'Acceso con Google' },
         { en: 'Allow-list', es: 'Lista de acceso' },
       ],
-      at: { x: 669, y: 180 },
+      at: { x: 680, y: 156 },
     },
     {
       id: 'voice',
@@ -293,7 +322,7 @@ export const tablux: SystemMap = {
         es: 'Convierte en voz las respuestas del asistente, con una voz de Piper propia que entrené con Voicebox y Runpod. Es la voz de todas las pantallas.',
       },
       tags: ['Piper', { en: 'Own voice', es: 'Voz propia' }, 'Voicebox'],
-      at: { x: 669, y: 260 },
+      at: { x: 680, y: 224 },
     },
     {
       id: 'mcp',
@@ -306,7 +335,24 @@ export const tablux: SystemMap = {
         es: 'Las herramientas del asistente —luces, persianas, rutinas, menús, agenda, temporizadores, música— al alcance de cualquier asistente que hable MCP, con una clave personal.',
       },
       tags: ['MCP', { en: 'Personal keys', es: 'Claves personales' }],
-      at: { x: 669, y: 344 },
+      at: { x: 680, y: 292 },
+    },
+
+    {
+      id: 'monitor',
+      zone: 'cloud',
+      label: { en: 'Monitoring', es: 'Monitorización' },
+      sub: { en: 'Uptime Kuma', es: 'Uptime Kuma' },
+      glyph: 'pulse',
+      body: {
+        en: 'Uptime Kuma and the server’s own metrics, on the same VPS. The app’s server screen reads them: CPU, memory, disk, the last backup and whether each of my sites is up.',
+        es: 'Uptime Kuma y las métricas del propio servidor, en el mismo VPS. La pantalla del servidor de la aplicación las lee: CPU, memoria, disco, la última copia de seguridad y si cada una de mis webs está en pie.',
+      },
+      tags: [
+        'Uptime Kuma',
+        { en: 'Server metrics', es: 'Métricas del servidor' },
+      ],
+      at: { x: 680, y: 360 },
     },
 
     // ── Training ────────────────────────────────────────────────
@@ -326,7 +372,7 @@ export const tablux: SystemMap = {
         { en: 'Wake word', es: 'Palabra de activación' },
         'Piper',
       ],
-      at: { x: 669, y: 524 },
+      at: { x: 680, y: 520 },
     },
 
     // ── Outside services ────────────────────────────────────────
@@ -337,14 +383,14 @@ export const tablux: SystemMap = {
       sub: { en: 'Answers and acts', es: 'Responde y actúa' },
       glyph: 'bubble',
       body: {
-        en: 'Reads what was said and answers with the same tools the app has, so one sentence can dim a light, plan the week’s menu or start a timer.',
-        es: 'Entiende lo que se le dice y responde con las mismas herramientas que tiene la aplicación: con una frase se baja una luz, se planea el menú de la semana o se pone un temporizador.',
+        en: 'Reads what was said and answers with the same tools the app has, so one sentence can dim a light, plan the week’s menu or start a timer. Asked how the app works, it reads the app’s own guide instead of making it up.',
+        es: 'Entiende lo que se le dice y responde con las mismas herramientas que tiene la aplicación: con una frase se baja una luz, se planea el menú de la semana o se pone un temporizador. Si le preguntan cómo funciona la aplicación, consulta su propia guía en vez de inventárselo.',
       },
       tags: [
         { en: 'Tool use', es: 'Herramientas' },
         { en: 'Photos in chat', es: 'Fotos en el chat' },
       ],
-      at: { x: 893, y: 66 },
+      at: { x: 893, y: 52 },
     },
     {
       id: 'whisper',
@@ -357,7 +403,7 @@ export const tablux: SystemMap = {
         es: 'Pasa a texto lo que se ha dicho, lo bastante rápido como para conversar.',
       },
       tags: ['Whisper', 'Groq'],
-      at: { x: 893, y: 134 },
+      at: { x: 893, y: 113 },
     },
     {
       id: 'calendar',
@@ -370,7 +416,7 @@ export const tablux: SystemMap = {
         es: 'La agenda familiar: el calendario de cada uno y uno compartido de la casa, que la aplicación lee y escribe.',
       },
       tags: ['Google Calendar'],
-      at: { x: 893, y: 202 },
+      at: { x: 893, y: 174 },
     },
     {
       id: 'spotify',
@@ -383,7 +429,7 @@ export const tablux: SystemMap = {
         es: 'Buscar y poner música desde cualquier pantalla, en el altavoz de la pared o en cualquier otro de casa.',
       },
       tags: ['Spotify Web API', 'Spotify Connect'],
-      at: { x: 893, y: 270 },
+      at: { x: 893, y: 235 },
     },
     {
       id: 'weather',
@@ -392,14 +438,31 @@ export const tablux: SystemMap = {
       sub: { en: 'My own', es: 'Meteorológica' },
       glyph: 'weather',
       body: {
-        en: 'A weather station of my own, with its own database, plus a forecast for the days ahead.',
-        es: 'Una estación meteorológica mía, con su propia base de datos, y una previsión para los próximos días.',
+        en: 'A weather station of my own, with its own database, and an Open-Meteo forecast that the station corrects.',
+        es: 'Una estación meteorológica mía, con su propia base de datos, y una previsión de Open-Meteo que la propia estación corrige.',
       },
       tags: [
         { en: 'Own station', es: 'Estación propia' },
         { en: 'Forecast', es: 'Previsión' },
       ],
-      at: { x: 893, y: 338 },
+      at: { x: 893, y: 296 },
+    },
+    {
+      id: 'push',
+      zone: 'services',
+      label: { en: 'Push services', es: 'Servicios push' },
+      sub: { en: 'Web Push', es: 'Web Push' },
+      glyph: 'bell',
+      body: {
+        en: 'The browsers’ own push services. They carry a Web Push to a phone when a timer set on it has finished, even with the app in the background. Only that phone gets it; the wall rings its own.',
+        es: 'Los servicios de push de los propios navegadores. Llevan un aviso Web Push al móvil cuando acaba un temporizador que se puso en él, aunque la aplicación esté en segundo plano. Solo lo recibe ese móvil; la pared hace sonar los suyos.',
+      },
+      tags: [
+        'Web Push',
+        'VAPID',
+        { en: 'Installed PWA on iOS', es: 'PWA instalada en iOS' },
+      ],
+      at: { x: 893, y: 357 },
     },
     {
       id: 'github',
@@ -412,7 +475,7 @@ export const tablux: SystemMap = {
         es: 'Donde vive el código de Tablux. Un cambio pedido en voz alta llega aquí como un issue, que abre la propia GitHub App de la aplicación.',
       },
       tags: ['GitHub App', 'Issues'],
-      at: { x: 893, y: 406 },
+      at: { x: 893, y: 418 },
     },
     {
       id: 'claudecode',
@@ -425,7 +488,7 @@ export const tablux: SystemMap = {
         es: 'Recoge cada issue en GitHub Actions, escribe el cambio y abre la pull request. Nada se fusiona sin un toque en el móvil.',
       },
       tags: ['GitHub Actions', 'Pull requests'],
-      at: { x: 893, y: 474 },
+      at: { x: 893, y: 479 },
     },
     {
       id: 'mcpclient',
@@ -438,7 +501,7 @@ export const tablux: SystemMap = {
         es: 'Cualquier asistente que hable MCP puede llevar la casa con las herramientas de Tablux y una clave personal.',
       },
       tags: ['MCP'],
-      at: { x: 893, y: 542 },
+      at: { x: 893, y: 540 },
     },
   ],
 
@@ -527,12 +590,15 @@ export const tablux: SystemMap = {
     // The only way into the house
     {
       from: 'app',
+      to: 'tailscale',
+      kind: 'tailscale',
+      label: { en: 'private network', es: 'red privada' },
+    },
+    {
+      from: 'tailscale',
       to: 'bridge',
       kind: 'tailscale',
-      label: {
-        en: 'Tailscale, no open ports',
-        es: 'Tailscale, sin puertos abiertos',
-      },
+      label: { en: 'no open ports', es: 'sin puertos abiertos' },
     },
     // On the VPS
     {
@@ -552,6 +618,12 @@ export const tablux: SystemMap = {
       to: 'app',
       kind: 'local',
       label: { en: 'the app’s tools', es: 'las herramientas de la aplicación' },
+    },
+    {
+      from: 'app',
+      to: 'monitor',
+      kind: 'local',
+      label: { en: 'server and sites', es: 'servidor y webs' },
     },
     // Outside services
     {
@@ -583,6 +655,18 @@ export const tablux: SystemMap = {
       to: 'weather',
       kind: 'https',
       label: { en: 'weather', es: 'el tiempo' },
+    },
+    {
+      from: 'app',
+      to: 'push',
+      kind: 'https',
+      label: { en: 'a timer ended', es: 'acabó un temporizador' },
+    },
+    {
+      from: 'push',
+      to: 'phones',
+      kind: 'https',
+      label: { en: 'Web Push', es: 'Web Push' },
     },
     {
       from: 'app',
@@ -651,7 +735,7 @@ export const tablux: SystemMap = {
           },
         },
         {
-          nodes: ['app', 'bridge'],
+          nodes: ['app', 'tailscale', 'bridge'],
           caption: {
             en: 'The order reaches the wall’s bridge over Tailscale.',
             es: 'La orden llega al puente de la pared por Tailscale.',
@@ -688,7 +772,7 @@ export const tablux: SystemMap = {
           },
         },
         {
-          nodes: ['listener', 'kiosk', 'app', 'bridge'],
+          nodes: ['listener', 'kiosk', 'app', 'tailscale', 'bridge'],
           caption: {
             en: 'One screen takes the turn and the routine goes to the wall’s bridge — straight from the wall when the internet is down.',
             es: 'Una pantalla se queda el turno y la rutina pasa al puente de la pared; si no hay internet, directamente desde la propia pared.',

@@ -36,7 +36,10 @@ export type GlyphId =
   | 'branch'
   | 'terminal'
   | 'key'
-  | 'chip';
+  | 'chip'
+  | 'tunnel'
+  | 'bell'
+  | 'pulse';
 
 /** The larger line drawings of physical things, shown in the panel. */
 export type DrawingId =
@@ -76,6 +79,11 @@ export interface MapZone {
   parent?: string;
   /** A node that stands for the zone itself, drawn as its title. */
   host?: string;
+  /**
+   * A passage between two zones rather than a place: drawn as a gateway on
+   * a wide map, as a band of its own when the zones stack.
+   */
+  tunnel?: true;
 }
 
 export interface MapNode {
