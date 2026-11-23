@@ -1,7 +1,7 @@
 ---
 import SectionHeader from './SectionHeader.astro';
 import { t, resolveLocale, localisedPath } from '../lib/i18n';
-import { aiStack, reviewedOn, type AiItem } from '../data/ai';
+import { aiColumns, reviewedOn, type AiItem } from '../data/ai';
 import { findCaseStudy } from '../data/caseStudies';
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -39,37 +39,38 @@ const reviewed = new Intl.DateTimeFormat(locale, {
     {t('ui_ai_reviewed', locale, { date: reviewed })}
   </p>
 
-  <div
-    data-reveal
-    class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-12 pb-16"
-  >
+  <div data-reveal class="grid gap-12 pb-16 md:grid-cols-2">
     {
-      aiStack.map((group) => (
-        <div>
-          <h3 class="text-muted m-0 mb-[18px] text-[13px] font-medium tracking-[0.16em] uppercase">
-            {t(group.headingKey, locale)}
-          </h3>
-          <ul class="text-body m-0 grid list-none gap-[10px] p-0 text-[15px]">
-            {group.items.map((item) => (
-              <li>
-                {item.caseStudy ? (
-                  <a href={caseStudyHref(item)}>{t(item.key, locale)}</a>
-                ) : item.href ? (
-                  <a href={item.href} target="_blank" rel="noopener">
-                    {t(item.key, locale)}
-                    <span
-                      class="text-muted ml-1 text-[0.8em]"
-                      aria-hidden="true"
-                    >
-                      ↗
-                    </span>
-                  </a>
-                ) : (
-                  t(item.key, locale)
-                )}
-              </li>
-            ))}
-          </ul>
+      aiColumns.map((column) => (
+        <div class="grid content-start gap-12">
+          {column.map((group) => (
+            <div>
+              <h3 class="text-muted m-0 mb-[18px] text-[13px] font-medium tracking-[0.16em] uppercase">
+                {t(group.headingKey, locale)}
+              </h3>
+              <ul class="text-body m-0 grid list-none gap-[10px] p-0 text-[15px]">
+                {group.items.map((item) => (
+                  <li>
+                    {item.caseStudy ? (
+                      <a href={caseStudyHref(item)}>{t(item.key, locale)}</a>
+                    ) : item.href ? (
+                      <a href={item.href} target="_blank" rel="noopener">
+                        {t(item.key, locale)}
+                        <span
+                          class="text-muted ml-1 text-[0.8em]"
+                          aria-hidden="true"
+                        >
+                          ↗
+                        </span>
+                      </a>
+                    ) : (
+                      t(item.key, locale)
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       ))
     }
