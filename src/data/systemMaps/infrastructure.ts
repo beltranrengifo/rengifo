@@ -406,12 +406,6 @@ export const infrastructure: SystemMap = {
       kind: 'local',
       label: { en: 'runs it', es: 'lo levanta' },
     },
-    {
-      from: 'kuma',
-      to: 'supabase',
-      kind: 'local',
-      label: { en: 'checks each one', es: 'comprueba cada uno' },
-    },
     // The only way in for me
     {
       from: 'laptop',
