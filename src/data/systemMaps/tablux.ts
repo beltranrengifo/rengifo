@@ -13,6 +13,10 @@ export const tablux: SystemMap = {
     en: 'Map of Tablux, part by part',
     es: 'Mapa de Tablux, pieza a pieza',
   },
+  intro: {
+    en: 'Every part of Tablux, at home and on my own VPS. Choose one to see what it is and what it talks to, or follow a path through it.',
+    es: 'Todas las piezas de Tablux, en casa y en mi propio VPS. Elige una para ver qué es y con qué habla, o sigue alguno de estos recorridos.',
+  },
   size: { w: 1000, h: 600 },
 
   zones: [
@@ -47,11 +51,13 @@ export const tablux: SystemMap = {
       id: 'training',
       label: { en: 'Training', es: 'Entrenamiento' },
       box: { x: 580, y: 440, w: 200, h: 146 },
+      outside: true,
     },
     {
       id: 'services',
       label: { en: 'Outside services', es: 'Servicios externos' },
       box: { x: 796, y: 14, w: 194, h: 572 },
+      outside: true,
     },
   ],
 

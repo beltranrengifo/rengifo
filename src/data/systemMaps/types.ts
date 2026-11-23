@@ -40,7 +40,18 @@ export type GlyphId =
   | 'tunnel'
   | 'bell'
   | 'pulse'
-  | 'stack';
+  | 'stack'
+  | 'globe'
+  | 'laptop'
+  | 'antenna'
+  | 'route'
+  | 'panel'
+  | 'vector'
+  | 'box'
+  | 'bucket'
+  | 'snapshot'
+  | 'board'
+  | 'nas';
 
 /** The larger line drawings of physical things, shown in the panel. */
 export type DrawingId =
@@ -54,7 +65,11 @@ export type DrawingId =
   | 'bulb'
   | 'projector'
   | 'cast'
-  | 'server';
+  | 'server'
+  | 'laptop'
+  | 'esp32'
+  | 'pi'
+  | 'nas';
 
 export type EdgeKind =
   | 'https' // over the internet
@@ -62,7 +77,8 @@ export type EdgeKind =
   | 'lan' // the home's local network
   | 'local' // inside one machine
   | 'audio' // sound out of a speaker
-  | 'training'; // done once, to make a model
+  | 'training' // done once, to make a model
+  | 'backup'; // a copy, kept somewhere else
 
 /** A box in the map's own units (see SystemMap.size). */
 export interface Box {
@@ -85,6 +101,8 @@ export interface MapZone {
    * a wide map, as a band of its own when the zones stack.
    */
   tunnel?: true;
+  /** Someone else's machines rather than mine: drawn dashed. */
+  outside?: true;
 }
 
 export interface MapNode {
@@ -106,6 +124,11 @@ export interface MapNode {
    * band across the bottom of the zone, or its first row on a phone.
    */
   layer?: true;
+  /**
+   * One of many alike (an instance per app): drawn with a row of small
+   * blank squares, never named or counted, the last one still to come.
+   */
+  many?: true;
   /** Its centre, in the map's units. A zone's host needs none. */
   at?: { x: number; y: number };
 }
@@ -124,6 +147,11 @@ export interface WalkStep {
    */
   nodes: string[];
   caption: Text;
+  /**
+   * Parts drawn as many (see MapNode.many) that gain their next square at
+   * this step, and keep it for the rest of the walk.
+   */
+  grows?: string[];
 }
 
 export interface Walkthrough {
@@ -132,8 +160,15 @@ export interface Walkthrough {
   steps: WalkStep[];
 }
 
-/** What still works when the internet goes: the map's «no internet» view. */
+/**
+ * What still stands when something goes: by default the internet (the
+ * map's «no internet» view), or whatever its own label names.
+ */
 export interface OfflineView {
+  /** The toggle's words, when it is not «no internet». */
+  label?: Text;
+  /** The toggle's icon, struck through when on; a wifi sign by default. */
+  glyph?: GlyphId;
   note: Text;
   /** The parts that keep working, lit. */
   keep: string[];
@@ -154,6 +189,8 @@ export interface SystemMap {
   id: string;
   /** What a screen reader hears for the whole map. */
   label: Text;
+  /** A line under the map's heading: what it shows and how to use it. */
+  intro: Text;
   /** The map's own units: every box and position is measured in them. */
   size: { w: number; h: number };
   zones: MapZone[];

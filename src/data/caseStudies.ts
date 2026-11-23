@@ -30,7 +30,6 @@ import assistedReviewHome from '../assets/work/assisted-review-home.png';
 import assistedReviewNew from '../assets/work/assisted-review-new.png';
 import assistedReviewActivity from '../assets/work/assisted-review-activity.png';
 import assistedReviewReview from '../assets/work/assisted-review-review.png';
-import infrastructureDiagram from '../assets/work/infrastructure-diagram.png';
 
 export interface Screenshot {
   src: ImageMetadata;
@@ -173,6 +172,7 @@ const allProjects: Project[] = [
     rowKey: 'proj_infrastructure_desc',
     taglineKey: 'cs_infrastructure_tagline',
     introKey: 'cs_infrastructure_intro',
+    systemMap: 'infrastructure',
     stack: [
       'VPS (ARM) · Coolify · Docker',
       'Supabase (self-hosted) · Postgres 17',
@@ -207,13 +207,8 @@ const allProjects: Project[] = [
         bodyKey: 'cs_infrastructure_n6_b',
       },
     ],
-    screenshots: [
-      {
-        src: infrastructureDiagram,
-        altKey: 'cs_infrastructure_shot1_alt',
-        captionKey: 'cs_infrastructure_shot1_cap',
-      },
-    ],
+    // The map below the intro shows the whole setup.
+    screenshots: [],
     code: 'private',
   },
   {

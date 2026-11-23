@@ -49,6 +49,7 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
 
     it('says everything in English and Spanish', () => {
       expect(filled(map.label)).toBe(true);
+      expect(filled(map.intro)).toBe(true);
       for (const zone of map.zones)
         expect(filled(zone.label), zone.id).toBe(true);
       for (const node of map.nodes) {
@@ -110,6 +111,8 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
     it('names only real parts, zones and pages in its extras', () => {
       if (map.offline) {
         expect(filled(map.offline.note)).toBe(true);
+        if (map.offline.label) expect(filled(map.offline.label)).toBe(true);
+        if (map.offline.glyph) expect(glyphs[map.offline.glyph]).toBeDefined();
         for (const id of map.offline.keep) expect(nodeIds, id).toContain(id);
         for (const id of map.offline.lose) expect(zoneIds, id).toContain(id);
       }
@@ -126,8 +129,64 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
 
     it('keeps the house private', () => {
       const text = JSON.stringify(map).toLowerCase();
-      for (const secret of ['perico', 'primo', 'hetzner', '192.168', '100.'])
-        expect(text).not.toContain(secret);
+      for (const secret of [
+        'perico',
+        'primo',
+        'hetzner',
+        '192.168',
+        '100.',
+        '€',
+        'rengifo.dev',
+        '.ts.net',
+        'tailf6f411',
+        'falkenstein',
+        'cax31',
+        'pi3',
+        'b2-backups',
+        'database-backup',
+        ':5432',
+        ':3001',
+        ':8000',
+      ])
+        expect(text, secret).not.toContain(secret);
+    });
+
+    it('grows only parts drawn as many', () => {
+      const many = new Set(map.nodes.filter((n) => n.many).map((n) => n.id));
+      for (const walk of map.walkthroughs)
+        for (const step of walk.steps)
+          for (const id of step.grows ?? []) {
+            expect(many, `${walk.id}: ${id}`).toContain(id);
+            expect(step.nodes, `${walk.id}: ${id}`).toContain(id);
+          }
     });
   },
 );
+
+// The infrastructure map stands for every app at once: none is ever named,
+// so it holds however many there are.
+describe('the infrastructure map', () => {
+  const text = JSON.stringify(systemMaps.infrastructure).toLowerCase();
+
+  it.each([
+    'Radio Perico',
+    'Ensayadero',
+    'PaellaLab',
+    'Paella Lab',
+    'Tartaytantas',
+    'La Casa Estudio',
+    'Assisted Review',
+    'Gorraplanistas',
+    'Tablux',
+    'Ca Na Llum',
+    'bandlab',
+    'meteo',
+  ])('never names %s', (name) => {
+    expect(text).not.toContain(name.toLowerCase());
+  });
+
+  it('shows the instances and the frontends as many, unnamed', () => {
+    const many = systemMaps.infrastructure.nodes.filter((n) => n.many);
+    expect(many.map((n) => n.id).sort()).toEqual(['frontends', 'supabase']);
+  });
+});

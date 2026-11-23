@@ -1,8 +1,8 @@
 /**
  * The system map's behaviour (see SystemMap.astro): wires drawn from where
  * the parts really sit, a part's panel, a hover preview, walkthroughs that
- * light a path one step at a time, and the «no internet» view. Without it,
- * the parts and their texts still read.
+ * light a path one step at a time, and the «no internet» view (or whatever
+ * the map's toggle names). Without it, the parts and their texts still read.
  */
 
 interface WireData {
@@ -15,7 +15,10 @@ interface MapData {
   edges: WireData[];
   hosts: Record<string, { zones: string[]; nodes: string[] }>;
   zoneOf: Record<string, string>;
-  walks: Record<string, { nodes: string[]; caption: string }[]>;
+  walks: Record<
+    string,
+    { nodes: string[]; caption: string; grows: string[] }[]
+  >;
   offline: { keep: string[]; lose: string[] } | null;
   bundles: { from: string; zone: string }[];
   stepOf: string;
@@ -362,6 +365,7 @@ function init(root: HTMLElement) {
     const trail = new Set<Wire>();
     const litZones = new Set<string>();
     const downZones = new Set<string>();
+    const grown = new Set<string>();
     const focus = selected ?? preview;
 
     if (focus) {
@@ -382,6 +386,10 @@ function init(root: HTMLElement) {
         const j = order.indexOf(w.to);
         if (i >= 0 && j >= 0) lit.set(w, i > j);
       });
+      // A part that grew one more stays grown for the rest of the walk.
+      steps
+        .slice(0, walk.step + 1)
+        .forEach((step) => step.grows.forEach((n) => grown.add(n)));
       steps.slice(0, walk.step).forEach((step) => {
         step.nodes.forEach((n) => active.has(n) || visited.add(n));
         wires.forEach((w) => {
@@ -411,6 +419,7 @@ function init(root: HTMLElement) {
       el.classList.toggle('is-related', related.has(id) && !active.has(id));
       el.classList.toggle('is-visited', visited.has(id));
       el.classList.toggle('is-down', down.has(id));
+      el.classList.toggle('is-grown', grown.has(id));
       el.setAttribute('aria-expanded', String(id === selected));
     });
     zones.forEach((el, id) => {

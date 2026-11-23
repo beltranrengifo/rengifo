@@ -33,5 +33,17 @@ const { node, locale, panelId, host = false, style } = Astro.props;
   <span class="smap-text">
     <span class="smap-name">{node.label[locale]}</span>
     {node.sub && <span class="smap-sub">{node.sub[locale]}</span>}
+    {
+      node.many && (
+        <span class="smap-many" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i class="smap-many-new" />
+        </span>
+      )
+    }
   </span>
 </button>

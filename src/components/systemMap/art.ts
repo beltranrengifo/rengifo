@@ -56,6 +56,26 @@ export const glyphs: Record<GlyphId, string> = {
   pulse:
     '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M5.5 13h3l2-5 3 9 2-4h3" class="a"/>',
   chip: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx=".6" class="a"/><path d="M9 2.5V6M12 2.5V6M15 2.5V6M9 18v3.5M12 18v3.5M15 18v3.5M2.5 9H6M2.5 12H6M2.5 15H6M18 9h3.5M18 12h3.5M18 15h3.5"/>',
+  globe:
+    '<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9" class="a"/><path d="M3 12h18"/><path d="M4.8 7.5h14.4M4.8 16.5h14.4" class="f"/>',
+  laptop:
+    '<rect x="4.5" y="4.5" width="15" height="10.5" rx="1.2"/><path d="M2 17.5h20l-1.6 2H3.6z"/><path d="M7.5 7.5l2 1.75-2 1.75" class="a"/><path d="M11 12h4"/>',
+  antenna:
+    '<path d="M12 21V11.5M8.5 21h7"/><rect x="8.5" y="6" width="7" height="5.5" rx=".8"/><path d="M12 6V3.5"/><path d="M6.5 3.5q-1.6 2.5 0 5M17.5 3.5q1.6 2.5 0 5" class="a"/><path d="M9.5 15h5M9.5 17.5h5" class="f"/>',
+  route:
+    '<path d="M2.5 12h7"/><circle cx="9.5" cy="12" r="1.6"/><path d="M11 11.2C14 9 14 6 17.5 6M11.1 12h6.4M11 12.8c3 2.2 3 5.2 6.5 5.2" class="a"/><path d="M17.5 4.5l2 1.5-2 1.5M17.5 10.5l2 1.5-2 1.5M17.5 16.5l2 1.5-2 1.5"/>',
+  panel:
+    '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M6.5 9.5h11M6.5 14.5h11" class="f"/><circle cx="10" cy="9.5" r="1.8" class="a"/><circle cx="14.5" cy="14.5" r="1.8" class="a"/>',
+  vector:
+    '<path d="M4 4v16h16" class="f"/><path d="M4 20L17 7M17 7h-4.5M17 7v4.5" class="a"/><circle cx="9" cy="8.5" r=".9"/><circle cx="15" cy="16" r=".9"/><circle cx="18.5" cy="12.5" r=".9"/><circle cx="8" cy="15.5" r=".9"/>',
+  box: '<rect x="2.5" y="6.5" width="19" height="11" rx="1"/><path d="M6 9.5v5M9 9.5v5M12 9.5v5M15 9.5v5" class="f"/><path d="M18 9.5v5" class="a"/><path d="M2.5 20h19" class="f"/>',
+  bucket:
+    '<path d="M7 18.5h10.5a4 4 0 0 0 .5-8 5.5 5.5 0 0 0-10.6-1.2A4.6 4.6 0 0 0 7 18.5z"/><path d="M12 10v5.5M9.8 13.3l2.2 2.2 2.2-2.2" class="a"/>',
+  snapshot:
+    '<path d="M3 8.5h3.8L8.5 6h7l1.7 2.5H21V19H3z"/><circle cx="12" cy="13.5" r="3.4" class="a"/><circle cx="18" cy="11" r=".6"/>',
+  board:
+    '<rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M5.5 5V3.5M7.5 5V3.5M9.5 5V3.5M11.5 5V3.5M13.5 5V3.5" class="f"/><rect x="6" y="9" width="6" height="6" rx=".6" class="a"/><rect x="15" y="8.5" width="6.5" height="3.5"/><rect x="15" y="13.5" width="6.5" height="3.5"/>',
+  nas: '<rect x="5" y="2.5" width="14" height="19" rx="2"/><rect x="7.5" y="5.5" width="9" height="4.5" rx=".6"/><rect x="7.5" y="11.5" width="9" height="4.5" rx=".6"/><path d="M10 7.75h4M10 13.75h4" class="f"/><circle cx="9.5" cy="18.5" r=".7" class="a"/><circle cx="12" cy="18.5" r=".7" class="a"/>',
 };
 
 export interface Drawing {
@@ -268,6 +288,101 @@ export const drawings: Record<DrawingId, Drawing> = {
       <rect x="14" y="76" width="10" height="18" rx="1"/><rect x="176" y="76" width="10" height="18" rx="1"/>
       <circle cx="19" cy="85" r="1.6"/><circle cx="181" cy="85" r="1.6"/>
       <rect class="f" stroke-dasharray="3 3" x="24" y="104" width="152" height="18" rx="2"/>
+    `,
+  },
+  laptop: {
+    alt: {
+      en: 'Line drawing of an open laptop with a terminal prompt on its screen.',
+      es: 'Dibujo a línea de un portátil abierto con la línea de comandos en pantalla.',
+    },
+    svg: `
+      <path class="f" d="M14 120h172"/>
+      <rect x="50" y="14" width="100" height="70" rx="5"/>
+      <rect x="56" y="20" width="88" height="58" rx="1.5"/>
+      <circle cx="100" cy="17" r="1"/>
+      <path class="a" d="M64 32l7 5-7 5"/>
+      <path class="a" d="M76 42h20"/>
+      <path class="f" d="M64 52h56M64 58h40M64 64h48"/>
+      <path d="M50 84h100"/>
+      <path d="M42 88h116l16 22H26z"/>
+      <path class="f" d="M52 93h96M49 98h102M46 103h108"/>
+      <rect class="f" x="84" y="104" width="32" height="4" rx="1"/>
+    `,
+  },
+  esp32: {
+    alt: {
+      en: 'Line drawing of a small sensor box on a mast, with its antenna sending readings, and a round inset showing the ESP32 board inside.',
+      es: 'Dibujo a línea de una pequeña caja de sensores en un mástil, con su antena enviando lecturas, y un detalle circular de la placa ESP32 que lleva dentro.',
+    },
+    svg: `
+      <defs><clipPath id="smap-esp32-inset"><circle cx="156" cy="62" r="30"/></clipPath></defs>
+      <path class="f" d="M30 130h110"/>
+      <path d="M80 130V40"/>
+      <path d="M80 114l-14 16M80 114l14 16"/>
+      <rect x="62" y="48" width="36" height="30" rx="4"/>
+      <path class="f" d="M68 56h24M68 61h18"/>
+      <circle class="a" cx="90" cy="70" r="1.6"/>
+      <path d="M72 88h16M70 93h20M72 98h16M74 103h12"/>
+      <path d="M80 48V24"/>
+      <circle cx="80" cy="22" r="2"/>
+      <path class="a" d="M70 14q-5 8 0 16M62 8q-9 14 0 28M90 14q5 8 0 16M98 8q9 14 0 28"/>
+      <path class="a" stroke-dasharray="2 3" d="M98 62 L126 62"/>
+      <circle class="a" cx="98" cy="62" r="2"/>
+      <circle cx="156" cy="62" r="30" fill="var(--smap-paper)"/>
+      <g clip-path="url(#smap-esp32-inset)">
+        <rect x="128" y="40" width="56" height="44" rx="2"/>
+        <path class="f" d="M131 40v-3M136 40v-3M141 40v-3M146 40v-3M151 40v-3M156 40v-3M161 40v-3M166 40v-3M171 40v-3M176 40v-3M181 40v-3M131 84v3M136 84v3M141 84v3M146 84v3M151 84v3M156 84v3M161 84v3M166 84v3M171 84v3M176 84v3M181 84v3"/>
+        <rect x="140" y="46" width="32" height="24" rx="1.5"/>
+        <path class="a" d="M143 50h4v4h4v-4h4v4h4v-4h4v4h3"/>
+        <path class="f" d="M140 58h32"/>
+        <text x="156" y="66" text-anchor="middle">ESP32</text>
+        <rect x="150" y="75" width="12" height="7" rx="1"/>
+      </g>
+      <circle class="a" cx="156" cy="62" r="30"/>
+    `,
+  },
+  pi: {
+    alt: {
+      en: 'Line drawing of a Raspberry Pi board seen from above: the pin header along one edge, the processor, the USB and network ports, and a network cable plugged in.',
+      es: 'Dibujo a línea de una placa Raspberry Pi vista desde arriba: la fila de pines en un borde, el procesador, los puertos USB y de red, y un cable de red enchufado.',
+    },
+    svg: `
+      <rect x="24" y="24" width="138" height="92" rx="6"/>
+      <circle cx="32" cy="32" r="3"/><circle cx="32" cy="108" r="3"/><circle cx="120" cy="32" r="3"/><circle cx="120" cy="108" r="3"/>
+      <rect x="40" y="29" width="76" height="10" rx="1"/>
+      <path class="f" d="M45 32v4M50 32v4M55 32v4M60 32v4M65 32v4M70 32v4M75 32v4M80 32v4M85 32v4M90 32v4M95 32v4M100 32v4M105 32v4M110 32v4"/>
+      <rect class="a" x="58" y="58" width="28" height="28" rx="1.5"/>
+      <rect class="f" x="64" y="64" width="16" height="16" rx="1"/>
+      <rect x="96" y="62" width="16" height="20" rx="1"/>
+      <rect x="146" y="30" width="24" height="20" rx="1.5"/>
+      <rect x="146" y="56" width="24" height="20" rx="1.5"/>
+      <rect x="144" y="84" width="28" height="24" rx="1.5"/>
+      <path class="f" d="M150 36h16M150 44h16M150 62h16M150 70h16"/>
+      <rect x="150" y="90" width="16" height="12" rx="1"/>
+      <rect x="18" y="64" width="8" height="16" rx="1"/>
+      <path d="M38 116v6h12v-6M70 116v6h14v-6"/>
+      <path class="a" d="M172 96h8c8 0 10 10 18 10"/>
+    `,
+  },
+  nas: {
+    alt: {
+      en: 'Line drawing of a small two-bay NAS, with a padlock beside it for the encrypted copy.',
+      es: 'Dibujo a línea de un NAS pequeño de dos bahías, con un candado al lado por la copia cifrada.',
+    },
+    svg: `
+      <ellipse class="f" cx="98" cy="128" rx="46" ry="4"/>
+      <path class="f" d="M134 20l12-6v104l-12 8"/>
+      <path class="f" d="M70 20l12-6h64"/>
+      <rect x="62" y="20" width="72" height="106" rx="7"/>
+      <rect x="72" y="32" width="52" height="32" rx="3"/>
+      <rect x="72" y="70" width="52" height="32" rx="3"/>
+      <path d="M84 48h28M84 86h28"/>
+      <path class="f" d="M80 38v20M80 76v20"/>
+      <circle class="a" cx="84" cy="114" r="1.8"/><circle class="a" cx="92" cy="114" r="1.8"/><circle cx="112" cy="114" r="2.6"/>
+      <path class="a" d="M166 74v-7a8 8 0 0 1 16 0v7"/>
+      <rect class="a" x="160" y="74" width="28" height="22" rx="3"/>
+      <circle class="a" cx="174" cy="83" r="2.4"/>
+      <path class="a" d="M174 85.5v5"/>
     `,
   },
 };

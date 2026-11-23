@@ -2,8 +2,8 @@
 /*
  * An explorable map of how a system fits together. Zones hold the parts;
  * a part opens its panel (what it is, what it does, what it talks to); a
- * walkthrough lights a path through the map one step at a time; «no
- * internet» shows what keeps working at home.
+ * walkthrough lights a path through the map one step at a time; a toggle
+ * («no internet», or whatever the map names) shows what still stands.
  *
  * The data lives in src/data/systemMaps; this draws any of them. Wires are
  * drawn in the browser from where the parts actually sit, so the same map
@@ -68,15 +68,19 @@ const placeOf = (node: MapNode) => {
   return parent ? say(parent.label) : say(zone.label);
 };
 
-// The legend leaves out the wires inside one machine: they stay in their
-// zone and read for themselves.
-const legendKinds: EdgeKind[] = [
-  'https',
-  'tailscale',
-  'lan',
-  'audio',
-  'training',
-];
+// The legend lists the kinds of wire this map uses, leaving out the ones
+// inside one machine: they stay in their zone and read for themselves.
+const usedKinds = new Set(map.edges.map((edge) => edge.kind));
+const legendKinds = (
+  [
+    'https',
+    'tailscale',
+    'lan',
+    'audio',
+    'training',
+    'backup',
+  ] satisfies EdgeKind[]
+).filter((kind) => usedKinds.has(kind));
 const kindLabel = (kind: EdgeKind) => t(`map_kind_${kind}`, locale);
 
 // What each part talks to, for its panel.
@@ -126,6 +130,7 @@ const clientData = {
       walk.steps.map((step) => ({
         nodes: step.nodes,
         caption: say(step.caption),
+        grows: step.grows ?? [],
       })),
     ]),
   ),
@@ -140,7 +145,7 @@ const clientData = {
 <section class="smap" data-smap aria-labelledby={`${uid}-h`}>
   <header class="smap-head" data-reveal>
     <h2 id={`${uid}-h`}>{heading}</h2>
-    <p>{t('map_intro', locale)}</p>
+    <p>{say(map.intro)}</p>
   </header>
 
   <div class="smap-bar">
@@ -168,12 +173,22 @@ const clientData = {
           aria-pressed="false"
           aria-controls={`${uid}-offline`}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0" />
-            <circle cx="12" cy="19.2" r="1" />
-            <path class="smap-offline-cut" d="M4 3.5l16 17" />
-          </svg>
-          {t('map_offline', locale)}
+          {map.offline.glyph ? (
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              set:html={`${glyphs[map.offline.glyph]}<path class="smap-offline-cut" d="M4 3.5l16 17"/>`}
+            />
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0" />
+              <circle cx="12" cy="19.2" r="1" />
+              <path class="smap-offline-cut" d="M4 3.5l16 17" />
+            </svg>
+          )}
+          {map.offline.label
+            ? say(map.offline.label)
+            : t('map_offline', locale)}
         </button>
       )
     }
@@ -208,7 +223,10 @@ const clientData = {
         {
           topZones.map((zone) => (
             <div
-              class:list={['smap-zone', { 'smap-tunnel': zone.tunnel }]}
+              class:list={[
+                'smap-zone',
+                { 'smap-tunnel': zone.tunnel, 'smap-outside': zone.outside },
+              ]}
               data-zone={zone.id}
               style={boxStyle(zone.box, whole)}
             >
@@ -225,7 +243,10 @@ const clientData = {
 
               {childZones(zone).map((child) => (
                 <div
-                  class="smap-zone smap-subzone"
+                  class:list={[
+                    'smap-zone smap-subzone',
+                    { 'smap-outside': child.outside },
+                  ]}
                   data-zone={child.id}
                   style={boxStyle(child.box, zone.box)}
                 >
@@ -638,8 +659,7 @@ const clientData = {
     border-color: color-mix(in srgb, var(--ink) 24%, transparent);
     --zone-bg: color-mix(in srgb, var(--ink) 3.5%, var(--canvas));
   }
-  .smap-zone[data-zone='training'],
-  .smap-zone[data-zone='services'] {
+  .smap-outside {
     border-style: dashed;
     --zone-bg: var(--smap-paper);
   }
@@ -768,6 +788,51 @@ const clientData = {
     color: var(--color-muted);
   }
 
+  /* One of many alike: blank squares, the last one still to come. */
+  .smap-many {
+    display: flex;
+    gap: 0.3em;
+    margin-top: 0.4em;
+  }
+  .smap-many i {
+    width: 0.7em;
+    height: 0.7em;
+    border: 1px solid color-mix(in srgb, var(--ink) 40%, transparent);
+    border-radius: 0.16em;
+    background: color-mix(in srgb, var(--ink) 9%, var(--smap-paper));
+    transition:
+      border-color 0.3s ease,
+      background 0.3s ease;
+  }
+  .smap-many i:nth-last-child(2) {
+    opacity: 0.5;
+  }
+  .smap-many .smap-many-new {
+    border-style: dashed;
+    background: none;
+    opacity: 0.8;
+  }
+  .smap-node.is-active .smap-many i:not(.smap-many-new),
+  .smap-node.is-related .smap-many i:not(.smap-many-new) {
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  /* A walk adds one: the square still to come fills in. */
+  .smap-node.is-grown .smap-many-new {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--accent);
+    opacity: 1;
+    animation: smap-pop 0.6s var(--smap-ease);
+  }
+  @keyframes smap-pop {
+    from {
+      transform: scale(0.2);
+    }
+    60% {
+      transform: scale(1.35);
+    }
+  }
+
   /* A zone's host is its title, sitting on the zone's top edge. */
   .smap-host {
     left: 16px;
@@ -876,6 +941,10 @@ const clientData = {
   }
   .k-training {
     stroke-dasharray: 2 6;
+  }
+  .k-backup {
+    stroke-width: 1.4;
+    stroke-dasharray: 11 3 2 3;
   }
   .smap-legend .smap-line,
   .smap-swatch .smap-line {
@@ -1577,6 +1646,9 @@ const clientData = {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .smap-node.is-grown .smap-many-new {
+      animation: none;
+    }
     .smap-wire.is-lit .pulse {
       animation: none;
       opacity: 0;
