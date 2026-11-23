@@ -232,6 +232,12 @@ export const techs: Tech[] = [
     uses: { prev: 1 },
   },
   {
+    id: 'blender',
+    label: 'Blender',
+    layer: 'media',
+    uses: { 'ca-na-llum': 1 },
+  },
+  {
     id: 'neve',
     label: 'Neve',
     layer: 'media',
