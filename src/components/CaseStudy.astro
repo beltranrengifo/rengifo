@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import Header from './Header.astro';
 import ContactFooter from './ContactFooter.astro';
+import SystemMap from './SystemMap.astro';
 import { t, resolveLocale, homeHref, contact } from '../lib/i18n';
 import type { CaseStudy } from '../data/caseStudies';
 
@@ -52,6 +53,17 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
         </p>
 
         {
+          study.systemMap && (
+            <p
+              class="text-body mt-5 mb-0 max-w-[620px] text-[17px] leading-[1.65]"
+              style={`animation: fadeUp 0.8s 0.25s ${EASE} both;`}
+            >
+              {t('map_intro', locale)}
+            </p>
+          )
+        }
+
+        {
           study.href && (
             <div
               class="mt-8 flex flex-wrap items-center gap-5"
@@ -82,6 +94,12 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
           )
         }
       </header>
+
+      {
+        study.systemMap && (
+          <SystemMap id={study.systemMap} heading={t('map_heading', locale)} />
+        )
+      }
 
       {/* Screenshots carry the work when the repository cannot. */}
       <div class="grid gap-14 pb-4">
