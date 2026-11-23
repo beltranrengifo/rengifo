@@ -20,7 +20,7 @@ export const ensayadero: SystemMap = {
   },
   intro: {
     en: 'Below, what happens between the upload and the mixer: every model, the queue, the fallbacks and where each file ends up. Choose any part to see what it does, or follow a path through it.',
-    es: 'Aquí debajo, lo que ocurre entre la subida y el mezclador: cada modelo, la cola, las alternativas cuando algo falla y dónde termina cada archivo. Elige una pieza para ver qué hace, o sigue alguno de los recorridos.',
+    es: 'Aquí debajo está todo lo que pasa entre la subida y el mezclador: cada modelo, la cola, las alternativas cuando algo falla y dónde acaba cada archivo. Elige una pieza para ver qué hace, o sigue uno de los recorridos.',
   },
   size: { w: 1000, h: 1000 },
 
@@ -220,7 +220,7 @@ export const ensayadero: SystemMap = {
       glyph: 'split',
       body: {
         en: 'Pulls the recording apart: bass, drums, vocals, guitar, piano and the rest. Three presets trade speed for quality, up to a fine-tuned model. It runs on the server’s CPU, with its weights baked into the image and checked against pinned hashes, so a job never downloads anything.',
-        es: 'Separa la grabación en bajo, batería, voz, guitarra, piano y el resto. Hay tres niveles, de más rápido a más calidad, el último con un modelo afinado. Se ejecuta en la CPU del servidor, con los pesos incluidos en la imagen y verificados con hashes fijados, así que un trabajo nunca descarga nada.',
+        es: 'Separa la grabación en bajo, batería, voz, guitarra, piano y el resto. Tiene tres niveles, del más rápido al de más calidad, y el último usa un modelo afinado. Se ejecuta en la CPU del servidor, con los pesos incluidos en la imagen y verificados con hashes fijados, así que un trabajo nunca descarga nada.',
       },
       tags: [
         'PyTorch',
@@ -298,7 +298,7 @@ export const ensayadero: SystemMap = {
       glyph: 'note',
       body: {
         en: 'Listens to the whole mix for major and minor chords. It goes first because it matched real recordings best, and it takes a moment. If it hears no chord most of the time, Omnizart listens too.',
-        es: 'Analiza la mezcla completa para detectar acordes mayores y menores. Es el primero porque fue el que más acertó con grabaciones reales, y apenas tarda. Si la mayor parte del tiempo no detecta ningún acorde, se prueba también con Omnizart.',
+        es: 'Analiza la mezcla completa para detectar acordes mayores y menores. Va primero porque es el que más acierta con grabaciones reales, y apenas tarda. Si la mayor parte del tiempo no detecta ningún acorde, se prueba también con Omnizart.',
       },
       tags: ['madmom', { en: 'Major and minor', es: 'Mayores y menores' }],
       at: { x: 800, y: 640 },
