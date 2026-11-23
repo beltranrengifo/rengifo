@@ -484,7 +484,7 @@ const clientData = {
     --smap-top: 76px;
     width: var(--smap-width);
     margin-inline: calc((100% - var(--smap-width)) / 2);
-    padding: 88px 0 24px;
+    padding: 8px 0 104px;
   }
   /* Nothing in the side column may push it wider than itself. */
   .smap-side,
@@ -1516,7 +1516,8 @@ const clientData = {
   @media (max-width: 839.98px) {
     .smap {
       --smap-width: calc(100vw - 32px);
-      padding-top: 48px;
+      padding-top: 0;
+      padding-bottom: 72px;
     }
     .smap-canvas {
       display: grid;
