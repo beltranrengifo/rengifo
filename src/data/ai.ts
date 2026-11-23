@@ -49,6 +49,10 @@ export const aiStack: AiGroup[] = [
     items: [
       { key: 'ai_built_tablux' },
       { key: 'ai_built_perico', href: 'https://radioperico.com' },
+      {
+        key: 'ai_built_lacasaestudio',
+        href: 'https://lacasaestudio.com/',
+      },
       { key: 'ai_built_ensayadero', href: 'https://ensayadero.studio/' },
       { key: 'ai_built_paella', href: 'https://paella-lab.vercel.app/' },
       {
