@@ -156,7 +156,7 @@ export const infrastructure: SystemMap = {
       drawing: 'server',
       body: {
         en: 'One ARM VPS for every backend. A machine of my own instead of a managed project per app: cheaper by design, and a new app is one more instance on it, with plenty of room left to grow. The provider keeps snapshots of the whole server.',
-        es: 'Un único VPS ARM para todos los backends. Una máquina propia en lugar de un proyecto gestionado por aplicación: más barato por diseño, y cada aplicación nueva es una instancia más, con margen de sobra para crecer. El proveedor hace copias del servidor completo.',
+        es: 'Un único VPS ARM para todos los backends. Una máquina propia en lugar de un proyecto gestionado por aplicación: más barato, y cada aplicación nueva es una instancia más, con margen de sobra para crecer. El proveedor hace copias del servidor completo.',
       },
       tags: ['VPS', 'ARM', 'Docker', 'Coolify'],
     },
