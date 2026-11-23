@@ -31,6 +31,7 @@ export const projectSpans: Record<string, Span> = {
   'assisted-review': ['2026-10', '2026-11'],
   'radio-perico': ['2026-09', '2026-10'],
   'ca-na-llum': ['2026-11', '2026-11'],
+  lacasaestudio: ['2026-07', '2026-11'],
   paellalab: ['2026-01', '2026-03'],
   'carabanchel-creativa': ['2021-01', '2021-05'],
   gorraplanistas: ['2026-10', '2026-11'],

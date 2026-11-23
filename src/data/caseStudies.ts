@@ -20,6 +20,10 @@ import canallumExterior from '../assets/work/canallum-exterior.png';
 import canallumPlan from '../assets/work/canallum-plan.png';
 import canallumTour from '../assets/work/canallum-tour.png';
 import canallumNight from '../assets/work/canallum-night.png';
+import lceHome from '../assets/work/lacasaestudio-home.png';
+import lceStudio from '../assets/work/lacasaestudio-studio.png';
+import lceBackline from '../assets/work/lacasaestudio-backline.png';
+import lceRecords from '../assets/work/lacasaestudio-records.png';
 import tabluxNight from '../assets/work/tablux-night.png';
 import assistedReviewHome from '../assets/work/assisted-review-home.png';
 import assistedReviewNew from '../assets/work/assisted-review-new.png';
@@ -264,6 +268,51 @@ const allProjects: Project[] = [
     screenshots: [],
     code: 'private',
     href: 'https://radioperico.com',
+  },
+  {
+    slug: 'lacasaestudio',
+    name: 'La Casa Estudio',
+    rowKey: 'proj_lacasaestudio_desc',
+    taglineKey: 'cs_lacasaestudio_tagline',
+    introKey: 'cs_lacasaestudio_intro',
+    stack: [
+      'Astro 7 · React islands',
+      'Supabase (self-hosted)',
+      'Tailwind 4 · Paraglide',
+      'Vercel',
+      'Telegram bot',
+      'Claude Code in GitHub Actions',
+    ],
+    notes: [
+      { headingKey: 'cs_lacasaestudio_n1_h', bodyKey: 'cs_lacasaestudio_n1_b' },
+      { headingKey: 'cs_lacasaestudio_n2_h', bodyKey: 'cs_lacasaestudio_n2_b' },
+      { headingKey: 'cs_lacasaestudio_n3_h', bodyKey: 'cs_lacasaestudio_n3_b' },
+      { headingKey: 'cs_lacasaestudio_n4_h', bodyKey: 'cs_lacasaestudio_n4_b' },
+    ],
+    screenshots: [
+      {
+        src: lceHome,
+        altKey: 'cs_lacasaestudio_shot1_alt',
+        captionKey: 'cs_lacasaestudio_shot1_cap',
+      },
+      {
+        src: lceStudio,
+        altKey: 'cs_lacasaestudio_shot2_alt',
+        captionKey: 'cs_lacasaestudio_shot2_cap',
+      },
+      {
+        src: lceBackline,
+        altKey: 'cs_lacasaestudio_shot3_alt',
+        captionKey: 'cs_lacasaestudio_shot3_cap',
+      },
+      {
+        src: lceRecords,
+        altKey: 'cs_lacasaestudio_shot4_alt',
+        captionKey: 'cs_lacasaestudio_shot4_cap',
+      },
+    ],
+    code: 'private',
+    href: 'https://lacasaestudio.com/',
   },
   {
     slug: 'billing-engine',
