@@ -80,6 +80,18 @@ export const glyphs: Record<GlyphId, string> = {
     '<path d="M6.5 18.5h11a4 4 0 0 0 .4-7.98 6 6 0 0 0-11.5 1.3A3.4 3.4 0 0 0 6.5 18.5z"/><path d="M10.5 12.5v2.2M13.5 12.5v2.2M9.8 14.7h4.4" class="a"/>',
   voice:
     '<path d="M3.5 9.5h3l4.5-3.8v12.6L6.5 14.5h-3z"/><path d="M14.5 9.2a4 4 0 0 1 0 5.6" class="a"/><path d="M17.3 6.6a7.6 7.6 0 0 1 0 10.8"/>',
+  sliders:
+    '<path d="M6 3.5v17M12 3.5v17M18 3.5v17" class="f"/><rect x="4" y="12.5" width="4" height="3" rx=".8"/><rect x="10" y="6.5" width="4" height="3" rx=".8" class="a"/><rect x="16" y="14.5" width="4" height="3" rx=".8"/>',
+  chords:
+    '<rect x="3" y="3.5" width="18" height="17" rx="2"/><path d="M6.5 8h3.5M6.5 12h3.5M6.5 16h3.5" class="a"/><path d="M13 8h4.5M13 12h3M13 16h4.5"/>',
+  queue:
+    '<rect x="3" y="4" width="12.5" height="4" rx="1" class="f"/><rect x="3" y="10" width="12.5" height="4" rx="1"/><rect x="3" y="16" width="12.5" height="4" rx="1" class="a"/><path d="M19.5 4.5v14M17.5 16.5l2 2 2-2"/>',
+  split:
+    '<path d="M2 12q1.2-4 2.4 0t2.4 0"/><path d="M7.5 12c4 0 4-6.5 8-6.5h5.5M7.5 12h13.5M7.5 12c4 0 4 6.5 8 6.5h5.5" class="a"/>',
+  roll: '<rect x="2.5" y="4" width="19" height="16" rx="1.5"/><path d="M6.5 4v16" class="f"/><rect x="8.5" y="7" width="5" height="2.2" rx=".5" class="a"/><rect x="11" y="11" width="7" height="2.2" rx=".5"/><rect x="9" y="15" width="4" height="2.2" rx=".5"/><rect x="15" y="15" width="4" height="2.2" rx=".5" class="a"/>',
+  drum: '<ellipse cx="12" cy="11" rx="8" ry="3"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M7.5 13.6v5.6M12 14v6M16.5 13.6v5.6" class="f"/><path d="M14 3.5l4.5 5M10 3.5l-4.5 5" class="a"/>',
+  sections:
+    '<path d="M2.5 19h19" class="f"/><rect x="2.5" y="8" width="5" height="8" rx="1"/><rect x="8.5" y="8" width="7" height="8" rx="1" class="a"/><rect x="16.5" y="8" width="5" height="8" rx="1"/><path d="M5 4.5v1.5M12 4.5v1.5M19 4.5v1.5" class="f"/>',
 };
 
 export interface Drawing {

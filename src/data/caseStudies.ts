@@ -249,6 +249,7 @@ const allProjects: Project[] = [
     code: 'private',
     href: 'https://ensayadero.studio/',
     accessKey: 'cs_ensayadero_access',
+    systemMap: 'ensayadero',
   },
   {
     slug: 'assisted-review',

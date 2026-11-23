@@ -53,7 +53,14 @@ export type GlyphId =
   | 'board'
   | 'nas'
   | 'cloud'
-  | 'voice';
+  | 'voice'
+  | 'sliders'
+  | 'chords'
+  | 'queue'
+  | 'split'
+  | 'roll'
+  | 'drum'
+  | 'sections';
 
 /** The larger line drawings of physical things, shown in the panel. */
 export type DrawingId =
@@ -80,7 +87,9 @@ export type EdgeKind =
   | 'local' // inside one machine
   | 'audio' // sound out of a speaker
   | 'training' // done once, to make a model
-  | 'backup'; // a copy, kept somewhere else
+  | 'backup' // a copy, kept somewhere else
+  | 'files' // audio, and what is made from it
+  | 'fallback'; // taken only when the first choice fails
 
 /** A box in the map's own units (see SystemMap.size). */
 export interface Box {

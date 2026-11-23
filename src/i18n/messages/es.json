@@ -121,6 +121,8 @@
   "map_kind_audio": "Sonido",
   "map_kind_training": "Entrenamiento",
   "map_kind_backup": "Copias",
+  "map_kind_files": "Audio y resultados",
+  "map_kind_fallback": "Si falla el primero",
   "map_offline": "Sin internet",
   "map_runs_on": "Se ejecuta encima",
   "map_more": "Ver más",
