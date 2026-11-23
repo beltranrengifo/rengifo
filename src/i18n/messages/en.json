@@ -102,7 +102,7 @@
   "proj_billing_desc": "A daily billing engine for cash advances: a pure domain core behind a ports-and-adapters seam, with late revenue, daily caps and rejected charges all carried forward by one mechanism.",
   "ui_cs_read": "Read the case study",
   "map_heading": "How it fits together",
-  "map_intro": "Every part of Tablux, at home and on my own VPS. Choose one to see what it is and what it talks to, or follow a path through it.",
+  "map_intro": "Below, every part of Tablux, at home and on my own VPS. Choose one to see what it is and what it talks to, or follow a path through it.",
   "map_walks": "Follow a path",
   "map_step": "Step {n} of {total}",
   "map_prev": "Previous step",

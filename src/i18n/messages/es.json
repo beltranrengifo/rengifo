@@ -102,7 +102,7 @@
   "proj_billing_desc": "Un motor de facturación diaria de anticipos: un núcleo de dominio puro tras una costura de puertos y adaptadores, donde los ingresos que llegan tarde, los topes diarios y los cargos rechazados se arrastran con un único mecanismo.",
   "ui_cs_read": "Ver el caso de estudio",
   "map_heading": "Cómo encaja todo",
-  "map_intro": "Todas las piezas de Tablux, en casa y en mi propio VPS. Elige una para ver qué es y con qué habla, o sigue alguno de estos recorridos.",
+  "map_intro": "Aquí debajo, todas las piezas de Tablux, en casa y en mi propio VPS. Elige una para ver qué es y con qué habla, o sigue alguno de los recorridos.",
   "map_walks": "Sigue un recorrido",
   "map_step": "Paso {n} de {total}",
   "map_prev": "Paso anterior",

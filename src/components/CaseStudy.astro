@@ -53,6 +53,17 @@ const EASE = 'cubic-bezier(0.2,0.6,0.2,1)';
         </p>
 
         {
+          study.systemMap && (
+            <p
+              class="text-body mt-5 mb-0 max-w-[620px] text-[17px] leading-[1.65]"
+              style={`animation: fadeUp 0.8s 0.25s ${EASE} both;`}
+            >
+              {t('map_intro', locale)}
+            </p>
+          )
+        }
+
+        {
           study.href && (
             <div
               class="mt-8 flex flex-wrap items-center gap-5"
