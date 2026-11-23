@@ -2,7 +2,7 @@ import type { SystemMap } from './types';
 
 /**
  * Tablux, part by part: the wall and the house's devices, the app on my own
- * VPS, and the services around it. Positions are in a 1000 × 600 map; on a
+ * VPS, and the services around it. Positions are in a 1000 × 760 map; on a
  * phone the zones stack and the nodes flow in this order instead.
  *
  * Private by design: no names, hosts, addresses, networks or wake phrase.
@@ -13,18 +13,18 @@ export const tablux: SystemMap = {
     en: 'Map of Tablux, part by part',
     es: 'Mapa de Tablux, pieza a pieza',
   },
-  size: { w: 1000, h: 600 },
+  size: { w: 1000, h: 760 },
 
   zones: [
     {
       id: 'home',
       label: { en: 'At home', es: 'En casa' },
-      box: { x: 10, y: 14, w: 506, h: 572 },
+      box: { x: 10, y: 20, w: 490, h: 732 },
     },
     {
       id: 'wall',
       label: { en: 'On the wall', es: 'En la pared' },
-      box: { x: 206, y: 62, w: 294, h: 352 },
+      box: { x: 222, y: 70, w: 248, h: 500 },
       parent: 'home',
       host: 'wall',
     },
@@ -34,24 +34,24 @@ export const tablux: SystemMap = {
         en: 'Between home and the VPS',
         es: 'Entre casa y el VPS',
       },
-      box: { x: 506, y: 296, w: 48, h: 52 },
+      box: { x: 508, y: 370, w: 44, h: 50 },
       tunnel: true,
     },
     {
       id: 'cloud',
       label: { en: 'On my VPS', es: 'En mi VPS' },
-      box: { x: 580, y: 14, w: 200, h: 392 },
+      box: { x: 598, y: 20, w: 196, h: 548 },
       host: 'server',
     },
     {
       id: 'training',
       label: { en: 'Training', es: 'Entrenamiento' },
-      box: { x: 580, y: 440, w: 200, h: 146 },
+      box: { x: 598, y: 604, w: 196, h: 148 },
     },
     {
       id: 'services',
       label: { en: 'Outside services', es: 'Servicios externos' },
-      box: { x: 796, y: 14, w: 194, h: 572 },
+      box: { x: 808, y: 20, w: 184, h: 732 },
     },
   ],
 
@@ -82,7 +82,7 @@ export const tablux: SystemMap = {
         es: 'Un Linux propio para una placa sin documentación pública. Primero, una copia completa del Android de fábrica. Después, un device tree escrito a partir del original del fabricante, un U-Boot compilado con la inicialización de memoria que pide esta placa y Linux 6.18 compilado con los drivers de pantalla que le faltaban, sobre Armbian. Encima, Phosh lo convierte en un sistema pensado para los dedos. Todo lo que hay en la pared corre sobre él.',
       },
       tags: ['Linux 6.18', 'Armbian', 'Phosh', 'U-Boot', 'Device tree'],
-      at: { x: 353, y: 388 },
+      at: { x: 346, y: 500 },
     },
     {
       id: 'kiosk',
@@ -95,7 +95,7 @@ export const tablux: SystemMap = {
         es: 'Chromium abre la aplicación a pantalla completa en cuanto arranca la pared, sin nada alrededor. Es la misma PWA que usan las demás pantallas; la pared solo pone lo que necesita un cuerpo: altavoz, micrófono y puente. De noche descansa con el reloj y los temporizadores en marcha, y «Buenas noches» puede mandarla a descansar. Sin internet, la caché de la propia aplicación mantiene en pantalla el reloj, la agenda y el menú.',
       },
       tags: ['Chromium', 'PWA', 'Phosh'],
-      at: { x: 354, y: 135 },
+      at: { x: 346, y: 232 },
     },
     {
       id: 'listener',
@@ -114,7 +114,7 @@ export const tablux: SystemMap = {
         'WASM',
         { en: 'USB microphone', es: 'Micrófono USB' },
       ],
-      at: { x: 278, y: 228 },
+      at: { x: 346, y: 145 },
     },
     {
       id: 'speaker',
@@ -131,7 +131,7 @@ export const tablux: SystemMap = {
         'Spotify Connect',
         { en: 'Offline Piper', es: 'Piper sin conexión' },
       ],
-      at: { x: 430, y: 228 },
+      at: { x: 346, y: 319 },
     },
     {
       id: 'bridge',
@@ -150,7 +150,7 @@ export const tablux: SystemMap = {
         { en: 'Routines', es: 'Rutinas' },
         { en: 'Works offline', es: 'Funciona sin red' },
       ],
-      at: { x: 354, y: 322 },
+      at: { x: 346, y: 406 },
     },
 
     // ── Around the house ────────────────────────────────────────
@@ -166,7 +166,7 @@ export const tablux: SystemMap = {
         es: 'Enchufes wifi para lámparas y aparatos. El puente habla su protocolo por la red local, con la clave de cada uno. «Encender durante» deja uno encendido un rato, y luego se apaga solo.',
       },
       tags: ['Tuya', 'Smart Life', { en: 'Local keys', es: 'Claves locales' }],
-      at: { x: 108, y: 100 },
+      at: { x: 116, y: 145 },
     },
     {
       id: 'bulbs',
@@ -180,7 +180,7 @@ export const tablux: SystemMap = {
         es: 'Bombillas de color de dos marcas, que se regulan y cambian de color desde cualquier pantalla, con la voz o con una rutina. El puente llega a cada una por la red local, con el protocolo de su fabricante.',
       },
       tags: ['Smart Life', 'Shelly', { en: 'Colour', es: 'Color' }],
-      at: { x: 108, y: 196 },
+      at: { x: 116, y: 260 },
     },
     {
       id: 'blinds',
@@ -198,7 +198,7 @@ export const tablux: SystemMap = {
         { en: 'Local RPC', es: 'RPC local' },
         { en: 'By the sun', es: 'Con el sol' },
       ],
-      at: { x: 108, y: 292 },
+      at: { x: 116, y: 375 },
     },
     {
       id: 'projector',
@@ -216,7 +216,7 @@ export const tablux: SystemMap = {
         'Cast',
         { en: 'Own protocol code', es: 'Protocolo propio' },
       ],
-      at: { x: 108, y: 388 },
+      at: { x: 116, y: 490 },
     },
     {
       id: 'cast',
@@ -230,7 +230,7 @@ export const tablux: SystemMap = {
         es: 'Los altavoces Cast de casa. El puente los encuentra en la red y los despierta él mismo como dispositivos de Spotify Connect, así que la música pasa a cualquier habitación sin abrir la aplicación de Spotify.',
       },
       tags: ['Cast', 'Spotify Connect', 'mDNS'],
-      at: { x: 108, y: 484 },
+      at: { x: 116, y: 605 },
     },
     {
       id: 'tablets',
@@ -244,7 +244,7 @@ export const tablux: SystemMap = {
         es: 'Tablets viejas repartidas por casa con la misma PWA. Como son de todos, de noche descansan con el reloj y los temporizadores en marcha, preguntan quién las usa y pueden estar atentas a la palabra de activación desde el navegador.',
       },
       tags: ['PWA', { en: 'Night rest', es: 'Descanso nocturno' }, 'WASM'],
-      at: { x: 304, y: 470 },
+      at: { x: 318, y: 628 },
     },
     {
       id: 'phones',
@@ -258,7 +258,7 @@ export const tablux: SystemMap = {
         es: 'Nuestros móviles llevan la aplicación instalada como PWA. Son personales: no descansan ni preguntan quién los usa, y les llega un aviso cuando acaba un temporizador que pusieron ellos. Los cambios pedidos en voz alta se fusionan desde la tarjeta «Cambios» de un móvil, y solo desde ahí.',
       },
       tags: ['PWA', 'Web Push'],
-      at: { x: 430, y: 540 },
+      at: { x: 438, y: 708 },
     },
 
     // ── Between home and the VPS ────────────────────────────────
@@ -278,7 +278,7 @@ export const tablux: SystemMap = {
         { en: 'No open ports', es: 'Sin puertos abiertos' },
         'SSH',
       ],
-      at: { x: 530, y: 322 },
+      at: { x: 530, y: 395 },
     },
 
     // ── On my VPS ───────────────────────────────────────────────
@@ -306,7 +306,7 @@ export const tablux: SystemMap = {
         es: 'Una sola aplicación en Next.js sirve la PWA y su API a todas las pantallas: el asistente, luces y persianas, agenda, menús, lista de la compra, temporizadores y cronómetros. Las recetas entran escritas, dictadas o desde cualquier web. Cada pantalla pregunta cada dos segundos si algo ha cambiado —una consulta sencilla, para que una tablet de 2014 no se quede atrás—, y antes de publicar un cambio en la interfaz todas las pantallas se revisan en diez tamaños, de día y de noche.',
       },
       tags: ['Next.js 16', 'React 19', 'PWA', 'Web Push'],
-      at: { x: 680, y: 88 },
+      at: { x: 696, y: 110 },
     },
     {
       id: 'supabase',
@@ -323,7 +323,7 @@ export const tablux: SystemMap = {
         { en: 'Google sign-in', es: 'Acceso con Google' },
         { en: 'Allow-list', es: 'Lista de acceso' },
       ],
-      at: { x: 680, y: 156 },
+      at: { x: 696, y: 200 },
     },
     {
       id: 'voice',
@@ -336,7 +336,7 @@ export const tablux: SystemMap = {
         es: 'Convierte en voz las respuestas del asistente, con una voz de Piper propia que entrené con Voicebox y Runpod. Es la voz de todas las pantallas.',
       },
       tags: ['Piper', { en: 'Own voice', es: 'Voz propia' }, 'Voicebox'],
-      at: { x: 680, y: 224 },
+      at: { x: 696, y: 290 },
     },
     {
       id: 'mcp',
@@ -349,7 +349,7 @@ export const tablux: SystemMap = {
         es: 'Las herramientas del asistente —luces, persianas, rutinas, menús, agenda, temporizadores, música— al alcance de cualquier asistente que hable MCP, con una clave personal.',
       },
       tags: ['MCP', { en: 'Personal keys', es: 'Claves personales' }],
-      at: { x: 680, y: 292 },
+      at: { x: 696, y: 380 },
     },
 
     {
@@ -366,7 +366,7 @@ export const tablux: SystemMap = {
         'Uptime Kuma',
         { en: 'Server metrics', es: 'Métricas del servidor' },
       ],
-      at: { x: 680, y: 360 },
+      at: { x: 696, y: 470 },
     },
 
     // ── Training ────────────────────────────────────────────────
@@ -386,7 +386,7 @@ export const tablux: SystemMap = {
         { en: 'Wake word', es: 'Palabra de activación' },
         'Piper',
       ],
-      at: { x: 680, y: 520 },
+      at: { x: 696, y: 680 },
     },
 
     // ── Outside services ────────────────────────────────────────
@@ -404,7 +404,7 @@ export const tablux: SystemMap = {
         { en: 'Tool use', es: 'Herramientas' },
         { en: 'Photos in chat', es: 'Fotos en el chat' },
       ],
-      at: { x: 893, y: 52 },
+      at: { x: 900, y: 95 },
     },
     {
       id: 'whisper',
@@ -417,7 +417,7 @@ export const tablux: SystemMap = {
         es: 'Pasa a texto lo que se ha dicho, lo bastante rápido como para conversar.',
       },
       tags: ['Whisper', 'Groq'],
-      at: { x: 893, y: 113 },
+      at: { x: 900, y: 172 },
     },
     {
       id: 'calendar',
@@ -430,7 +430,7 @@ export const tablux: SystemMap = {
         es: 'La agenda familiar: el calendario de cada uno y uno compartido de la casa, que la aplicación lee y escribe.',
       },
       tags: ['Google Calendar'],
-      at: { x: 893, y: 174 },
+      at: { x: 900, y: 249 },
     },
     {
       id: 'spotify',
@@ -443,7 +443,7 @@ export const tablux: SystemMap = {
         es: 'Buscar y poner música desde cualquier pantalla, en el altavoz de la pared o en cualquier otro de casa.',
       },
       tags: ['Spotify Web API', 'Spotify Connect'],
-      at: { x: 893, y: 235 },
+      at: { x: 900, y: 326 },
     },
     {
       id: 'weather',
@@ -460,7 +460,7 @@ export const tablux: SystemMap = {
         { en: 'Own station', es: 'Estación propia' },
         { en: 'Forecast', es: 'Previsión' },
       ],
-      at: { x: 893, y: 296 },
+      at: { x: 900, y: 403 },
     },
     {
       id: 'push',
@@ -477,7 +477,7 @@ export const tablux: SystemMap = {
         'VAPID',
         { en: 'Installed PWA on iOS', es: 'PWA instalada en iOS' },
       ],
-      at: { x: 893, y: 357 },
+      at: { x: 900, y: 480 },
     },
     {
       id: 'github',
@@ -490,7 +490,7 @@ export const tablux: SystemMap = {
         es: 'Donde vive el código de Tablux. Un cambio pedido en voz alta llega aquí como un issue, que abre la propia GitHub App de la aplicación.',
       },
       tags: ['GitHub App', 'Issues'],
-      at: { x: 893, y: 418 },
+      at: { x: 900, y: 557 },
     },
     {
       id: 'claudecode',
@@ -503,7 +503,7 @@ export const tablux: SystemMap = {
         es: 'Recoge cada issue en GitHub Actions, escribe el cambio y abre la pull request. Nada se fusiona sin un toque en el móvil.',
       },
       tags: ['GitHub Actions', 'Pull requests'],
-      at: { x: 893, y: 479 },
+      at: { x: 900, y: 634 },
     },
     {
       id: 'mcpclient',
@@ -516,7 +516,7 @@ export const tablux: SystemMap = {
         es: 'Cualquier asistente que hable MCP puede llevar la casa con las herramientas de Tablux y una clave personal.',
       },
       tags: ['MCP'],
-      at: { x: 893, y: 540 },
+      at: { x: 900, y: 711 },
     },
   ],
 
@@ -902,6 +902,12 @@ export const tablux: SystemMap = {
     lose: ['tunnel', 'cloud', 'training', 'services'],
   },
 
-  // The app's wires to the outside services run as one trunk.
-  bundles: [{ from: 'app', zone: 'services' }],
+  // The app's wires run as trunks: one by the outside services, one down
+  // the VPS's left side to Tailscale and to the screens at home.
+  bundles: [
+    { from: 'app', zone: 'services' },
+    { from: 'app', zone: 'tunnel', trunk: 'cloud' },
+    { from: 'app', zone: 'wall', trunk: 'cloud' },
+    { from: 'app', zone: 'home', trunk: 'cloud' },
+  ],
 };

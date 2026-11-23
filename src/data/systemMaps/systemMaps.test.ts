@@ -116,6 +116,7 @@ describe.each(Object.entries(systemMaps) as [string, SystemMap][])(
       for (const bundle of map.bundles ?? []) {
         expect(nodeIds).toContain(bundle.from);
         expect(zoneIds).toContain(bundle.zone);
+        if (bundle.trunk) expect(zoneIds).toContain(bundle.trunk);
       }
       const pages = new Set(
         projects.filter((p) => p.page !== false).map((p) => p.slug),

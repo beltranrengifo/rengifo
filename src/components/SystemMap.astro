@@ -199,7 +199,7 @@ const clientData = {
         data-smap-canvas
         role="group"
         aria-label={say(map.label)}
-        style={`--ratio:${map.size.w}/${map.size.h}`}
+        style={`--ratio:${map.size.w}/${map.size.h};--ratio-n:${(map.size.w / map.size.h).toFixed(4)}`}
       >
         <svg class="smap-wires" data-smap-wires aria-hidden="true"></svg>
         <svg class="smap-wires smap-labels" data-smap-labels aria-hidden="true"
@@ -462,7 +462,7 @@ const clientData = {
     --smap-zone: color-mix(in srgb, var(--ink) 2.2%, var(--canvas));
     --smap-ease: cubic-bezier(0.22, 0.8, 0.2, 1);
     /* Wider than the text column: a map needs room. */
-    --smap-width: min(1280px, calc(100vw - 32px));
+    --smap-width: min(1600px, calc(100vw - 48px));
     /* Below the slim, sticky site header. */
     --smap-top: 76px;
     width: var(--smap-width);
@@ -599,11 +599,15 @@ const clientData = {
   .smap-stage {
     position: relative;
   }
+  /* As wide as its column allows, and no taller than the window unless
+     the window is too short to hold it without crowding. */
   .smap-canvas {
     position: relative;
+    width: min(100%, max(860px, calc((100dvh - 100px) * var(--ratio-n))));
+    margin-inline: auto;
     aspect-ratio: var(--ratio);
     container-type: inline-size;
-    font-size: clamp(10.5px, 1.42cqw, 14px);
+    font-size: clamp(10.5px, 1.3cqw, 14.5px);
   }
   .smap-wires {
     position: absolute;
@@ -697,6 +701,17 @@ const clientData = {
   .smap-tunnel .smap-glyph {
     color: var(--accent);
   }
+  /* The gateway stands upright, narrow enough to sit between two zones. */
+  .smap-tunnel .smap-node {
+    flex-direction: column;
+    gap: 0.2em;
+    padding: 0.6em 0.9em;
+    border-radius: 1.4em;
+    text-align: center;
+  }
+  .smap-tunnel .smap-text {
+    justify-items: center;
+  }
 
   /* A part: a small card the wires run behind. */
   .smap-node {
@@ -709,7 +724,7 @@ const clientData = {
     gap: 0.55em;
     box-sizing: border-box;
     width: max-content;
-    padding: 0.42em 0.85em 0.42em 0.5em;
+    padding: 0.55em 0.95em 0.55em 0.6em;
     transform: translate(-50%, -50%);
     border: 1px solid var(--smap-line);
     border-radius: 0.85em;
@@ -754,12 +769,12 @@ const clientData = {
     display: grid;
   }
   .smap-name {
-    font: italic 400 1.1em/1.15 var(--font-serif);
+    font: italic 400 1.1em/1.25 var(--font-serif);
     letter-spacing: -0.005em;
     white-space: nowrap;
   }
   .smap-sub {
-    margin-top: 0.15em;
+    margin-top: 0.2em;
     font-size: 11px;
     font-weight: 500;
     line-height: 1.25;
@@ -1370,8 +1385,8 @@ const clientData = {
   /* ── Wide screens: the map stays in view beside a flowing panel ── */
   @media (min-width: 1280px) {
     .smap-body {
-      grid-template-columns: minmax(0, 1fr) 330px;
-      gap: 44px;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 40px;
       align-items: start;
     }
     .smap-stage {
@@ -1477,9 +1492,12 @@ const clientData = {
       margin: 0 0 22px;
       padding-top: 28px;
     }
+    .smap-canvas {
+      width: auto;
+    }
     .smap-parts {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 8px;
     }
     .smap-node:not(.smap-host) {
