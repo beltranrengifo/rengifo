@@ -625,6 +625,13 @@ const clientData = {
   .smap-zone.is-active {
     border-color: var(--accent);
   }
+  /* Training's title sits on its bottom edge: the trained voice's wire comes
+     in through the top. */
+  @media (min-width: 840px) {
+    .smap-zone[data-zone='training'] > .smap-zone-label {
+      top: 100%;
+    }
+  }
   /* Out of reach (no internet): hatched, its title struck through. */
   .smap-zone.is-down {
     border-style: dashed;

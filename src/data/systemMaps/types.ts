@@ -40,7 +40,9 @@ export type GlyphId =
   | 'tunnel'
   | 'bell'
   | 'pulse'
-  | 'stack';
+  | 'stack'
+  | 'cloud'
+  | 'voice';
 
 /** The larger line drawings of physical things, shown in the panel. */
 export type DrawingId =

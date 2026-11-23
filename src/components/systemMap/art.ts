@@ -56,6 +56,10 @@ export const glyphs: Record<GlyphId, string> = {
   pulse:
     '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M5.5 13h3l2-5 3 9 2-4h3" class="a"/>',
   chip: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx=".6" class="a"/><path d="M9 2.5V6M12 2.5V6M15 2.5V6M9 18v3.5M12 18v3.5M15 18v3.5M2.5 9H6M2.5 12H6M2.5 15H6M18 9h3.5M18 12h3.5M18 15h3.5"/>',
+  cloud:
+    '<path d="M6.5 18.5h11a4 4 0 0 0 .4-7.98 6 6 0 0 0-11.5 1.3A3.4 3.4 0 0 0 6.5 18.5z"/><path d="M10.5 12.5v2.2M13.5 12.5v2.2M9.8 14.7h4.4" class="a"/>',
+  voice:
+    '<path d="M3.5 9.5h3l4.5-3.8v12.6L6.5 14.5h-3z"/><path d="M14.5 9.2a4 4 0 0 1 0 5.6" class="a"/><path d="M17.3 6.6a7.6 7.6 0 0 1 0 10.8"/>',
 };
 
 export interface Drawing {
