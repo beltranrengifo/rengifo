@@ -134,7 +134,7 @@
   "cs_ensayadero_tagline": "Un local de ensayo que escucha.",
   "cs_ensayadero_intro": "Una herramienta de ensayo para grupos: subes una grabación y te la devuelve separada en stems, con MIDI y una hoja de acordes editable, en un mezclador multipista. En beta privada, solo con invitación.",
   "cs_ensayadero_n1_h": "ML de audio en casa, sin APIs de pago",
-  "cs_ensayadero_n1_b": "Un pipeline en Python (Demucs separa los stems; Basic Pitch y Omnizart transcriben; Omnizart y madmom sacan los acordes) se ejecuta sobre TensorFlow y PyTorch, en la misma imagen Docker que el servidor Next.js, en un servidor propio con Coolify. Una cola de trabajos retoma lo que se haya quedado a medias si el servidor se reinicia.",
+  "cs_ensayadero_n1_b": "Un pipeline en Python (Demucs separa los stems; Basic Pitch y Omnizart los transcriben; madmom saca los acordes, con Omnizart de reserva) se ejecuta sobre TensorFlow y PyTorch, en la misma imagen Docker que el servidor Next.js, en un servidor propio con Coolify. Una cola de trabajos retoma lo que se haya quedado a medias si el servidor se reinicia.",
   "cs_ensayadero_n2_h": "Next.js sobre Supabase",
   "cs_ensayadero_n2_b": "Next.js 16 y React 19, con rutas de API que respetan el RLS; Supabase para Postgres, el acceso con Google con lista de invitados y roles en el token, y Storage para stems, MIDI y hojas de acordes. La reproducción en el navegador va con Tone.js y wavesurfer.",
   "cs_perico_tagline": "Un traductor con una voz muy concreta.",
