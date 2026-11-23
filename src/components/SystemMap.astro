@@ -230,7 +230,7 @@ const clientData = {
                     {partsOf(child).map((node) => (
                       <button
                         type="button"
-                        class="smap-node"
+                        class:list={['smap-node', { 'smap-layer': node.layer }]}
                         data-node={node.id}
                         style={nodeStyle(node, child.box)}
                         aria-expanded="false"
@@ -258,7 +258,7 @@ const clientData = {
                 {partsOf(zone).map((node) => (
                   <button
                     type="button"
-                    class="smap-node"
+                    class:list={['smap-node', { 'smap-layer': node.layer }]}
                     data-node={node.id}
                     style={nodeStyle(node, zone.box)}
                     aria-expanded="false"
@@ -763,6 +763,24 @@ const clientData = {
   }
   .smap-host .smap-name {
     white-space: nowrap;
+  }
+
+  /* A layer the zone's parts run on: a band along the bottom of the zone. */
+  .smap-layer {
+    width: calc(100% - 1.6em);
+    justify-content: center;
+    padding-block: 0.5em;
+    border-radius: 0.6em;
+    border-color: color-mix(in srgb, var(--ink) 26%, transparent);
+    background: color-mix(in srgb, var(--ink) 5%, var(--smap-paper));
+  }
+  .smap-layer .smap-text {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7em;
+  }
+  .smap-layer .smap-sub {
+    margin: 0;
   }
 
   /*
@@ -1384,6 +1402,10 @@ const clientData = {
     .smap-tunnel .smap-zone-label {
       display: block;
       color: var(--accent);
+    }
+    .smap-node.smap-layer {
+      grid-column: 1 / -1;
+      min-height: 46px;
     }
     .smap-tunnel .smap-parts {
       grid-template-columns: minmax(0, 1fr);

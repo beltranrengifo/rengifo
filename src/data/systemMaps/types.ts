@@ -39,7 +39,8 @@ export type GlyphId =
   | 'chip'
   | 'tunnel'
   | 'bell'
-  | 'pulse';
+  | 'pulse'
+  | 'stack';
 
 /** The larger line drawings of physical things, shown in the panel. */
 export type DrawingId =
@@ -98,6 +99,11 @@ export interface MapNode {
   /** What it is, what it does, why it is there. */
   body: Text;
   tags: (string | Text)[];
+  /**
+   * A layer the rest of its zone runs on (an operating system): drawn as a
+   * band across the bottom of the zone, or its first row on a phone.
+   */
+  layer?: true;
   /** Its centre, in the map's units. A zone's host needs none. */
   at?: { x: number; y: number };
 }

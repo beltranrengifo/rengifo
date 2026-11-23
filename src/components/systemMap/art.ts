@@ -50,6 +50,8 @@ export const glyphs: Record<GlyphId, string> = {
   key: '<circle cx="8" cy="12" r="4"/><circle cx="8" cy="12" r="1.2" class="a"/><path d="M12 12h9.5M18.5 12v3M21.5 12v2"/>',
   tunnel:
     '<path d="M2 20.5h20"/><path d="M4 20.5V13a8 8 0 0 1 16 0v7.5"/><path d="M8.5 20.5V14a3.5 3.5 0 0 1 7 0v6.5" class="a"/><path d="M12 6.5v-2" class="f"/>',
+  stack:
+    '<path d="M12 3.5l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5" class="f"/><path d="M3 16l9 4.5 9-4.5" class="a"/>',
   bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/><path d="M19.5 5.5q1.8 1.8 1.8 4.5M4.5 5.5Q2.7 7.3 2.7 10" class="a"/>',
   pulse:
     '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M5.5 13h3l2-5 3 9 2-4h3" class="a"/>',

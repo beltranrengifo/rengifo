@@ -24,7 +24,7 @@ export const tablux: SystemMap = {
     {
       id: 'wall',
       label: { en: 'On the wall', es: 'En la pared' },
-      box: { x: 206, y: 62, w: 300, h: 330 },
+      box: { x: 206, y: 62, w: 300, h: 352 },
       parent: 'home',
       host: 'wall',
     },
@@ -61,14 +61,28 @@ export const tablux: SystemMap = {
       id: 'wall',
       zone: 'wall',
       label: { en: 'The wall', es: 'La pared' },
-      sub: { en: 'HiPOS · RK3288', es: 'HiPOS · RK3288' },
+      sub: { en: 'Recycled POS · RK3288', es: 'TPV reciclado · RK3288' },
       glyph: 'screen',
       drawing: 'wall',
       body: {
-        en: 'A HiPOS point-of-sale screen that was headed for the bin, now hung on the wall. A 15.6-inch panel on a Rockchip RK3288 with 2 GB of memory, running a Linux made for it: my own device tree, my own U-Boot and Linux 6.18 on Armbian, with Phosh on top for fingers. It is also the house’s ears, its speaker and its bridge to every device.',
-        es: 'Un TPV HiPOS que iba a la basura y ahora cuelga de la pared. Pantalla de 15,6 pulgadas y placa Rockchip RK3288 con 2 GB de memoria, con un Linux hecho a su medida: device tree y U-Boot propios, Linux 6.18 sobre Armbian y Phosh encima para usarlo con los dedos. Además es el oído de la casa, su altavoz y el puente hacia todos los aparatos.',
+        en: 'A HiPOS point-of-sale screen that was headed for the bin, now hung on the wall: a 15.6-inch panel on a Rockchip RK3288 with 2 GB of memory. It runs a Linux of my own, and it is also the house’s ears, its speaker and its bridge to every device.',
+        es: 'Un TPV HiPOS que iba a la basura y ahora cuelga de la pared: pantalla de 15,6 pulgadas y placa Rockchip RK3288 con 2 GB de memoria. Lleva un Linux propio, y además es el oído de la casa, su altavoz y el puente hacia todos los aparatos.',
       },
       tags: ['RK3288', '2 GB', 'Linux 6.18', 'U-Boot', 'Armbian', 'Phosh'],
+    },
+    {
+      id: 'linux',
+      zone: 'wall',
+      label: { en: 'Linux 6.18', es: 'Linux 6.18' },
+      sub: { en: 'Armbian · Phosh', es: 'Armbian · Phosh' },
+      glyph: 'stack',
+      layer: true,
+      body: {
+        en: 'My own Linux for a board with no public documentation. First, a full backup of the factory Android. Then a device tree written from the vendor’s own, U-Boot built with the memory init this board needs, and Linux 6.18 compiled with the display drivers it lacked, on Armbian. Phosh on top makes it a system for fingers. Everything on the wall runs on it.',
+        es: 'Un Linux propio para una placa sin documentación pública. Primero, una copia completa del Android de fábrica. Después, un device tree escrito a partir del original del fabricante, un U-Boot compilado con la inicialización de memoria que pide esta placa y Linux 6.18 compilado con los drivers de pantalla que le faltaban, sobre Armbian. Encima, Phosh lo convierte en un sistema pensado para los dedos. Todo lo que hay en la pared corre sobre él.',
+      },
+      tags: ['Linux 6.18', 'Armbian', 'Phosh', 'U-Boot', 'Device tree'],
+      at: { x: 356, y: 388 },
     },
     {
       id: 'kiosk',
@@ -506,6 +520,13 @@ export const tablux: SystemMap = {
   ],
 
   edges: [
+    // Everything on the wall runs on its own Linux
+    ...(['kiosk', 'listener', 'speaker', 'bridge'] as const).map((part) => ({
+      from: 'linux',
+      to: part,
+      kind: 'local' as const,
+      label: { en: 'runs on it', es: 'corre sobre él' },
+    })),
     // On the wall
     {
       from: 'listener',
