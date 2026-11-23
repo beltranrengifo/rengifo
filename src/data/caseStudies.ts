@@ -1,4 +1,5 @@
 import type { ImageMetadata } from 'astro';
+import type { SystemMapId } from './systemMaps';
 import billingOverview from '../assets/work/billing-overview.png';
 import ensayaderoLibrary from '../assets/work/ensayadero-library.png';
 import ensayaderoSession from '../assets/work/ensayadero-session.png';
@@ -72,6 +73,8 @@ export interface CaseStudy extends ProjectBase {
    * public site needs no such line — the link is the proof.
    */
   accessKey?: string;
+  /** An explorable map of how the parts fit (see src/data/systemMaps). */
+  systemMap?: SystemMapId;
 }
 
 export type Project = CaseStudy | LinkedProject;
@@ -89,6 +92,7 @@ const allProjects: Project[] = [
     rowKey: 'proj_tablux_desc',
     taglineKey: 'cs_tablux_tagline',
     introKey: 'cs_tablux_intro',
+    systemMap: 'tablux',
     stack: [
       'Linux 6.18 · U-Boot · device tree',
       'Armbian · Phosh',
@@ -96,6 +100,7 @@ const allProjects: Project[] = [
       'Supabase (self-hosted)',
       'Node · Hono',
       'Claude Haiku · Whisper on Groq',
+      'Piper · wake word in WASM',
       'MCP server',
       'Tailscale · Coolify',
     ],
@@ -106,6 +111,7 @@ const allProjects: Project[] = [
       { headingKey: 'cs_tablux_n4_h', bodyKey: 'cs_tablux_n4_b' },
       { headingKey: 'cs_tablux_n5_h', bodyKey: 'cs_tablux_n5_b' },
       { headingKey: 'cs_tablux_n6_h', bodyKey: 'cs_tablux_n6_b' },
+      { headingKey: 'cs_tablux_n7_h', bodyKey: 'cs_tablux_n7_b' },
     ],
     screenshots: [
       {
