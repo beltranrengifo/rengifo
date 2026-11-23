@@ -20,7 +20,7 @@ interface MapData {
     { nodes: string[]; caption: string; grows: string[] }[]
   >;
   offline: { keep: string[]; lose: string[] } | null;
-  bundles: { from: string; zone: string }[];
+  bundles: { from: string; zone: string; trunk?: string }[];
   stepOf: string;
 }
 interface Box {
@@ -200,14 +200,16 @@ function init(root: HTMLElement) {
     };
   };
 
-  // A bundled wire: straight out to a trunk just before the zone, along the
-  // trunk, then into its part. The bundle's wires share every pixel up to
-  // where they fan out, so they read as one.
+  // A bundled wire: straight out to a trunk, along the trunk, then into its
+  // part. The bundle's wires share every pixel up to where they fan out, so
+  // they read as one.
   const trunk = (a: Point, b: Point, x: number) => {
     const r = Math.min(8, Math.abs(b.y - a.y) / 2);
     const s = Math.sign(b.y - a.y) || 1;
+    const out = Math.sign(x - a.x) || 1; // which way the hub leaves
+    const into = Math.sign(b.x - x) || 1; // which way the part is entered
     const d = r
-      ? `M${f(a.x)} ${f(a.y)}H${f(x - r)}Q${f(x)} ${f(a.y)} ${f(x)} ${f(a.y + s * r)}V${f(b.y - s * r)}Q${f(x)} ${f(b.y)} ${f(x + r)} ${f(b.y)}H${f(b.x)}`
+      ? `M${f(a.x)} ${f(a.y)}H${f(x - out * r)}Q${f(x)} ${f(a.y)} ${f(x)} ${f(a.y + s * r)}V${f(b.y - s * r)}Q${f(x)} ${f(b.y)} ${f(x + into * r)} ${f(b.y)}H${f(b.x)}`
       : `M${f(a.x)} ${f(a.y)}H${f(b.x)}`;
     return { d, at: along([a, { x, y: a.y }, { x, y: b.y }, b]) };
   };
@@ -255,10 +257,10 @@ function init(root: HTMLElement) {
       const b = boxes.get(wire.to);
       if (!a || !b) return;
       const bundle = bundled(wire);
-      const zone = bundle ? zones.get(bundle.zone) : undefined;
+      const zone = bundle ? zones.get(bundle.trunk ?? bundle.zone) : undefined;
       let path: { d: string; at: (t: number) => Point };
       if (bundle && zone) {
-        const x = boxOf(zone, origin).l - 9;
+        const x = boxOf(zone, origin).l - 10;
         const fromHub = bundle.from === wire.from;
         const hub = centreOf(fromHub ? a : b);
         const leaf = centreOf(fromHub ? b : a);
@@ -693,12 +695,17 @@ function init(root: HTMLElement) {
     const r = canvas.getBoundingClientRect();
     if (r.top >= top - 4 && r.bottom <= floor + 4) return;
     const room = floor - top;
-    const offset = r.height < room ? (room - r.height) / 2 : 0;
+    // A map taller than the room: frame the step's parts instead.
+    if (r.height > room + 4) return followStep(top, floor);
+    const offset = (room - r.height) / 2;
     window.scrollBy({ top: r.top - top - offset, behavior: smooth() });
   };
 
-  const followStep = () => {
-    if (!walk || !isStacked()) return;
+  const followStep = (
+    head = 72,
+    floor = player.getBoundingClientRect().top - 12,
+  ) => {
+    if (!walk) return;
     const parts = data.walks[walk.id]![walk.step]!.nodes.map((id) =>
       nodes.get(id),
     ).filter((el): el is HTMLButtonElement => !!el);
@@ -706,12 +713,12 @@ function init(root: HTMLElement) {
     const rects = parts.map((el) => el.getBoundingClientRect());
     const top = Math.min(...rects.map((r) => r.top));
     const bottom = Math.max(...rects.map((r) => r.bottom));
-    const floor = player.getBoundingClientRect().top - 12;
-    if (top >= 72 && bottom <= floor) return;
-    // As many of the step's parts as fit between the header and the player.
-    const room = floor - 72;
+    if (top >= head && bottom <= floor) return;
+    // As many of the step's parts as fit between the header and the floor.
+    const room = floor - head;
     const span = bottom - top;
-    const shift = span <= room ? top - 72 - (room - span) / 2 : top - 80;
+    const shift =
+      span <= room ? top - head - (room - span) / 2 : top - head - 8;
     window.scrollBy({ top: shift, behavior: smooth() });
   };
 

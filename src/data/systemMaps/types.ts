@@ -183,6 +183,8 @@ export interface OfflineView {
 export interface Bundle {
   from: string;
   zone: string;
+  /** The zone whose left side carries the trunk; the bundle's own by default. */
+  trunk?: string;
 }
 
 export interface SystemMap {
