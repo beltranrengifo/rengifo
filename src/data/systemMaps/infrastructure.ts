@@ -17,8 +17,8 @@ export const infrastructure: SystemMap = {
     es: 'Mapa de la infraestructura de mis aplicaciones, pieza a pieza',
   },
   intro: {
-    en: 'Where the backends of my apps live, and where their copies go. Choose any part to see what it is and what it talks to, or follow a path through it.',
-    es: 'Dónde viven los backends de mis aplicaciones y adónde van sus copias. Elige una pieza para ver qué es y con qué habla, o sigue alguno de estos recorridos.',
+    en: 'Below, every part of it, down to where the copies go. Choose any part to see what it is and what it talks to, or follow a path through it.',
+    es: 'Aquí debajo, todas sus piezas, hasta adónde van las copias. Elige una para ver qué es y con qué habla, o sigue alguno de los recorridos.',
   },
   size: { w: 1000, h: 760 },
 
