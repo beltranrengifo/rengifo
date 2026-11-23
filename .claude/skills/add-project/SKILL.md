@@ -24,7 +24,16 @@ A project touches five places. Do them all in one branch and one PR.
 
 ### Screenshots
 
-- Only for work that cannot be visited, and only with images the user provides — never mockups.
+- Every project page carries screenshots (3–4), public sites too. Never mockups: real screens only.
+- Take them yourself with Playwright, using Google Chrome via `require('playwright')` from a repo that has it (e.g. `~/Development/tablux/web`). Use one browser, one shot at a time, closed after.
+  - Sites: 1440×900 at deviceScaleFactor 2, `locale: 'es-ES'`, scrolled or clicked to each section.
+  - Wait for `load` plus a fixed pause, not `networkidle`: players and embeds keep the network busy and the script hangs.
+  - `reducedMotion: 'reduce'` so nothing is caught mid-animation, and hide floating widgets and cookie notes (a player, a chat bubble) with an injected style.
+  - WebGL sites: launch Chrome with `--use-angle=metal --enable-gpu --ignore-gpu-blocklist` and force the highest quality the app offers. A guided tour or a demo path makes better interior shots than placing the camera by hand.
+  - Apps with a fixtures or demo mode (Tablux's layout matrix): their iPad landscape size, 1180×820 @2x.
+  - Every shot of one project at the same size.
+- Gated apps whose screens hold real people's data (students, clients): don't log in and shoot; ask the user for shots from a demo account.
+- RAM: never run several builds, embeds or browsers at once (the Mac ran out of memory once). Check `memory_pressure` before heavy steps.
 - Look at every image before using it. Remove what is private or reads badly out of context: third parties' names, addresses, appointments, odd voice transcriptions. Blur a region or crop; never retouch text into something it did not say. Pillow is not installed; use `sharp` from the repo's `node_modules` (`extract` + `blur` + `composite`, or `extract` to crop). Tell the user what was blurred or cropped.
 - Save as `src/assets/work/<slug>-<what>.png`, import them at the top of `caseStudies.ts`, keys `cs_<slug>_shotN_alt` (what is on screen) and `cs_<slug>_shotN_cap` (one line on what it shows about the work).
 
@@ -38,7 +47,7 @@ Rules (also in `bd memories`; re-read them):
 - No commit or PR counts anywhere.
 - Spanish must read as natural Spanish, not a calque of the English. Write each language on its own terms.
 - A tagline is a few words and must fit the whole project, not one part of it (Tablux reaches tablets and phones, so a wall-only tagline was wrong). The intro says what it is and for whom; each note is one paragraph telling one part of the story, in the order it happened.
-- Write the English first. Then hand the English (as JSON, every key) to a subagent briefed as a senior Spain-Spanish translator and copy editor: it writes the Spanish on its own terms from the English and these rules, keeps product names and phrases already in Spanish as they are, and returns JSON plus what was wrong. Review its output against the facts before applying it. The user has rejected first-draft Spanish; do not skip this pass.
+- Write the English first, then write the Spanish yourself from the meaning, not sentence by sentence from the English: Spanish word order, shorter sentences, natural verbs ("a distancia", not "en remoto"), fewer chains of "con X, con Y" and possessives. A translator subagent's output still read as a machine translation to the user, so don't hand it off. Check the Spanish against the facts.
 - If the project uses AI in a meaningful way, add a line to "Built by me" in `src/data/ai.ts` (`ai_built_<slug>`, with `href` only if something public exists).
 
 ## 4. Board: `src/data/board.ts`
