@@ -1,0 +1,96 @@
+---
+import Header from './Header.astro';
+import { t, currentYear, type Locale } from '../lib/i18n';
+import {
+  mochueloPrivacy,
+  mochueloPrivacyDate,
+  mochueloPrivacyPaths,
+} from '../data/mochueloPrivacy';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const policy = mochueloPrivacy[locale];
+const other: Locale = locale === 'es' ? 'en' : 'es';
+const updated = new Intl.DateTimeFormat(locale === 'es' ? 'es' : 'en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+}).format(new Date(`${mochueloPrivacyDate}T00:00:00Z`));
+---
+
+<div class="relative">
+  <a href="#main" class="skip-link no-underline">{t('ui_skip', locale)}</a>
+  <div class="grain" data-no-print aria-hidden="true"></div>
+
+  <Header locale={locale} alternate={mochueloPrivacyPaths[other]} />
+
+  <main id="main">
+    <article class="mx-auto max-w-[1080px] px-6 sm:px-10">
+      <header class="pt-[104px] pb-12 sm:pt-[130px]">
+        <p class="text-muted m-0 mb-9 text-[13px] tracking-[0.2em] uppercase">
+          Mochuelo
+        </p>
+        <h1
+          class="m-0 max-w-[900px] text-[clamp(34px,4.6vw,60px)] leading-[1.1] font-medium tracking-[-0.03em]"
+        >
+          {policy.title}
+        </h1>
+        <p class="text-muted mt-6 mb-0 text-[15px]">
+          {policy.updatedLabel}:{' '}
+          <time datetime={mochueloPrivacyDate}>{updated}</time>
+        </p>
+        <p class="text-body mt-8 mb-0 max-w-[660px] text-[17px] leading-[1.65]">
+          {policy.intro}
+        </p>
+      </header>
+
+      <div class="grid gap-12 pb-[100px]">
+        {
+          policy.sections.map((section) => (
+            <section class="grid gap-3">
+              <h2 class="border-ink m-0 border-t pt-5 text-[19px] font-semibold tracking-[-0.01em]">
+                {section.heading}
+              </h2>
+              {section.body && (
+                <p class="text-body m-0 max-w-[660px] text-[16px] leading-[1.7]">
+                  {section.body}
+                </p>
+              )}
+              {section.items && (
+                <ul class="text-body m-0 grid max-w-[660px] list-disc gap-2 pl-5 text-[16px] leading-[1.7]">
+                  {section.items.map((item) => (
+                    <li>
+                      {item.term && (
+                        <>
+                          <strong class="text-ink font-semibold">
+                            {item.term}
+                          </strong>{' '}
+                        </>
+                      )}
+                      {item.text}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </article>
+  </main>
+
+  <footer class="mx-auto mb-16 max-w-[1080px] px-6 sm:px-10">
+    <p class="border-hairline text-muted m-0 border-t pt-7 text-[14px]">
+      {t('ui_footer_legal', locale, { year: currentYear })}
+    </p>
+  </footer>
+</div>
+
+<script>
+  // Header behaviour and the theme picker, as on every classic page.
+  import '../scripts/resume.ts';
+</script>

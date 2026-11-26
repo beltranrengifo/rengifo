@@ -6,9 +6,19 @@ import {
   alternateHref,
   homeHref,
   pdfHref,
+  type Locale,
 } from '../lib/i18n';
 
-const locale = resolveLocale(Astro.currentLocale);
+interface Props {
+  /** For pages outside the mirrored EN/ES routes (Astro would say 'en'). */
+  locale?: Locale;
+  /** The other language's URL, when it is not the mirrored path. */
+  alternate?: string;
+}
+
+const locale = Astro.props.locale ?? resolveLocale(Astro.currentLocale);
+const alternate =
+  Astro.props.alternate ?? alternateHref(locale, Astro.url.pathname);
 
 // Themes, each shown by its accent; the names match :root[data-theme] in
 // global.css. Blue is the default and sets no attribute.
@@ -62,7 +72,7 @@ const themes = [
       }
     </div>
     <a
-      href={alternateHref(locale, Astro.url.pathname)}
+      href={alternate}
       class="text-muted hover:text-ink font-sans text-[13px] tracking-[0.14em] uppercase no-underline transition-colors"
     >
       {t('ui_lang_switch', locale)}
