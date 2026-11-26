@@ -90,8 +90,7 @@ export const mochueloPrivacy: Record<Locale, PrivacyPolicy> = {
       },
       {
         heading: 'Contacto',
-        // TODO: the contact address is still to be decided.
-        body: '[correo de contacto]',
+        body: 'Para cualquier pregunta sobre esta política, escribe a beltran@rengifo.es.',
       },
     ],
   },
@@ -147,8 +146,7 @@ export const mochueloPrivacy: Record<Locale, PrivacyPolicy> = {
       },
       {
         heading: 'Contact',
-        // TODO: the contact address is still to be decided.
-        body: '[contact email]',
+        body: 'For any question about this policy, write to beltran@rengifo.es.',
       },
     ],
   },
