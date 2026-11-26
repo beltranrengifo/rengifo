@@ -6,6 +6,8 @@ interface Props {
   title?: string;
   description?: string;
   lang?: Locale;
+  /** Each locale's path, for a page whose slugs differ by language. */
+  alternates?: Record<Locale, string>;
 }
 
 const { lang = 'en' } = Astro.props;
@@ -17,12 +19,16 @@ const canonical = Astro.site
   ? new URL(Astro.url.pathname, Astro.site)
   : undefined;
 
-// hreflang: every page exists in both locales at mirrored paths.
+// hreflang: every page exists in both locales, at mirrored paths unless the
+// page names its own.
 const alternates = Astro.site
   ? (['en', 'es'] as const).map((locale) => ({
       locale,
-      href: new URL(localisedPath(Astro.url.pathname, lang, locale), Astro.site)
-        .href,
+      href: new URL(
+        Astro.props.alternates?.[locale] ??
+          localisedPath(Astro.url.pathname, lang, locale),
+        Astro.site,
+      ).href,
     }))
   : [];
 

@@ -1,0 +1,19 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PrivacyPolicy from '../../components/PrivacyPolicy.astro';
+import {
+  mochueloPrivacy,
+  mochueloPrivacyPaths,
+} from '../../data/mochueloPrivacy';
+
+const policy = mochueloPrivacy.es;
+---
+
+<Layout
+  lang="es"
+  title={`${policy.title} — Beltrán Rengifo`}
+  description={policy.description}
+  alternates={mochueloPrivacyPaths}
+>
+  <PrivacyPolicy locale="es" />
+</Layout>
